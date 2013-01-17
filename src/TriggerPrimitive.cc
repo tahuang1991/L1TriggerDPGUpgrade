@@ -15,20 +15,35 @@ using namespace L1ITMu;
 
 //constructors from DT data
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
-				   const L1MuDTChambPhDigi& digi) {
+				   const L1MuDTChambPhDigi& digi):
+  _subsystem(TriggerPrimitive::kDT) {
+  
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
-				   const L1MuDTChambThDigi& digi) {
+				   const L1MuDTChambThDigi& digi):
+  _subsystem(TriggerPrimitive::kDT) {
+  
+}
+
+TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
+				   const L1MuDTChambPhDigi& digi_phi,
+				   const L1MuDTChambThDigi& digi_th):
+  _subsystem(TriggerPrimitive::kDT) {
+  
 }
 
 //constructor from CSC data
 TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
-				   const CSCCorrelatedLCTDigi& digi) {
+				   const CSCCorrelatedLCTDigi& digi):
+  _subsystem(TriggerPrimitive::kCSC) {
+
 }
 
 // constructor from RPC data
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
-				   const RPCDigi& digi) {
+				   const RPCDigi& digi):
+  _subsystem(TriggerPrimitive::kRPC) {
+
 }
 
