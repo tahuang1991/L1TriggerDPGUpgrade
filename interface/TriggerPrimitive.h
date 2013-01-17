@@ -4,7 +4,7 @@
 //
 // Info: This class implements a unifying layer between DT, CSC and RPC
 //       trigger primitives (TPs) such that TPs from different subsystems
-//       can be queried for their positional and orientation information
+//       can be queried for their position and orientation information
 //       in a consistent way amongst all subsystems.
 //
 // Note: Not all input data types are persistable, so we make local
