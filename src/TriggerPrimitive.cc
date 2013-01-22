@@ -17,12 +17,14 @@ using namespace L1ITMu;
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi):
   _subsystem(TriggerPrimitive::kDT) {
-  
+  calculateDTGlobalSector(detid,_globalsector,_subsector);
+
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambThDigi& digi):
   _subsystem(TriggerPrimitive::kDT) {
+  calculateDTGlobalSector(detid,_globalsector,_subsector);
   
 }
 
@@ -30,6 +32,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
 				   const L1MuDTChambThDigi& digi_th):
   _subsystem(TriggerPrimitive::kDT) {
+  calculateDTGlobalSector(detid,_globalsector,_subsector);
   
 }
 
@@ -37,6 +40,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
 				   const CSCCorrelatedLCTDigi& digi):
   _subsystem(TriggerPrimitive::kCSC) {
+  calculateCSCGlobalSector(detid,_globalsector,_subsector);
 
 }
 
@@ -44,6 +48,38 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
 				   const RPCDigi& digi):
   _subsystem(TriggerPrimitive::kRPC) {
+  calculateRPCGlobalSector(detid,_globalsector,_subsector);
 
 }
 
+const int TriggerPrimitive::getBX() const {
+  switch(_subsystem) {
+  case kDT:
+    return _dt.bx;
+    break;
+  case kCSC:
+    return _csc.bx;
+  case kRPC:
+    return _rpc.bx;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  return -1;
+}
+
+void TriggerPrimitive::calculateDTGlobalSector(const DTChamberId& chid, 
+					       unsigned& global_sector, 
+					       unsigned& subsector ) {
+}
+
+void TriggerPrimitive::calculateCSCGlobalSector(const CSCDetId& chid, 
+						unsigned& global_sector, 
+						unsigned& subsector ) {
+}
+
+void TriggerPrimitive::calculateRPCGlobalSector(const RPCDetId& chid, 
+						unsigned& global_sector, 
+						unsigned& subsector ) {
+}

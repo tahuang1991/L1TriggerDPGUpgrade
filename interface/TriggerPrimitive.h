@@ -97,31 +97,50 @@ namespace L1ITMu {
 		     const RPCDigi&);
     
     // return the subsystem we belong to
-    subsystem_type subsystem() const { return _subsystem; }    
+    const subsystem_type subsystem() const { return _subsystem; }    
 
-    double getCMSGlobalEta() const { return _eta; }
+    const double getCMSGlobalEta() const { return _eta; }
     void   setCMSGlobalEta(const double eta) { _eta = eta; }
-    double getCMSGlobalPhi() const { return _phi; }    
+    const double getCMSGlobalPhi() const { return _phi; }    
     void   setCMSGlobalPhi(const double phi) { _phi = phi; }
+
+    void setThetaBend(const double theta) { _theta = theta; }
+    double getThetaBend() const { return _theta; }
 
     // accessors to raw subsystem data
     const DTData  getDTData()  const { return _dt;  }
     const CSCData getCSCData() const { return _csc; }
-    const RPCData getRPCData() const { return _rpc; }
+    const RPCData getRPCData() const { return _rpc; }    
 
-    // generalized accessors to underlying stub data
+    // consistent accessors to common information    
+    const int getBX() const;
+    
+    const unsigned getGlobalSector() const { return _globalsector; } 
+    const unsigned getSubSector() const { return _subsector; } 
 
   private:
-    
+    // Translate to 'global' position information at the level of 60
+    // degree sectors. Use CSC sectors as a template
+    void calculateDTGlobalSector(const DTChamberId& chid, 
+				 unsigned& global_sector, 
+				 unsigned& subsector );
+    void calculateCSCGlobalSector(const CSCDetId& chid, 
+				  unsigned& global_sector, 
+				  unsigned& subsector );
+    void calculateRPCGlobalSector(const RPCDetId& chid, 
+				  unsigned& global_sector, 
+				  unsigned& subsector );
+      
     DTData  _dt;
     CSCData _csc;
     RPCData _rpc;
     
-    const subsystem_type _subsystem;
+    subsystem_type _subsystem;
 
     unsigned _globalsector; // [1,6] in 60 degree sectors
     unsigned _subsector; // [1,2] in 30 degree partitions of a sector 
-    double _eta,_phi;
+    double _eta,_phi; // global pseudorapidity, phi
+    double _theta; // bend angle with respect to ray from (0,0,0)
   };
 
 }

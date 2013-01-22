@@ -2,3 +2,6 @@
 <use name="DataFormats/L1DTTrackFinder"/>
 <use name="DataFormats/RPCDigi"/>
 <use name="DataFormats/MuonDetId"/>
+<use name="DataFormats/Common"/>
+
+<use name="rootrflx"/>
