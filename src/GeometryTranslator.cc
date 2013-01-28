@@ -12,55 +12,117 @@ using namespace L1ITMu;
 
 double 
 GeometryTranslator::calculateGlobalEta(const TriggerPrimitive& tp) const {
-  return 0.0;
+  switch(tp.subsystem()) {
+  case TriggerPrimitive::kDT:
+    return calcDTSpecificEta(tp);
+    break;
+  case TriggerPrimitive::kCSC:
+    return calcCSCSpecificEta(tp);
+    break;
+  case TriggerPrimitive::kRPC:
+    return calcRPCSpecificEta(tp);
+    break;
+  default:
+    return std::nan("Invalid TP type!"); 
+    break;
+  }
 }
 
 double 
 GeometryTranslator::calculateGlobalPhi(const TriggerPrimitive& tp) const {
-  return 0.0;
+  switch(tp.subsystem()) {
+  case TriggerPrimitive::kDT:
+    return calcDTSpecificPhi(tp);
+    break;
+  case TriggerPrimitive::kCSC:
+    return calcCSCSpecificPhi(tp);
+    break;
+  case TriggerPrimitive::kRPC:
+    return calcRPCSpecificPhi(tp);
+    break;
+  default:
+    return std::nan("Invalid TP type!");
+    break;
+  }
 }
 
 double 
 GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
-  return 0.0;
+  switch(tp.subsystem()) {
+  case TriggerPrimitive::kDT:
+    return calcDTSpecificBend(tp);
+    break;
+  case TriggerPrimitive::kCSC:
+    return calcCSCSpecificBend(tp);
+    break;
+  case TriggerPrimitive::kRPC:
+    return calcRPCSpecificBend(tp);
+    break;
+  default:
+    return std::nan("Invalid TP type!");
+    break;
+  }
 }
 
 void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
   unsigned long long geomid = es.get<MuonGeometryRecord>().cacheIdentifier();
-  if( _geom_cache_id != geomid ) { 
-    es.get<MuonGeometryRecord>().get(_georpc);  
-    es.get<MuonGeometryRecord>().get(_geocsc);
-    es.get<MuonGeometryRecord>().get(_geodt);
+  if( _geom_cache_id != geomid ) {
+    const MuonGeometryRecord& geom = es.get<MuonGeometryRecord>();
+    geom.get(_georpc);  
+    geom.get(_geocsc);
+    geom.get(_geodt);
     _geom_cache_id = geomid;
   }  
 }
 
-double GeometryTranslator::calcRpcSpecificEta(const TriggerPrimitive&) const {
-  return 0.0;
+double 
+GeometryTranslator::calcRPCSpecificEta(const TriggerPrimitive& tp) const {
+  RPCDetId id(tp.detId<RPCDetId>());
+  const RPCRoll*  roll = _georpc->roll(id);
+
+  uint16_t strip = tp.getRPCData().strip;
+  LocalPoint lp = roll->centreOfStrip(strip);
+  GlobalPoint gp = roll->toGlobal(lp);
+
+  return gp.eta();
 }
-double GeometryTranslator::calcRpcSpecificPhi(const TriggerPrimitive&) const {
-  return 0.0;
-}
-double GeometryTranslator::calcRpcSpecificBend(const TriggerPrimitive&) const {
+
+double 
+GeometryTranslator::calcRPCSpecificPhi(const TriggerPrimitive& tp) const {
   return 0.0;
 }
 
-double GeometryTranslator::calcCSCSpecificEta(const TriggerPrimitive&) const {
-  return 0.0;
-}
-double GeometryTranslator::calcCSCSpecificPhi(const TriggerPrimitive&) const {
-  return 0.0;
-}
-double GeometryTranslator::calcCSCSpecificBend(const TriggerPrimitive&) const {
+double 
+GeometryTranslator::calcRPCSpecificBend(const TriggerPrimitive& tp) const {
   return 0.0;
 }
 
-double GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive&) const {
+double 
+GeometryTranslator::calcCSCSpecificEta(const TriggerPrimitive& tp) const {
   return 0.0;
 }
-double GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive&) const {
+
+double 
+GeometryTranslator::calcCSCSpecificPhi(const TriggerPrimitive& tp) const {
   return 0.0;
 }
-double GeometryTranslator::calcDTSpecificBend(const TriggerPrimitive&) const {
+
+double 
+GeometryTranslator::calcCSCSpecificBend(const TriggerPrimitive& tp) const {
+  return 0.0;
+}
+
+double 
+GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive& tp) const {
+  return 0.0;
+}
+
+double 
+GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive& tp) const {
+  return 0.0;
+}
+
+double 
+GeometryTranslator::calcDTSpecificBend(const TriggerPrimitive& tp) const {
   return 0.0;
 }

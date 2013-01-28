@@ -18,6 +18,9 @@
 
 #include <boost/cstdint.hpp>
 
+//DetId
+#include "DataFormats/DetId/interface/DetId.h"
+
 // DT digi types
 class DTChamberId;
 class L1MuDTChambPhDigi;
@@ -110,6 +113,9 @@ namespace L1ITMu {
     void setThetaBend(const double theta) { _theta = theta; }
     double getThetaBend() const { return _theta; }
 
+    template<typename IDType>
+      IDType detId() const { return IDType(_id); }
+
     // accessors to raw subsystem data
     const DTData  getDTData()  const { return _dt;  }
     const CSCData getCSCData() const { return _csc; }
@@ -137,6 +143,8 @@ namespace L1ITMu {
     DTData  _dt;
     CSCData _csc;
     RPCData _rpc;
+    
+    DetId _id;
     
     subsystem_type _subsystem;
 

@@ -16,40 +16,40 @@ using namespace L1ITMu;
 //constructors from DT data
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi):
+  _id(detid),
   _subsystem(TriggerPrimitive::kDT) {
   calculateDTGlobalSector(detid,_globalsector,_subsector);
-
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambThDigi& digi):
+  _id(detid),
   _subsystem(TriggerPrimitive::kDT) {
-  calculateDTGlobalSector(detid,_globalsector,_subsector);
-  
+  calculateDTGlobalSector(detid,_globalsector,_subsector);  
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
 				   const L1MuDTChambThDigi& digi_th):
+  _id(detid),
   _subsystem(TriggerPrimitive::kDT) {
-  calculateDTGlobalSector(detid,_globalsector,_subsector);
-  
+  calculateDTGlobalSector(detid,_globalsector,_subsector);  
 }
 
 //constructor from CSC data
 TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
 				   const CSCCorrelatedLCTDigi& digi):
+  _id(detid),
   _subsystem(TriggerPrimitive::kCSC) {
   calculateCSCGlobalSector(detid,_globalsector,_subsector);
-
 }
 
 // constructor from RPC data
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
 				   const RPCDigi& digi):
+  _id(detid),
   _subsystem(TriggerPrimitive::kRPC) {
   calculateRPCGlobalSector(detid,_globalsector,_subsector);
-
 }
 
 const int TriggerPrimitive::getBX() const {

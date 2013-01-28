@@ -44,9 +44,9 @@ namespace L1ITMu{
     edm::ESHandle<DTGeometry>  _geodt;
     unsigned long long _geom_cache_id;
     
-    double calcRpcSpecificEta(const TriggerPrimitive&) const;
-    double calcRpcSpecificPhi(const TriggerPrimitive&) const;
-    double calcRpcSpecificBend(const TriggerPrimitive&) const;
+    double calcRPCSpecificEta(const TriggerPrimitive&) const;
+    double calcRPCSpecificPhi(const TriggerPrimitive&) const;
+    double calcRPCSpecificBend(const TriggerPrimitive&) const;
 
     double calcCSCSpecificEta(const TriggerPrimitive&) const;
     double calcCSCSpecificPhi(const TriggerPrimitive&) const;
