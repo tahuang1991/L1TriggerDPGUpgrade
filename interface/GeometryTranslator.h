@@ -29,7 +29,7 @@ namespace L1ITMu{
 
   class GeometryTranslator {
   public:
-    GeometryTranslator() {}
+    GeometryTranslator() : _geom_cache_id(0ULL) {}
 
     double calculateGlobalEta(const TriggerPrimitive&) const;
     double calculateGlobalPhi(const TriggerPrimitive&) const;
@@ -39,9 +39,10 @@ namespace L1ITMu{
 
   private:
     // pointers to the current geometry records
-    edm::ESHandle<RPCGeometry> _georpc;
-    edm::ESHandle<CSCGeometry> _geocsc;
+    edm::ESHandle<RPCGeometry> _georpc;    
+    edm::ESHandle<CSCGeometry> _geocsc;    
     edm::ESHandle<DTGeometry>  _geodt;
+    unsigned long long _geom_cache_id;
     
     double calcRpcSpecificEta(const TriggerPrimitive&) const;
     double calcRpcSpecificPhi(const TriggerPrimitive&) const;
