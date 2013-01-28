@@ -89,7 +89,14 @@ GeometryTranslator::calcRPCSpecificEta(const TriggerPrimitive& tp) const {
 
 double 
 GeometryTranslator::calcRPCSpecificPhi(const TriggerPrimitive& tp) const {
-  return 0.0;
+  RPCDetId id(tp.detId<RPCDetId>());
+  const RPCRoll*  roll = _georpc->roll(id);
+
+  uint16_t strip = tp.getRPCData().strip;
+  LocalPoint lp = roll->centreOfStrip(strip);
+  GlobalPoint gp = roll->toGlobal(lp);
+
+  return gp.phi();
 }
 
 double 
