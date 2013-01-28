@@ -10,6 +10,9 @@
 // Note: Not all input data types are persistable, so we make local
 //       copies of all data from various digi types.
 //
+//       At the end of the day this should represent the output of some
+//       common sector receiver module.
+//
 // Author: L. Gray (FNAL)
 //
 
