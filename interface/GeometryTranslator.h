@@ -14,6 +14,8 @@
 //
 
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include <memory>
 
 // forwards
 namespace edm {  
@@ -29,7 +31,8 @@ namespace L1ITMu{
 
   class GeometryTranslator {
   public:
-    GeometryTranslator() : _geom_cache_id(0ULL) {}
+    GeometryTranslator();
+    ~GeometryTranslator();
 
     double calculateGlobalEta(const TriggerPrimitive&) const;
     double calculateGlobalPhi(const TriggerPrimitive&) const;
@@ -44,10 +47,12 @@ namespace L1ITMu{
     edm::ESHandle<DTGeometry>  _geodt;
     unsigned long long _geom_cache_id;
     
+    GlobalPoint getRPCSpecificPoint(const TriggerPrimitive&) const;
     double calcRPCSpecificEta(const TriggerPrimitive&) const;
     double calcRPCSpecificPhi(const TriggerPrimitive&) const;
     double calcRPCSpecificBend(const TriggerPrimitive&) const;
 
+    GlobalPoint getCSCSpecificPoint(const TriggerPrimitive&) const;
     double calcCSCSpecificEta(const TriggerPrimitive&) const;
     double calcCSCSpecificPhi(const TriggerPrimitive&) const;
     double calcCSCSpecificBend(const TriggerPrimitive&) const;
