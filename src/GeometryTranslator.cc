@@ -7,9 +7,12 @@
 
 #include "Geometry/CSCGeometry/interface/CSCGeometry.h"
 #include "L1Trigger/CSCCommonTrigger/interface/CSCConstants.h"
+#include "L1Trigger/CSCCommonTrigger/interface/CSCPatternLUT.h"
 
 #include "Geometry/DTGeometry/interface/DTGeometry.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
+
+#include <cmath> // for pi
 
 using namespace L1ITMu;
 
@@ -88,10 +91,14 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
 GlobalPoint 
 GeometryTranslator::getRPCSpecificPoint(const TriggerPrimitive& tp) const {
   RPCDetId id(tp.detId<RPCDetId>());
-  const RPCRoll*  roll = _georpc->roll(id);
+  std::unique_ptr<const RPCRoll>  roll(_georpc->roll(id));
   uint16_t strip = tp.getRPCData().strip;
   LocalPoint lp = roll->centreOfStrip(strip);
-  return roll->toGlobal(lp);
+  GlobalPoint gp = roll->toGlobal(lp);
+
+  roll.release();
+ 
+  return gp;
 }
 
 double 
@@ -111,23 +118,69 @@ GeometryTranslator::calcRPCSpecificBend(const TriggerPrimitive& tp) const {
   return 0.0;
 }
 
+
+// alot of this is transcription and consolidation of the CSC
+// global phi calculation code
+// this works directly with the geometry 
+// rather than using the old phi luts
 GlobalPoint 
 GeometryTranslator::getCSCSpecificPoint(const TriggerPrimitive& tp) const {
-  CSCDetId id(tp.detId<CSCDetId>());  
-  const CSCChamber* chamb = _geocsc->chamber(id);
-  const CSCLayerGeometry* layer_geom = 
-    chamb->layer(CSCConstants::KEY_ALCT_LAYER)->geometry();
-  const CSCLayer* layer = chamb->layer(CSCConstants::KEY_ALCT_LAYER);
-
-  uint16_t strip = tp.getCSCData().strip;
-  uint16_t keyWG = tp.getCSCData().keywire;
-
-  // some magic needs to go here to scale some chamber's strips due to
-  // local phi lut scaling
-
-  LocalPoint lp  = layer_geom->stripWireGroupIntersection(strip,keyWG);
+  const CSCDetId id(tp.detId<CSCDetId>()); 
+  // we should change this to weak_ptrs at some point
+  // requires introducing std::shared_ptrs to geometry
+  std::unique_ptr<const CSCChamber> chamb(_geocsc->chamber(id));
+  std::unique_ptr<const CSCLayerGeometry> layer_geom(
+    chamb->layer(CSCConstants::KEY_ALCT_LAYER)->geometry()
+    );
+  std::unique_ptr<const CSCLayer> layer(
+    chamb->layer(CSCConstants::KEY_ALCT_LAYER)
+    );
   
-  return layer->surface().toGlobal(lp);
+  const uint16_t halfstrip = tp.getCSCData().strip;
+  const uint16_t pattern = tp.getCSCData().pattern;
+  const uint16_t keyWG = tp.getCSCData().keywire; 
+  //const unsigned maxStrips = layer_geom->numberOfStrips();  
+
+  // so we can extend this later 
+  // assume TMB2007 half-strips only as baseline
+  double offset = 0.0;
+  switch(1) {
+  case 1:
+    offset = CSCPatternLUT::get2007Position(pattern);
+  }
+  const unsigned halfstrip_offs = unsigned(0.5 + halfstrip + offset);
+  const unsigned strip = halfstrip_offs/2 + 1; // geom starts from 1
+
+  // the rough location of the hit at the ALCT key layer
+  // we will refine this using the half strip information
+  const LocalPoint coarse_lp = 
+    layer_geom->stripWireGroupIntersection(strip,keyWG);  
+  const GlobalPoint coarse_gp = layer->surface().toGlobal(coarse_lp);  
+  
+  // the strip width/4.0 gives the offset of the half-strip
+  // center with respect to the strip center
+  const double hs_offset = layer_geom->stripPhiPitch()/4.0;
+  
+  // determine if we need to add or subtract the half-strip center
+  const bool ccw = isCSCCounterClockwise(layer);
+  const double phi_offset = ( ccw ? -hs_offset : hs_offset );
+  
+  // the global eta calculation uses the middle of the strip
+  // so no need to increment it
+  const GlobalPoint final_gp( GlobalPoint::Polar( coarse_gp.theta(),
+						  coarse_gp.phi() + phi_offset,
+						  coarse_gp.theta() ) );
+    
+  // We need to add in some notion of the 'error' on trigger primitives
+  // like the width of the wire group by the width of the strip
+  // or something similar      
+
+  // release ownership of the pointers
+  chamb.release();
+  layer_geom.release();
+  layer.release();
+  
+  return final_gp;
 }
 
 double 
@@ -164,4 +217,13 @@ double
 GeometryTranslator::calcDTSpecificBend(const TriggerPrimitive& tp) const {
   DTChamberId id(tp.detId<DTChamberId>());
   return 0.0;
+}
+
+bool GeometryTranslator::
+isCSCCounterClockwise(const std::unique_ptr<const CSCLayer>& layer) const {
+  const int nStrips = layer->geometry()->numberOfStrips();
+  const double phi1 = layer->centerOfStrip(1).phi();
+  const double phiN = layer->centerOfStrip(nStrips).phi();
+  return ( (std::abs(phi1 - phiN) < M_PI  && phi1 >= phiN) || 
+	   (std::abs(phi1 - phiN) >= M_PI && phi1 < phiN)     );  
 }

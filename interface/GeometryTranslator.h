@@ -24,6 +24,7 @@ namespace edm {
 
 class RPCGeometry;
 class CSCGeometry;
+class CSCLayer;
 class DTGeometry;
 
 namespace L1ITMu{
@@ -56,6 +57,7 @@ namespace L1ITMu{
     double calcCSCSpecificEta(const TriggerPrimitive&) const;
     double calcCSCSpecificPhi(const TriggerPrimitive&) const;
     double calcCSCSpecificBend(const TriggerPrimitive&) const;
+    bool isCSCCounterClockwise(const std::unique_ptr<const CSCLayer>&) const;
 
     double calcDTSpecificEta(const TriggerPrimitive&) const;
     double calcDTSpecificPhi(const TriggerPrimitive&) const;
