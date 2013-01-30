@@ -17,6 +17,7 @@
 //
 
 #include <boost/cstdint.hpp>
+#include <vector>
 
 //DetId
 #include "DataFormats/DetId/interface/DetId.h"
@@ -31,7 +32,7 @@ class CSCCorrelatedLCTDigi;
 class CSCDetId;
 
 // RPC digi types
-class RPCDigi;
+class RPCDigiL1Link;
 class RPCDetId;
 
 namespace L1ITMu {
@@ -44,10 +45,10 @@ namespace L1ITMu {
     // define the data we save locally from each subsystem type
     // variables in these structs keep their colloquial meaning
     // within a subsystem
+    // for RPCs you have to unroll the digi-link and raw det-id
     struct RPCData {
-      unsigned sector;
-      unsigned chamber;
-      uint16_t strip;
+      unsigned layer;
+      unsigned strip;
       uint16_t bx;
     };
 
@@ -80,8 +81,8 @@ namespace L1ITMu {
       int Ts2TagCode; // ??
       int BxCntCode; // ????
       // from ChambThDigi
-      unsigned char outPos[7]; // seems to be indexed by BX
-      unsigned char outQual[7]; // again by BX
+      std::vector<unsigned char> outPos; // seems to be indexed by BX
+      std::vector<unsigned char> outQual; // again by BX
     };
 
     //Persistency
@@ -100,7 +101,7 @@ namespace L1ITMu {
 		     const CSCCorrelatedLCTDigi&);
     //RPC
     TriggerPrimitive(const RPCDetId&,
-		     const RPCDigi&);
+		     const RPCDigiL1Link&);
     
     // return the subsystem we belong to
     const subsystem_type subsystem() const { return _subsystem; }    

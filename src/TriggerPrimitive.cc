@@ -4,7 +4,7 @@
 #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigi.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhDigi.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
-#include "DataFormats/RPCDigi/interface/RPCDigi.h"
+#include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
 
 // detector ID types
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
@@ -46,7 +46,7 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
 
 // constructor from RPC data
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
-				   const RPCDigi& digi):
+				   const RPCDigiL1Link& digi):
   _id(detid),
   _subsystem(TriggerPrimitive::kRPC) {
   calculateRPCGlobalSector(detid,_globalsector,_subsector);
