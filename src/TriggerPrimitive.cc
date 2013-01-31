@@ -42,14 +42,31 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
   _id(detid),
   _subsystem(TriggerPrimitive::kCSC) {
   calculateCSCGlobalSector(detid,_globalsector,_subsector);
+  _csc.trknmb  = digi.getTrknmb();
+  _csc.valid   = digi.isValid();
+  _csc.quality = digi.getQuality();
+  _csc.keywire = digi.getKeyWG();
+  _csc.strip   = digi.getStrip();
+  _csc.pattern = digi.getPattern();
+  _csc.bend    = digi.getBend();
+  _csc.bx      = digi.getBX();
+  _csc.mpclink = digi.getMPCLink();
+  _csc.bx0     = digi.getBX0();
+  _csc.syncErr = digi.getSyncErr();
+  _csc.cscID   = digi.getCSCID();
 }
 
 // constructor from RPC data
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
-				   const RPCDigiL1Link& digi):
+				   const unsigned strip,
+				   const unsigned layer,
+				   const uint16_t bx):
   _id(detid),
   _subsystem(TriggerPrimitive::kRPC) {
   calculateRPCGlobalSector(detid,_globalsector,_subsector);
+  _rpc.strip = strip;
+  _rpc.layer = layer;
+  _rpc.bx = bx;
 }
 
 const int TriggerPrimitive::getBX() const {

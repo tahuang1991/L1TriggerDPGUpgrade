@@ -47,14 +47,12 @@ namespace L1ITMu {
     // within a subsystem
     // for RPCs you have to unroll the digi-link and raw det-id
     struct RPCData {
-      unsigned layer;
       unsigned strip;
+      unsigned layer;
       uint16_t bx;
     };
 
     struct CSCData {
-      unsigned sector;
-      unsigned subsector;
       uint16_t trknmb;
       uint16_t valid;
       uint16_t quality;
@@ -100,8 +98,10 @@ namespace L1ITMu {
     TriggerPrimitive(const CSCDetId&,
 		     const CSCCorrelatedLCTDigi&);
     //RPC
-    TriggerPrimitive(const RPCDetId&,
-		     const RPCDigiL1Link&);
+    TriggerPrimitive(const RPCDetId& detid,
+		     const unsigned strip,
+		     const unsigned layer,
+		     const uint16_t bx);
     
     // return the subsystem we belong to
     const subsystem_type subsystem() const { return _subsystem; }    

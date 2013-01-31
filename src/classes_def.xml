@@ -1,10 +1,12 @@
 <lcgdict>
  <selection>
-  <class name="L1ITMu::TriggerPrimitive::RPCData"  ClassVersion="10">
+  <class name="L1ITMu::TriggerPrimitive::RPCData"  ClassVersion="11">
    <version ClassVersion="10" checksum="3778906334"/>
+   <version ClassVersion="11" checksum="2268502340"/>
   </class>
-  <class name="L1ITMu::TriggerPrimitive::CSCData"  ClassVersion="10">
+  <class name="L1ITMu::TriggerPrimitive::CSCData"  ClassVersion="11">
    <version ClassVersion="10" checksum="1330447874"/>
+   <version ClassVersion="11" checksum="2375170618"/>
   </class>
   <class name="L1ITMu::TriggerPrimitive::DTData"  ClassVersion="10">
    <version ClassVersion="10" checksum="1812071516"/>
