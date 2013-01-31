@@ -1,0 +1,22 @@
+<lcgdict>
+ <selection>
+  <class name="L1ITMu::TriggerPrimitive::RPCData"  ClassVersion="10">
+   <version ClassVersion="10" checksum="3778906334"/>
+  </class>
+  <class name="L1ITMu::TriggerPrimitive::CSCData"  ClassVersion="10">
+   <version ClassVersion="10" checksum="1330447874"/>
+  </class>
+  <class name="L1ITMu::TriggerPrimitive::DTData"  ClassVersion="10">
+   <version ClassVersion="10" checksum="1812071516"/>
+  </class>
+  <class name="L1ITMu::TriggerPrimitive" ClassVersion="11">
+   <version ClassVersion="10" checksum="798990672"/>
+   <version ClassVersion="11" checksum="3799991664"/>
+  </class>
+  <class name="edm::Wrapper<L1ITMu::TriggerPrimitive>"/>
+  <class name="L1ITMu::TriggerPrimitiveCollection"/>
+  <class name="edm::Wrapper<L1ITMu::TriggerPrimitiveCollection>"/>
+  <class name="L1ITMu::TriggerPrimitiveRef"/>
+  <class name="L1ITMu::TriggerPrimitivePtr"/>
+ </selection>
+</lcgdict>
