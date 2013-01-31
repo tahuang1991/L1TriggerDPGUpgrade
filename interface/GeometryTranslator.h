@@ -59,6 +59,7 @@ namespace L1ITMu{
     double calcCSCSpecificBend(const TriggerPrimitive&) const;
     bool isCSCCounterClockwise(const std::unique_ptr<const CSCLayer>&) const;
 
+    GlobalPoint calcDTSpecificPoint(const TriggerPrimitive&) const;
     double calcDTSpecificEta(const TriggerPrimitive&) const;
     double calcDTSpecificPhi(const TriggerPrimitive&) const;
     double calcDTSpecificBend(const TriggerPrimitive&) const;

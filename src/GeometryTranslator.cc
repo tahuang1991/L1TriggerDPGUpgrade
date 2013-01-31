@@ -10,6 +10,7 @@
 #include "L1Trigger/CSCCommonTrigger/interface/CSCPatternLUT.h"
 
 #include "Geometry/DTGeometry/interface/DTGeometry.h"
+#include "L1Trigger/DTUtilities/interface/DTTrigGeom.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
 
 #include <cmath> // for pi
@@ -200,24 +201,35 @@ GeometryTranslator::calcCSCSpecificBend(const TriggerPrimitive& tp) const {
   return 0.0;
 }
 
-// need to get eta position of the TRACO in some non-insane way
-double 
-GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive& tp) const {
-  DTChamberId id(tp.detId<DTChamberId>());
-  return 0.0;
+GlobalPoint
+GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {  
+  const DTChamberId baseid(tp.detId<DTChamberId>());
+  // do not use this pointer for anything other than creating a trig geom
+  std::unique_ptr<DTChamber> chamb(
+    const_cast<DTChamber*>(_geodt->chamber(baseid)) 
+    );
+  std::unique_ptr<DTTrigGeom> trig_geom( new DTTrigGeom(chamb.get(),false) );
+  chamb.release(); // release it here so no one gets funny ideas
+  // super layer one is the theta superlayer in a DT chamber
+  // station 4 does not have a theta super layer
+  const DTBtiId thetaBTI(baseid,1,tp.getDTData().bti_idx);  
+
+  return GlobalPoint();
 }
 
-// phi of a hit seems to be straightforward
+double 
+GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive& tp) const {  
+  return calcDTSpecificPoint(tp).eta();
+}
+
 double 
 GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive& tp) const {
-  DTChamberId id(tp.detId<DTChamberId>());
-  return 0.0;
+  return calcDTSpecificPoint(tp).eta();
 }
 
 // we have the bend except for station 3
 double 
 GeometryTranslator::calcDTSpecificBend(const TriggerPrimitive& tp) const {
-  DTChamberId id(tp.detId<DTChamberId>());
   return 0.0;
 }
 

@@ -68,19 +68,24 @@ namespace L1ITMu {
     };
 
     struct DTData {
-      // from ChambPhDigi
+      // from ChambPhDigi (corresponds to a TRACO)
+      // this gives us directly the phi
       int bx; // relative? bx number
-      int wheel; // wheel number -2,-1,0,1,2
+      int wheel; // wheel number -3,-2,-1,1,2,3
       int sector; // 1-12 in DT speak (these correspond to CSC sub-sectors)
       int station; // 1-4 radially outwards
-      int radialAngle; // need to look this up
-      int bendingAngle; // pitch of segment relative to chamber
+      int radialAngle; // packed phi in a sector
+      int bendingAngle; // angle of segment relative to chamber
       int qualityCode; // need to decode
       int Ts2TagCode; // ??
       int BxCntCode; // ????
-      // from ChambThDigi
-      std::vector<unsigned char> outPos; // seems to be indexed by BX
-      std::vector<unsigned char> outQual; // again by BX
+      // from ChambThDigi (corresponds to a BTI)
+      // we have to root out the eta manually
+      // theta super layer == SL 1
+      // station four has no theta super-layer
+      uint16_t bti_idx;
+      std::vector<unsigned char> outPos; // indexed set of 7 BTIs
+      std::vector<unsigned char> outQual; // indexed set of 7 BTIs
     };
 
     //Persistency

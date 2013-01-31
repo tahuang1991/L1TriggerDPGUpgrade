@@ -73,7 +73,6 @@ const int TriggerPrimitive::getBX() const {
   switch(_subsystem) {
   case kDT:
     return _dt.bx;
-    break;
   case kCSC:
     return _csc.bx;
   case kRPC:
