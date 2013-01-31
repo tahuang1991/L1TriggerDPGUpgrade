@@ -83,22 +83,24 @@ namespace L1ITMu {
       // we have to root out the eta manually
       // theta super layer == SL 1
       // station four has no theta super-layer
-      uint16_t bti_idx;
-      std::vector<unsigned char> outPos; // indexed set of 7 BTIs
-      std::vector<unsigned char> outQual; // indexed set of 7 BTIs
+      // bti_idx == -1 means there was no theta trigger for this segment
+      int theta_bti_group;
+      int segment_number; // position(i)
+      int theta_code;
+      int theta_quality;
     };
-
+    
     //Persistency
     TriggerPrimitive(): _subsystem(kNSubsystems) {}
-
-    //DT
-    TriggerPrimitive(const DTChamberId&,
-		     const L1MuDTChambPhDigi&);
-    TriggerPrimitive(const DTChamberId&,
-		     const L1MuDTChambThDigi&);    
+      
+    //DT      
     TriggerPrimitive(const DTChamberId&,		     
 		     const L1MuDTChambPhDigi&,
-		     const L1MuDTChambThDigi&);    
+		     const int segment_number);  
+    TriggerPrimitive(const DTChamberId&,		     
+		     const L1MuDTChambPhDigi&,
+		     const L1MuDTChambThDigi&,
+		     const int theta_bti_group);    
     //CSC
     TriggerPrimitive(const CSCDetId&,
 		     const CSCCorrelatedLCTDigi&);

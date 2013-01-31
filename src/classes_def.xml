@@ -8,9 +8,10 @@
    <version ClassVersion="10" checksum="1330447874"/>
    <version ClassVersion="11" checksum="2375170618"/>
   </class>
-  <class name="L1ITMu::TriggerPrimitive::DTData"  ClassVersion="11">
+  <class name="L1ITMu::TriggerPrimitive::DTData"  ClassVersion="12">
    <version ClassVersion="10" checksum="1812071516"/>
    <version ClassVersion="11" checksum="3519618344"/>
+   <version ClassVersion="12" checksum="1712212034"/>
   </class>
   <class name="L1ITMu::TriggerPrimitive" ClassVersion="11">
    <version ClassVersion="10" checksum="798990672"/>

@@ -15,25 +15,50 @@ using namespace L1ITMu;
 
 //constructors from DT data
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
-				   const L1MuDTChambPhDigi& digi):
+				   const L1MuDTChambPhDigi& digi_phi,
+				   const int segment_number):
   _id(detid),
   _subsystem(TriggerPrimitive::kDT) {
   calculateDTGlobalSector(detid,_globalsector,_subsector);
-}
-
-TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
-				   const L1MuDTChambThDigi& digi):
-  _id(detid),
-  _subsystem(TriggerPrimitive::kDT) {
-  calculateDTGlobalSector(detid,_globalsector,_subsector);  
+  // fill in information from theta trigger
+  _dt.theta_bti_group = -1;
+  _dt.segment_number = segment_number;  
+  _dt.theta_code = -1;
+  _dt.theta_quality = -1;
+  // now phi trigger
+  _dt.bx = digi_phi.bxNum();
+  _dt.wheel = digi_phi.whNum();
+  _dt.sector = digi_phi.scNum();
+  _dt.station = digi_phi.stNum();
+  _dt.radialAngle = digi_phi.phi();
+  _dt.bendingAngle = digi_phi.phiB();
+  _dt.qualityCode = digi_phi.code();
+  _dt.Ts2TagCode = digi_phi.Ts2Tag();
+  _dt.BxCntCode = digi_phi.BxCnt();  
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
-				   const L1MuDTChambThDigi& digi_th):
+				   const L1MuDTChambThDigi& digi_th,
+				   const int theta_bti_group):
   _id(detid),
   _subsystem(TriggerPrimitive::kDT) {
-  calculateDTGlobalSector(detid,_globalsector,_subsector);  
+  calculateDTGlobalSector(detid,_globalsector,_subsector);
+  // fill in information from theta trigger
+  _dt.theta_bti_group = theta_bti_group;
+  _dt.segment_number = digi_th.position(theta_bti_group);
+  _dt.theta_code = digi_th.code(theta_bti_group);
+  _dt.theta_quality = digi_th.quality(theta_bti_group);
+  // now phi trigger
+  _dt.bx = digi_phi.bxNum();
+  _dt.wheel = digi_phi.whNum();
+  _dt.sector = digi_phi.scNum();
+  _dt.station = digi_phi.stNum();
+  _dt.radialAngle = digi_phi.phi();
+  _dt.bendingAngle = digi_phi.phiB();
+  _dt.qualityCode = digi_phi.code();
+  _dt.Ts2TagCode = digi_phi.Ts2Tag();
+  _dt.BxCntCode = digi_phi.BxCnt();    
 }
 
 //constructor from CSC data

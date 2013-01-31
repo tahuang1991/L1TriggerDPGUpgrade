@@ -217,9 +217,16 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
   // so, we choose the BTI that's in the middle of the group
   // as the BTI that we get theta from
   // TODO:::::>>> need to make sure this ordering doesn't flip under wheel sign
-  const unsigned bti_actual = tp.getDTData().bti_idx*9 + 9/2;
-  const DTBtiId thetaBTI(baseid,1,bti_actual);  
-
+  const int bti_group = tp.getDTData().theta_bti_group;
+  const unsigned bti_actual = bti_group*9 + 9/2;
+  DTBtiId thetaBTI;  
+  if ( baseid.station() != 4 && bti_group != -1) {
+    thetaBTI = DTBtiId(baseid,1,bti_actual);
+  } else {
+    // since this is phi oriented it'll give us theta in the middle
+    // of the chamber
+    thetaBTI = DTBtiId(baseid,2,1); 
+  }
   const GlobalPoint theta_gp = trig_geom->CMSPosition(thetaBTI);
   
   // local phi in sector -> global phi
@@ -228,12 +235,10 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
   while ( phi > 2*M_PI ) phi -= 2*M_PI;
   while ( phi < 0      ) phi += 2*M_PI; // get phi in [0,2pi]
   phi -= M_PI; // convert [0,2pi] -> [-pi,pi]
-
-  const GlobalPoint final_gp( GlobalPoint::Polar( theta_gp.theta(),
-						  phi,
-						  theta_gp.mag() ) );
-			      
-  return final_gp;
+  
+  return GlobalPoint( GlobalPoint::Polar( theta_gp.theta(),
+					  phi,
+					  theta_gp.mag() ) );
 }
 
 double 
