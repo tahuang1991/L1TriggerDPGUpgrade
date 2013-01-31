@@ -161,9 +161,11 @@ GeometryTranslator::getCSCSpecificPoint(const TriggerPrimitive& tp) const {
   // center with respect to the strip center
   const double hs_offset = layer_geom->stripPhiPitch()/4.0;
   
-  // determine if we need to add or subtract the half-strip center
+  // determine handedness of the chamber
   const bool ccw = isCSCCounterClockwise(layer);
-  const double phi_offset = ( ccw ? -hs_offset : hs_offset );
+  // we need to subtract the offset of even half strips and add the odd ones
+  const double phi_offset = ( ( halfstrip_offs%2 ? 1 : -1)*
+			      ( ccw ? -hs_offset : hs_offset ) );
   
   // the global eta calculation uses the middle of the strip
   // so no need to increment it
