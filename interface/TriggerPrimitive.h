@@ -1,4 +1,5 @@
-
+#ifndef __L1ITMU_TRIGGERPRIMITIVE_H__
+#define __L1ITMU_TRIGGERPRIMITIVE_H__
 // 
 // Class: L1ITMu::TriggerPrimitive
 //
@@ -163,3 +164,5 @@ namespace L1ITMu {
   };
 
 }
+
+#endif

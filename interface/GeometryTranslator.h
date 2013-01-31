@@ -1,3 +1,5 @@
+#ifndef __L1ITMU_GEOMETRYTRANSLATOR_H__
+#define __L1ITMU_GEOMETRYTRANSLATOR_H__
 // 
 // Class: L1ITMu::GeometryTranslator
 //
@@ -65,3 +67,5 @@ namespace L1ITMu{
     double calcDTSpecificBend(const TriggerPrimitive&) const;
   };
 }
+
+#endif
