@@ -171,8 +171,9 @@ GeometryTranslator::getCSCSpecificPoint(const TriggerPrimitive& tp) const {
   // the global eta calculation uses the middle of the strip
   // so no need to increment it
   const GlobalPoint final_gp( GlobalPoint::Polar( coarse_gp.theta(),
-						  coarse_gp.phi() + phi_offset,
-						  coarse_gp.theta() ) );
+						  (coarse_gp.phi().value() + 
+						   phi_offset),
+						  coarse_gp.mag() ) );
     
   // We need to add in some notion of the 'error' on trigger primitives
   // like the width of the wire group by the width of the strip
@@ -209,12 +210,30 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
     const_cast<DTChamber*>(_geodt->chamber(baseid)) 
     );
   std::unique_ptr<DTTrigGeom> trig_geom( new DTTrigGeom(chamb.get(),false) );
-  chamb.release(); // release it here so no one gets funny ideas
+  chamb.release(); // release it here so no one gets funny ideas  
   // super layer one is the theta superlayer in a DT chamber
   // station 4 does not have a theta super layer
-  const DTBtiId thetaBTI(baseid,1,tp.getDTData().bti_idx);  
+  // the BTI index from the theta trigger is an OR of 9 BTI outputs
+  // so, we choose the BTI that's in the middle of the group
+  // as the BTI that we get theta from
+  // TODO:::::>>> need to make sure this ordering doesn't flip under wheel sign
+  const unsigned bti_actual = tp.getDTData().bti_idx*9 + 9/2;
+  const DTBtiId thetaBTI(baseid,1,bti_actual);  
 
-  return GlobalPoint();
+  const GlobalPoint theta_gp = trig_geom->CMSPosition(thetaBTI);
+  
+  // local phi in sector -> global phi
+  double phi = ((double)tp.getDTData().radialAngle)/4096.0; 
+  phi += tp.getDTData().sector*M_PI/6.0; // add sector offset
+  while ( phi > 2*M_PI ) phi -= 2*M_PI;
+  while ( phi < 0      ) phi += 2*M_PI; // get phi in [0,2pi]
+  phi -= M_PI; // convert [0,2pi] -> [-pi,pi]
+
+  const GlobalPoint final_gp( GlobalPoint::Polar( theta_gp.theta(),
+						  phi,
+						  theta_gp.mag() ) );
+			      
+  return final_gp;
 }
 
 double 
@@ -224,7 +243,7 @@ GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive& tp) const {
 
 double 
 GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive& tp) const {
-  return calcDTSpecificPoint(tp).eta();
+  return calcDTSpecificPoint(tp).phi();
 }
 
 // we have the bend except for station 3
