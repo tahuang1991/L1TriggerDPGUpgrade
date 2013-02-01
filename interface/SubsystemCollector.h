@@ -10,6 +10,7 @@
 //
 #include <vector>
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 namespace edm {
   class ParameterSet;
@@ -22,9 +23,12 @@ namespace L1ITMu {
   class SubsystemCollector {
   public:
     SubsystemCollector(const edm::ParameterSet&);
+    virtual ~SubsystemCollector() {}
 
-    virtual void processDigis(const edm::Event&, const edm::EventSetup&, 
-			      std::vector<TriggerPrimitive>&) const = 0;
+    virtual void extractPrimitives(const edm::Event&, const edm::EventSetup&, 
+				   std::vector<TriggerPrimitive>&) const = 0;
+  protected:
+    edm::InputTag _src;
   };
 }
 
