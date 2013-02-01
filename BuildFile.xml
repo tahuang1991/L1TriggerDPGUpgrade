@@ -1,3 +1,7 @@
+<export>
+  <lib name="1"/>
+</export>
+
 <use name="DataFormats/CSCDigi"/>
 <use name="DataFormats/L1DTTrackFinder"/>
 <use name="DataFormats/RPCDigi"/>
@@ -14,4 +18,5 @@
 
 <use name="Geometry/RPCGeometry"/>
 
+<use name="FWCore/PluginManager"/>
 <use name="rootrflx"/>

@@ -15,7 +15,7 @@
 namespace L1ITMu {
   typedef 
     edmplugin::PluginFactory<SubsystemCollector*(const edm::ParameterSet&)>
-    SubSystemCollectorFactory;
+    SubsystemCollectorFactory;
 }
 
 #endif

@@ -25,11 +25,13 @@ namespace L1ITMu {
     virtual void extractPrimitives(const edm::Event&, const edm::EventSetup&, 
 				   std::vector<TriggerPrimitive>&) const;
   private:
-    TriggerPrimitive processDigis(const L1MuDTChambPhDigi&) const;
     TriggerPrimitive processDigis(const L1MuDTChambPhDigi&,
-				  const L1MuDTChambThDigi&) const;
-    L1MuDtChambThDigi* 
-      findThetaDigiForPosition(const L1MuDTChamThContainer) const;
+				  const int segment_number) const;
+    TriggerPrimitive processDigis(const L1MuDTChambPhDigi&,
+				  const L1MuDTChambThDigi&,
+				  const int bti_group) const;
+    int findBTIGroupForThetaDigi(const L1MuDTChambThDigi&,
+				 const int position) const;
 				  
     int bx_min, bx_max;
   };
