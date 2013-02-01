@@ -12,9 +12,10 @@ RPCCollector::RPCCollector( const edm::ParameterSet& ps ):
   SubsystemCollector(ps) {
 }
 
-void RPCCollector::extractPrimitives(const edm::Event& ev, 
-				    const edm::EventSetup& es, 
-				    std::vector<TriggerPrimitive>& out) const {
+void RPCCollector::
+extractPrimitives(const edm::Event& ev, 
+		  const edm::EventSetup& es, 
+		  std::vector<TriggerPrimitive>& out) const {
   edm::Handle<std::vector<RPCDigiL1Link> > rpcDigis;  
   ev.getByLabel(_src,rpcDigis);
   
