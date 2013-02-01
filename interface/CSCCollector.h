@@ -1,9 +1,9 @@
-#ifndef __L1ITMU_RPCCOLLECTOR_H__
-#define __L1ITMU_RPCCOLLECTOR_H__
+#ifndef __L1ITMU_CSCCOLLECTOR_H__
+#define __L1ITMU_CSCCOLLECTOR_H__
 // 
-// Class: L1ITMu::RPCCollector
+// Class: L1ITMu::CSCCollector
 //
-// Info: Processes RPC digis into ITMu trigger primitives. 
+// Info: Processes CSC digis into ITMu trigger primitives. 
 //       Positional information is not assigned here.
 //
 // Author: L. Gray (FNAL)
@@ -14,10 +14,10 @@
 
 namespace L1ITMu {
   
-  class RPCCollector: public SubsystemCollector {
+  class CSCCollector: public SubsystemCollector {
   public:
-    RPCCollector(const edm::ParameterSet&);
-    ~RPCCollector() {}
+    CSCCollector(const edm::ParameterSet&);
+    ~CSCCollector() {}
 
     virtual void extractPrimitives(const edm::Event&, const edm::EventSetup&, 
 				   std::vector<TriggerPrimitive>&) const;
