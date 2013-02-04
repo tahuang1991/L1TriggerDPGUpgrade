@@ -18,6 +18,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/GeometryTranslator.h"
+
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 
@@ -26,7 +28,8 @@
 using namespace L1ITMu;
 
 typedef std::vector<std::string> vstring;
-typedef std::map<std::string,std::unique_ptr<SubsystemCollector> > collector_list;
+typedef std::map<std::string,std::unique_ptr<SubsystemCollector> > 
+collector_list;
 typedef std::unique_ptr<SubsystemCollector> collector_ptr;
 typedef edm::ParameterSet PSet;
 
@@ -38,6 +41,7 @@ public:
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
   collector_list collectors;
+  std::unique_ptr<GeometryTranslator> geom;
 };
 
 L1ITMuTriggerPrimitiveProducer::L1ITMuTriggerPrimitiveProducer(const PSet& p) {
@@ -65,9 +69,12 @@ void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev,
   std::auto_ptr<TriggerPrimitiveCollection> 
     master_out(new TriggerPrimitiveCollection);
 
+  geom->checkAndUpdateGeometry(es);
+
   auto coll_itr = collectors.cbegin();
   auto cend = collectors.cend();
   
+  double eta,phi,bend;
   for( ; coll_itr != cend; ++coll_itr ) {
     std::auto_ptr<TriggerPrimitiveCollection> 
       subs_out;
@@ -75,6 +82,17 @@ void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev,
     
     collector->extractPrimitives(ev,es,*subs_out);
     
+    auto the_tp = subs_out->begin();
+    auto tp_end   = subs_out->end();    
+    for ( ; the_tp != tp_end; ++the_tp ) {
+      eta  = geom->calculateGlobalEta(*the_tp);
+      phi  = geom->calculateGlobalPhi(*the_tp);
+      bend = geom->calculateBendAngle(*the_tp);
+      the_tp->setCMSGlobalEta(eta);
+      the_tp->setCMSGlobalPhi(phi);
+      the_tp->setThetaBend(bend);
+    }
+
     master_out->insert(master_out->end(),
 		       subs_out->begin(),
 		       subs_out->end());
