@@ -20,6 +20,7 @@ namespace {
     edm::Wrapper<TriggerPrimitiveCollection> wvtrigPrim;
 
     TriggerPrimitiveRef rtrigPrim;
+    edm::RefVector<TriggerPrimitiveCollection> rvtripPrim;
     
     TriggerPrimitivePtr ptrigPrim;    
   };
