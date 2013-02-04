@@ -20,8 +20,8 @@
   <class name="edm::Wrapper<L1ITMu::TriggerPrimitive>"/>
   <class name="L1ITMu::TriggerPrimitiveCollection"/>
   <class name="edm::Wrapper<L1ITMu::TriggerPrimitiveCollection>"/>
-  <class name="L1ITMu::TriggerPrimitiveRef"/>
-  <class name="edm::RefVector<TriggerPrimitiveCollection>"/>
+  <class name="L1ITMu::TriggerPrimitiveRef"/> 
   <class name="L1ITMu::TriggerPrimitivePtr"/>
+  <class name="edm::RefVector<L1ITMu::TriggerPrimitiveCollection>"/>
  </selection>
 </lcgdict>
