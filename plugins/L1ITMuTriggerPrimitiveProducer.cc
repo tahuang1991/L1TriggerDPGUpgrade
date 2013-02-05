@@ -36,7 +36,7 @@ typedef edm::ParameterSet PSet;
 class L1ITMuTriggerPrimitiveProducer : public edm::EDProducer {
 public:
   L1ITMuTriggerPrimitiveProducer(const PSet&);
-  virtual ~L1ITMuTriggerPrimitiveProducer() {}
+  ~L1ITMuTriggerPrimitiveProducer() {}
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
@@ -102,3 +102,6 @@ void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev,
 
   ev.put(master_out);
 }
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_FWK_MODULE(L1ITMuTriggerPrimitiveProducer);

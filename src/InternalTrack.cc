@@ -5,11 +5,14 @@
 
 using namespace L1ITMu;
 
-InternalTrack::InternalTrack(const L1MuDTTrackCand& dttrack) {
+InternalTrack::InternalTrack(const L1MuDTTrackCand& dttrack):
+  L1MuRegionalCand(dttrack) {
 }
 
-InternalTrack::InternalTrack(const csc::L1Track& csctrack) {
+InternalTrack::InternalTrack(const csc::L1Track& csctrack):
+  L1MuRegionalCand(csctrack) {
 }
 
-InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack) {
+InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack):
+  L1MuRegionalCand(rpctrack) {
 }

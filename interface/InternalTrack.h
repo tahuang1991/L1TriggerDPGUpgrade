@@ -28,6 +28,7 @@ namespace L1ITMu{
     typedef std::vector<TriggerPrimitiveRef> stublist;
   public:
     InternalTrack() {}
+    ~InternalTrack() {}
     
     InternalTrack(const L1MuDTTrackCand&);
     InternalTrack(const csc::L1Track&);
