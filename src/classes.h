@@ -1,12 +1,14 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
-#include "DataFormats/Common/interface/RefVector.h"
 
 namespace {
   using namespace L1ITMu;
   struct dictionary {
+    // trigger primitive information
     TriggerPrimitive::RPCData rpcD;
     TriggerPrimitive::CSCData cscD;
     TriggerPrimitive::DTData  dtD;
@@ -21,8 +23,18 @@ namespace {
     edm::Wrapper<TriggerPrimitiveCollection> wvtrigPrim;
 
     TriggerPrimitiveRef rtrigPrim;
-    edm::RefVector<TriggerPrimitiveCollection> rvtripPrim;
+    std::vector<TriggerPrimitiveRef> rvtripPrim;
     
-    TriggerPrimitivePtr ptrigPrim;    
+    TriggerPrimitivePtr ptrigPrim;   
+
+    // internal tracks
+    InternalTrack tk;
+    edm::Wrapper<InternalTrack> wtk;
+
+    InternalTrackCollection ctk;
+    edm::Wrapper<InternalTrackCollection> wctk;
+
+    InternalTrackRef rtk;
+    InternalTrackPtr ptk;
   };
 }

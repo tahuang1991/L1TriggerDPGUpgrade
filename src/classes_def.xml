@@ -22,6 +22,16 @@
   <class name="edm::Wrapper<L1ITMu::TriggerPrimitiveCollection>"/>
   <class name="L1ITMu::TriggerPrimitiveRef"/> 
   <class name="L1ITMu::TriggerPrimitivePtr"/>
-  <class name="edm::RefVector<L1ITMu::TriggerPrimitiveCollection>"/>
+  <class name="std::vector<L1ITMu::TriggerPrimitiveRef>"/>
+
+  <class name="L1ITMu::InternalTrack" ClassVersion="10">
+   <version ClassVersion="10" checksum="3413851472"/>
+  </class>
+  <class name="edm::Wrapper<L1ITMu::InternalTrack>"/>
+  <class name="L1ITMu::InternalTrackCollection"/>
+  <class name="edm::Wrapper<L1ITMu::InternalTrackCollection>"/>
+  <class name="L1ITMu::InternalTrackRef"/>
+  <class name="L1ITMu::InternalTrackPtr"/>
+
  </selection>
 </lcgdict>
