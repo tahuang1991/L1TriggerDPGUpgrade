@@ -7,7 +7,7 @@ L1ITMuTriggerPrimitives = cms.EDProducer(
     RPCb = cms.PSet( collectorType = cms.string('RPCCollector'),
                      src = cms.InputTag('simRpcTriggerDigis', 'RPCb') ),
     CSC  = cms.PSet( collectorType = cms.string('CSCCollector'),
-                     src = cms.InputTag('cscTriggerPrimitiveDigis',
+                     src = cms.InputTag('simCscTriggerPrimitiveDigis',
                                         'MPCSORTED') ),
     RPCf = cms.PSet( collectorType = cms.string('RPCCollector'),
                      src = cms.InputTag('simRpcTriggerDigis', 'RPCf') )    
