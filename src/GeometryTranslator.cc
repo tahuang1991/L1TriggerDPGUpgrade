@@ -254,7 +254,9 @@ GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive& tp) const {
 // we have the bend except for station 3
 double 
 GeometryTranslator::calcDTSpecificBend(const TriggerPrimitive& tp) const {
-  return 0.0;
+  int bend = tp.getDTData().bendingAngle;
+  double bendf = bend/512.0;
+  return bendf;
 }
 
 bool GeometryTranslator::

@@ -46,6 +46,10 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
 				    const edm::EventSetup& es) {
   std::auto_ptr<InternalTrackCollection> 
     convertedTracks (new InternalTrackCollection());
+
+  edm::Handle<std::vector<csc::L1Track> > cscTracks;
+  ev.getByLabel(_cscTrackSrc,cscTracks);
+
   ev.put(convertedTracks);
 }
 

@@ -119,6 +119,9 @@ namespace L1ITMu {
     const double getCMSGlobalPhi() const { return _phi; }    
     void   setCMSGlobalPhi(const double phi) { _phi = phi; }
 
+    // this is the relative bending angle with respect to the 
+    // current phi position. 
+    // The total angle of the track is phi + bendAngle
     void setThetaBend(const double theta) { _theta = theta; }
     double getThetaBend() const { return _theta; }
 
