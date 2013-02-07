@@ -19,6 +19,7 @@
 
 #include <boost/cstdint.hpp>
 #include <vector>
+#include <iostream>
 
 //DetId
 #include "DataFormats/DetId/interface/DetId.h"
@@ -143,7 +144,9 @@ namespace L1ITMu {
     
     const unsigned getGlobalSector() const { return _globalsector; } 
     const unsigned getSubSector() const { return _subsector; } 
-
+    
+    void print(std::ostream&) const;
+    
   private:
     // Translate to 'global' position information at the level of 60
     // degree sectors. Use CSC sectors as a template

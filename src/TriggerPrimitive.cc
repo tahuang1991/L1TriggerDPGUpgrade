@@ -13,6 +13,10 @@
 
 using namespace L1ITMu;
 
+namespace {
+  const char subsystem_names[][4] = {"DT","CSC","RPC"};
+}
+
 //constructors from DT data
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
@@ -149,4 +153,51 @@ void TriggerPrimitive::calculateCSCGlobalSector(const CSCDetId& chid,
 void TriggerPrimitive::calculateRPCGlobalSector(const RPCDetId& chid, 
 						unsigned& global_sector, 
 						unsigned& subsector ) {
+}
+
+void TriggerPrimitive::print(std::ostream& out) const {
+  unsigned idx = (unsigned) _subsystem;
+  out << subsystem_names[idx] << " Trigger Primitive" << std::endl;
+  out << "eta: " << _eta << " phi: " << _phi 
+      << " bend: " << _theta << std::endl;
+  switch(_subsystem) {
+  case kDT:
+    out << detId<DTChamberId>() << std::endl;
+    out << "Local BX      : " << _dt.bx << std::endl;
+    out << "Segment Nmb   : " << _dt.segment_number << std::endl;
+    out << "Packed Phi    : " << _dt.radialAngle << std::endl;
+    out << "Packed Bend   : " << _dt.bendingAngle << std::endl;
+    out << "Quality Code  : " << _dt.qualityCode << std::endl;
+    out << "Ts2Tag Code   : " << _dt.Ts2TagCode << std::endl;
+    out << "BXCnt Code    : " << _dt.BxCntCode << std::endl;
+    out << "Theta BTI Grp : " << _dt.theta_bti_group << std::endl;
+    out << "Theta Code    : " << _dt.theta_code << std::endl;
+    out << "Theta Quality : " << _dt.theta_quality << std::endl;
+    break;
+  case kCSC:
+    out << detId<CSCDetId>() << std::endl;
+    out << "Local BX      : " << _csc.bx << std::endl;
+    out << "Segment Nmb   : " << _csc.trknmb << std::endl;
+    out << "Segment Valid : " << _csc.valid << std::endl;
+    out << "Quality Code  : " << _csc.quality << std::endl;
+    out << "Key Wire Grp  : " << _csc.keywire << std::endl;
+    out << "Half-Strip    : " << _csc.strip << std::endl;
+    out << "CLCT Pattern  : " << _csc.pattern << std::endl;
+    out << "Packed Bend   : " << _csc.bend << std::endl;
+    out << "MPC Link      : " << _csc.mpclink << std::endl;
+    out << "BX0           : " << _csc.bx0 << std::endl;
+    out << "Sync Error    : " << _csc.syncErr << std::endl;
+    out << "CSCID         : " << _csc.cscID << std::endl;
+    break;
+  case kRPC:
+    out << detId<RPCDetId>() << std::endl;
+    out << "Local BX      : " << _rpc.bx << std::endl;
+    out << "Strip         : " << _rpc.strip << std::endl;
+    out << "Layer         : " << _rpc.layer << std::endl;
+    break;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }     
 }
