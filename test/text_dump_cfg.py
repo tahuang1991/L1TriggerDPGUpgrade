@@ -4,6 +4,8 @@ process = cms.Process('TEXTDUMP')
 
 process.L1ITMuText = cms.EDAnalyzer(
     'L1ITMuTextDumper',
+    doGen = cms.untracked.bool(True),
+    genSrc = cms.untracked.InputTag("genParticles"),
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1ITMuTriggerPrimitives','CSC'),
     cms.InputTag('L1ITMuTriggerPrimitives','DT'),
