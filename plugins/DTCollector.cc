@@ -6,11 +6,14 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 using namespace L1ITMu;
 
 DTCollector::DTCollector( const edm::ParameterSet& ps ):
-  SubsystemCollector(ps) {
+  SubsystemCollector(ps),
+  bx_min(ps.getParameter<int>("BX_min")),
+  bx_max(ps.getParameter<int>("BX_max")) {
 }
 
 void DTCollector::extractPrimitives(const edm::Event& ev, 
@@ -36,18 +39,26 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
 	    );
 	  
 	  if( phi_segm_1 ) {
-	    const int bti_group = findBTIGroupForThetaDigi(*theta_segm,1);
-	    if( bti_group != -1 ) {
-	      out.push_back(processDigis(*phi_segm_1,*theta_segm,bti_group));
+	    if( theta_segm ) {
+	      const int bti_group = findBTIGroupForThetaDigi(*theta_segm,1);
+	      if( bti_group != -1 ) {	      
+		out.push_back(processDigis(*phi_segm_1,*theta_segm,bti_group));
+	      } else {
+		out.push_back(processDigis(*phi_segm_1,1));
+	      }
 	    } else {
 	      out.push_back(processDigis(*phi_segm_1,1));
 	    }
 	  }
 	  
 	  if( phi_segm_2 ) {
-	    const int bti_group = findBTIGroupForThetaDigi(*theta_segm,2);
-	    if( bti_group != -1 ) {
-	      out.push_back(processDigis(*phi_segm_2,*theta_segm,bti_group));
+	    if( theta_segm ) {
+	      const int bti_group = findBTIGroupForThetaDigi(*theta_segm,2);
+	      if( bti_group != -1 ) {
+		out.push_back(processDigis(*phi_segm_2,*theta_segm,bti_group));
+	      } else {
+		out.push_back(processDigis(*phi_segm_2,2));
+	      }
 	    } else {
 	      out.push_back(processDigis(*phi_segm_2,2));
 	    }
@@ -78,6 +89,7 @@ TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi_phi,
 int DTCollector::
 findBTIGroupForThetaDigi(const L1MuDTChambThDigi& digi,
 			 const int pos) const {
+  //if( digi.stNum() == 4 ) return -1; // there is no theta layer there
   int result = -1;
   for( int i = 0; i < 7; ++i ) {
     if( digi.position(i) == pos ) result = i;

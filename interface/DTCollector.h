@@ -33,7 +33,7 @@ namespace L1ITMu {
     int findBTIGroupForThetaDigi(const L1MuDTChambThDigi&,
 				 const int position) const;
 				  
-    int bx_min, bx_max;
+    const int bx_min, bx_max;
   };
 }
 

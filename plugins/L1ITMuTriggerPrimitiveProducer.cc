@@ -61,9 +61,9 @@ L1ITMuTriggerPrimitiveProducer::L1ITMuTriggerPrimitiveProducer(const PSet& p) {
     collectors[*name] = collector_ptr( factory->create( collector_type,
 							collector_cfg  ) );
     produces<TriggerPrimitiveCollection>(*name);
-  } 
-  factory.release();
+  }   
   produces<TriggerPrimitiveCollection>();
+  factory.release();
 }
 
 void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev, 

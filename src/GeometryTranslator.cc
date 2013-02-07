@@ -213,19 +213,21 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
   chamb.release(); // release it here so no one gets funny ideas  
   // super layer one is the theta superlayer in a DT chamber
   // station 4 does not have a theta super layer
-  // the BTI index from the theta trigger is an OR of 9 BTI outputs
+  // the BTI index from the theta trigger is an OR of some BTI outputs
   // so, we choose the BTI that's in the middle of the group
   // as the BTI that we get theta from
   // TODO:::::>>> need to make sure this ordering doesn't flip under wheel sign
+  const int NBTI_theta = ( (baseid.station() != 4) ? 
+			   trig_geom->nCell(2) : trig_geom->nCell(3) );
   const int bti_group = tp.getDTData().theta_bti_group;
-  const unsigned bti_actual = bti_group*9 + 9/2;
+  const unsigned bti_actual = bti_group*NBTI_theta/7 + NBTI_theta/28 + 1;  
   DTBtiId thetaBTI;  
   if ( baseid.station() != 4 && bti_group != -1) {
-    thetaBTI = DTBtiId(baseid,1,bti_actual);
+    thetaBTI = DTBtiId(baseid,2,bti_actual);
   } else {
     // since this is phi oriented it'll give us theta in the middle
     // of the chamber
-    thetaBTI = DTBtiId(baseid,2,1); 
+    thetaBTI = DTBtiId(baseid,3,1); 
   }
   const GlobalPoint theta_gp = trig_geom->CMSPosition(thetaBTI);
   
