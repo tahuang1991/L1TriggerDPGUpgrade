@@ -111,6 +111,11 @@ namespace L1ITMu {
 		     const unsigned layer,
 		     const uint16_t bx);
     
+    //copy
+    TriggerPrimitive(const TriggerPrimitive&);
+
+    TriggerPrimitive& operator=(const TriggerPrimitive& tp);
+
     // return the subsystem we belong to
     const subsystem_type subsystem() const { return _subsystem; }    
 

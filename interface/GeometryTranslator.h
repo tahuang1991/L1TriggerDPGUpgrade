@@ -45,10 +45,10 @@ namespace L1ITMu{
 
   private:
     // pointers to the current geometry records
+    unsigned long long _geom_cache_id;
     edm::ESHandle<RPCGeometry> _georpc;    
     edm::ESHandle<CSCGeometry> _geocsc;    
-    edm::ESHandle<DTGeometry>  _geodt;
-    unsigned long long _geom_cache_id;
+    edm::ESHandle<DTGeometry>  _geodt;    
     
     GlobalPoint getRPCSpecificPoint(const TriggerPrimitive&) const;
     double calcRPCSpecificEta(const TriggerPrimitive&) const;

@@ -48,6 +48,8 @@ L1ITMuTriggerPrimitiveProducer::L1ITMuTriggerPrimitiveProducer(const PSet& p) {
   std::unique_ptr<SubsystemCollectorFactory> 
     factory(SubsystemCollectorFactory::get());
   
+  geom.reset(new GeometryTranslator());
+
   vstring psetNames;
   p.getParameterSetNames(psetNames);
   auto name = psetNames.cbegin();
@@ -77,7 +79,7 @@ void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev,
   double eta,phi,bend;
   for( ; coll_itr != cend; ++coll_itr ) {
     std::auto_ptr<TriggerPrimitiveCollection> 
-      subs_out;
+      subs_out(new TriggerPrimitiveCollection);
     auto& collector = coll_itr->second;
     
     collector->extractPrimitives(ev,es,*subs_out);

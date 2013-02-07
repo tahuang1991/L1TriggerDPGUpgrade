@@ -23,9 +23,9 @@ extractPrimitives(const edm::Event& ev,
   auto end  = rpcDigis->end();
 
   for( ; digi != end; ++digi ) {
-    for( unsigned layer = 1; layer <= digi->nlayer(); ++layer ){
-      const RPCDetId id(digi->rawdetId(layer));
+    for( unsigned layer = 1; layer <= digi->nlayer(); ++layer ){      
       if( ! digi->empty(layer) ) {
+	const RPCDetId id(digi->rawdetId(layer));
 	out.push_back(TriggerPrimitive(id,
 				       digi->strip(layer),
 				       layer,

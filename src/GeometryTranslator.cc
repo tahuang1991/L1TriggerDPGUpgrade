@@ -79,9 +79,9 @@ GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
 }
 
 void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
-  unsigned long long geomid = es.get<MuonGeometryRecord>().cacheIdentifier();
+  const MuonGeometryRecord& geom = es.get<MuonGeometryRecord>();
+  unsigned long long geomid = geom.cacheIdentifier();
   if( _geom_cache_id != geomid ) {
-    const MuonGeometryRecord& geom = es.get<MuonGeometryRecord>();
     geom.get(_georpc);  
     geom.get(_geocsc);    
     geom.get(_geodt);

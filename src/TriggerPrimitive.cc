@@ -94,6 +94,32 @@ TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
   _rpc.bx = bx;
 }
 
+TriggerPrimitive::TriggerPrimitive(const TriggerPrimitive& tp):
+  _dt(tp._dt),
+  _csc(tp._csc),
+  _rpc(tp._rpc),
+  _id(tp._id),
+  _subsystem(tp._subsystem),  
+  _globalsector(tp._globalsector),
+  _subsector(tp._subsector),
+  _eta(tp._eta),
+  _phi(tp._phi),
+  _theta(tp._theta){
+}
+
+TriggerPrimitive& TriggerPrimitive::operator=(const TriggerPrimitive& tp) {
+  this->_dt = tp._dt;
+  this->_csc = tp._csc;
+  this->_rpc = tp._rpc;
+  this->_id = tp._id;
+  this->_subsystem = tp._subsystem;
+  this->_globalsector = tp._globalsector;
+  this->_subsector = tp._subsector;
+  this->_eta = tp._eta;
+  this->_phi = tp._phi;
+  return *this;
+}
+
 const int TriggerPrimitive::getBX() const {
   switch(_subsystem) {
   case kDT:

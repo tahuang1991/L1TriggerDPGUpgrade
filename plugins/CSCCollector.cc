@@ -18,13 +18,16 @@ extractPrimitives(const edm::Event& ev,
 		  std::vector<TriggerPrimitive>& out) const {
   edm::Handle<CSCCorrelatedLCTDigiCollection> cscDigis;  
   ev.getByLabel(_src,cscDigis);  
+  std::vector<TriggerPrimitive> test;
+
   auto chamber = cscDigis->begin();
   auto chend  = cscDigis->end();
   for( ; chamber != chend; ++chamber ) {
     auto digi = (*chamber).second.first;
     auto dend = (*chamber).second.second;
     for( ; digi != dend; ++digi ) {
-      out.push_back(TriggerPrimitive((*chamber).first,*digi));
+      TriggerPrimitive the_digi((*chamber).first,*digi);
+      out.push_back(the_digi);
     }
   }    
 }
