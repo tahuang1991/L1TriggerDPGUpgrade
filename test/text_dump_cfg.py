@@ -12,9 +12,6 @@ process.L1ITMuText = cms.EDAnalyzer(
     )
 )
 
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
-
 infile = 'file:L1ITMU.root'
 
 process.source = cms.Source(
