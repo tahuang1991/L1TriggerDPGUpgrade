@@ -9,14 +9,21 @@
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 namespace L1ITMu {
   namespace helpers {
     TriggerPrimitiveList
       getPrimitivesByCSCTriggerInfo(const int endcap,
 				    const int sector,
-				    const TriggerPrimitiveCollection& tps,
+			    const edm::Handle<TriggerPrimitiveCollection>& tps,
 				    const std::vector<unsigned>& trkNmbs);
+    TriggerPrimitiveList 
+      getPrimitivesByDTTriggerInfo(const int endcap,
+				   const int sector,
+			    const edm::Handle<TriggerPrimitiveCollection>& tps,
+				   const unsigned mode,
+				   const std::vector<unsigned>& addrs);
   }
 }
 

@@ -73,7 +73,7 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
     TriggerPrimitiveList tplist =
       helpers::getPrimitivesByCSCTriggerInfo(btrk->first.endcap(),
 					     btrk->first.sector(),
-					     *trigPrims,
+					     trigPrims,
 					     trkNmbs);
     auto stub = tplist.cbegin();
     auto stend = tplist.cend();

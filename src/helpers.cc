@@ -8,18 +8,43 @@
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
+namespace {
+  // from the track is the VHDL address
+  // not the raw address
+  // for raw addresses (addr/2)%2 == 0 means same wheel
+  bool isNextWheelAddr(const int addr, const int station) { 
+    if( station != 1 ) {
+      switch(addr) {
+      case 8:
+      case 9:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+	return false;
+	break;
+      default:
+	return true;
+      }
+    } else {
+      return (bool)addr;
+    }
+    return false;
+  }  
+}
+
 namespace L1ITMu {
   namespace helpers {
     
     TriggerPrimitiveList 
     getPrimitivesByCSCTriggerInfo(const int endcap,
 				  const int sector,
-				  const TriggerPrimitiveCollection& tps,
+			    const edm::Handle<TriggerPrimitiveCollection>& tps,
 				  const std::vector<unsigned>& trkNmbs) {
       TriggerPrimitiveList result;
-      auto tp = tps.cbegin();
-      auto tbeg = tps.cbegin();
-      auto tend = tps.cend();
+      auto tp = tps->cbegin();
+      auto tbeg = tps->cbegin();
+      auto tend = tps->cend();
       
       std::vector<unsigned>::const_iterator ista;
       auto sbeg = trkNmbs.cbegin();
@@ -56,7 +81,7 @@ namespace L1ITMu {
 			  (csubsector!=0)*(csubsector-1)*3 );	    
 	      if( cendcap == endcap && cstation == station && 
 		  csector == sector && ctrkNmb == *ista ) {
-		result.push_back(TriggerPrimitiveRef(&tps,tp - tbeg));
+		result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	      }	  
 	    }
 	    break;
@@ -73,13 +98,64 @@ namespace L1ITMu {
 	      if( twheel == dwheel && 
 		  (dsector == tfirstsector || dsector == tfirstsector+1) &&
 		  dtrkNmb == *ista ) {
-		result.push_back(TriggerPrimitiveRef(&tps,tp-tbeg));
+		result.push_back(TriggerPrimitiveRef(tps,tp-tbeg));
 	      }
 	    }	    
 	    break;
 	  default:
 	    break;
 	  }
+	}	
+      }
+      return result;
+    }
+
+    TriggerPrimitiveList 
+    getPrimitivesByDTTriggerInfo(const int wheel,
+				 const int sector,
+			    const edm::Handle<TriggerPrimitiveCollection>& tps,
+				 const unsigned mode,
+				 const std::vector<unsigned>& trkNmbs) {
+      TriggerPrimitiveList result;
+      auto tp = tps->cbegin();
+      auto tbeg = tps->cbegin();
+      auto tend = tps->cend();
+      
+      std::vector<unsigned>::const_iterator ista;
+      auto sbeg = trkNmbs.cbegin();
+      auto send = trkNmbs.cend();
+      
+      // the station and relative address
+      unsigned station, address;      
+      // dt chamber identifiers
+      DTChamberId dtid;
+      int dwheel, dsector,calcwheel,calcsector;
+      unsigned dtrkNmb;
+      
+      for( ; tp != tend; ++tp ) {
+	for( ista = sbeg; ista != send; ++ista ) {
+	  if( tp->subsystem() != TriggerPrimitive::kDT ) continue;
+	  station = (ista - sbeg) + 1;
+	  bool station_used = mode & ( 0x1 << (station-1) );
+	  if( station_used ) {
+	    dtid = tp->detId<DTChamberId>();
+	    
+	    address = *ista;
+	    calcwheel = wheel + (int)isNextWheelAddr(address,station);
+	    dtrkNmb = address%2 + 1;
+	    
+	    std::cout <<"Track wheel: " << wheel 
+		      << " calcwheel : " << calcwheel
+		      << " exp. trk. #: " << dtrkNmb
+		      << " sector: " << sector 
+		      << " station:address " 
+		      << station << ":" << address << std::endl;
+	    std::cout << "Segment : " << dtid << std::endl;
+	    tp->print(std::cout);
+	    if( false ) {
+	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
+	    }	
+	  }		  	   
 	}	
       }
       return result;

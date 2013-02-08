@@ -26,6 +26,8 @@
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
+#include "L1Trigger/DTTrackFinder/src/L1MuDTTrackAssParam.h"
+
 using namespace L1ITMu;
 
 typedef edm::ParameterSet PSet;
@@ -61,7 +63,7 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
   ev.getByLabel(_trigPrimSrc,trigPrims);
     
   for( int wheel = -2 ; wheel <= 2; ++wheel ) {
-    for( int sector = 1; sector <= 12; ++sector ) {
+    for( int sector = 0; sector <= 11; ++sector ) {
       for( int bx = min_bx; bx <= max_bx; ++bx ) {
 	for( int itrk = 1; itrk <=2; ++itrk ) {
 	  std::unique_ptr<L1MuDTTrackCand> dttrk;
@@ -77,9 +79,14 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	      std::cout << "MB " << station << " : " 
 			<< dttrk->stNum(station) << std::endl;
 	      addrs.push_back(dttrk->stNum(station));
-	    }	    
+	    }	    	   
 
-	    TriggerPrimitiveList tplist;
+	    // this is a 4 bit word , the bit position indicates the station
+	    const unsigned mode = tc2bitmap((TrackClass)dttrk->TCNum());
+	    TriggerPrimitiveList tplist =
+	      helpers::getPrimitivesByDTTriggerInfo(wheel,sector+1,
+						    trigPrims,mode,
+						    addrs);
 	    
 	    auto stub = tplist.cbegin();
 	    auto stend = tplist.cend();

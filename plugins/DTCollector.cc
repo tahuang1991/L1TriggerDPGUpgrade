@@ -26,7 +26,7 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
 
   for( int wheel = -2; wheel <= 2 ; ++wheel ) {
     for( int station = 1; station <= 4; ++station ) {
-      for( int sector = 1; sector <= 12; ++sector ) {
+      for( int sector = 0; sector <= 11; ++sector ) {
 	for( int bx = bx_min; bx <= bx_max; ++bx) {	  
 	  std::unique_ptr<L1MuDTChambPhDigi> phi_segm_1(
 	    phiDigis->chPhiSegm1(wheel,station,sector,bx)
@@ -74,17 +74,15 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
 }
 
 TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi,
-					   const int segment_number) const {
-  // -1 or *-1 for regular detector labelling... why??
-  DTChamberId detid(digi.whNum(),digi.stNum(), digi.scNum() +1);
+					   const int segment_number) const {  
+  DTChamberId detid(digi.whNum(),digi.stNum(),digi.scNum()+1);
   return TriggerPrimitive(detid,digi,segment_number);
 }
 
 TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi_phi,
 					   const L1MuDTChambThDigi& digi_theta,
 					   const int bti_group) const {
-  // -1 or *-1 for regular detector labelling... why???
-  DTChamberId detid(digi_phi.whNum(),digi_phi.stNum(), digi_phi.scNum()+1);
+  DTChamberId detid(digi_phi.whNum(),digi_phi.stNum(),digi_phi.scNum()+1);
   return TriggerPrimitive(detid,digi_phi,digi_theta,bti_group);
 }
 
