@@ -3,7 +3,7 @@
 //
 // Info: This producer eats DTTF tracks (pre GMT) and matches them to 
 //       L1ITMu::TriggerPrimitives. In the process of doing so it
-//       converts the CSCTF tracks into a collection L1ITMu::InternalTrack
+//       converts the DTTF tracks into a collection L1ITMu::InternalTrack
 //       each of which contains the track stubs it was matched to.
 //
 // Author: L. Gray (FNAL)
@@ -44,8 +44,8 @@ private:
 L1DTTFTrackConverter::L1DTTFTrackConverter(const PSet& ps):
   _dtTrackSrc(ps.getParameter<edm::InputTag>("DTTrackSrc")),
   _trigPrimSrc(ps.getParameter<edm::InputTag>("TriggerPrimitiveSrc")),
-  min_bx(ps.getParameter<int>("MinBx")),
-  max_bx(ps.getParameter<int>("MaxBx")) {
+  min_bx(ps.getParameter<int>("BX_min")),
+  max_bx(ps.getParameter<int>("BX_max")) {
   produces<InternalTrackCollection>();
 }
 
@@ -86,6 +86,8 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	    for( ; stub != stend; ++stub ) {
 	      trk.addStub(*stub);      
 	    }
+
+	    convertedTracks->push_back(trk);
 	  }
 	  dttrk.release();
 	}

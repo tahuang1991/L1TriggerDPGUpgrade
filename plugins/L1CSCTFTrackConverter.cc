@@ -80,6 +80,7 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
     for( ; stub != stend; ++stub ) {
       trk.addStub(*stub);      
     }
+    convertedTracks->push_back(trk);
   }
 
   ev.put(convertedTracks);

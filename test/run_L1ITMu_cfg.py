@@ -13,6 +13,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuTriggerPrimitiveProducer_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1CSCTFTrackConverter_cfi')
+process.load('L1Trigger.L1IntegratedMuonTrigger.L1DTTFTrackConverter_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
@@ -25,7 +26,8 @@ process.source = cms.Source(
     )
 
 process.L1ITMUSequence = cms.Sequence( process.L1ITMuTriggerPrimitives +
-                                       process.L1CSCTFTrackConverter     )
+                                       process.L1CSCTFTrackConverter   +
+                                       process.L1DTTFTrackConverter      )
 
 process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
 
