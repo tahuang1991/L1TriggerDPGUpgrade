@@ -49,16 +49,16 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
 
   edm::Handle<L1CSCTrackCollection> cscTracks;
   ev.getByLabel(_cscTrackSrc,cscTracks);
-
+  
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   ev.getByLabel(_trigPrimSrc,trigPrims);
-
-  auto cscTk = cscTracks->cbegin();
-  auto cscEnd = cscTracks->cend();
-  for( ; cscTk != cscEnd; ++cscTk ) {
+  
+  auto btrk = cscTracks->cbegin();
+  auto etrk = cscTracks->cend();
+  for( ; btrk != etrk; ++btrk ) {
+    InternalTrack trk(btrk->first);
     
   }
-  
 
   ev.put(convertedTracks);
 }
