@@ -47,10 +47,18 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   std::auto_ptr<InternalTrackCollection> 
     convertedTracks (new InternalTrackCollection());
 
-  edm::Handle<std::vector<csc::L1Track> > cscTracks;
+  edm::Handle<L1CSCTrackCollection> cscTracks;
   ev.getByLabel(_cscTrackSrc,cscTracks);
-
   
+  edm::Handle<TriggerPrimitiveCollection> trigPrims;
+  ev.getByLabel(_trigPrimSrc,trigPrims);
+  
+  auto btrk = cscTracks->cbegin();
+  auto etrk = cscTracks->cend();
+  for( ; btrk != etrk; ++btrk ) {
+    InternalTrack trk(btrk->first);
+    
+  }
 
   ev.put(convertedTracks);
 }
