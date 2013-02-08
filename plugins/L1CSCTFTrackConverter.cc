@@ -61,15 +61,7 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   auto etrk = cscTracks->cend();
   for( ; btrk != etrk; ++btrk ) {
     InternalTrack trk(btrk->first);
-    
-    std::cout << "Track endcap:" << btrk->first.endcap() 
-	      << " sector: " << btrk->first.sector() << std::endl;
-    std::cout << "ME 1: " << btrk->first.me1ID() << std::endl 
-	      << "ME 2: " << btrk->first.me2ID() << std::endl
-	      << "ME 3: " << btrk->first.me3ID() << std::endl
-	      << "ME 4: " << btrk->first.me4ID() << std::endl
-	      << "MB 1: " << btrk->first.mb1ID() << std::endl;
-
+        
     std::vector<unsigned> trkNmbs;
     trkNmbs.reserve(5);
     trkNmbs.push_back(btrk->first.me1ID());
@@ -83,14 +75,11 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
 					     btrk->first.sector(),
 					     *trigPrims,
 					     trkNmbs);
-    //assert(tplist.size() <= 5);
-    
     auto stub = tplist.cbegin();
     auto stend = tplist.cend();
     for( ; stub != stend; ++stub ) {
-      (*stub)->print(std::cout);
+      trk.addStub(*stub);      
     }
-
   }
 
   ev.put(convertedTracks);

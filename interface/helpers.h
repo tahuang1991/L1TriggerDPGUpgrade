@@ -75,7 +75,7 @@ namespace L1ITMu {
 	      twheel = ( endcap == 1 ? 2 : -2 );
 	      tfirstsector = 2*sector - 1;
 	      dwheel = dtid.wheel();
-	      dsector = dtid.sector() + 1; // +1 for trigger sector
+	      dsector = dtid.sector(); // +1 for trigger sector
 	      dtrkNmb = tp->getDTData().segment_number;	      
 	      if( twheel == dwheel && 
 		  (dsector == tfirstsector || dsector == tfirstsector+1) &&
