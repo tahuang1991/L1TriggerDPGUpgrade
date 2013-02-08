@@ -220,7 +220,7 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
   const int NBTI_theta = ( (baseid.station() != 4) ? 
 			   trig_geom->nCell(2) : trig_geom->nCell(3) );
   const int bti_group = tp.getDTData().theta_bti_group;
-  const unsigned bti_actual = bti_group*NBTI_theta/7 + NBTI_theta/28 + 1;  
+  const unsigned bti_actual = bti_group*NBTI_theta/7 + NBTI_theta/14 + 1;  
   DTBtiId thetaBTI;  
   if ( baseid.station() != 4 && bti_group != -1) {
     thetaBTI = DTBtiId(baseid,2,bti_actual);
@@ -233,11 +233,8 @@ GeometryTranslator::calcDTSpecificPoint(const TriggerPrimitive& tp) const {
   
   // local phi in sector -> global phi
   double phi = ((double)tp.getDTData().radialAngle)/4096.0; 
-  phi += tp.getDTData().sector*M_PI/6.0; // add sector offset
-  while ( phi > 2*M_PI ) phi -= 2*M_PI;
-  while ( phi < 0      ) phi += 2*M_PI; // get phi in [0,2pi]
-  phi -= M_PI; // convert [0,2pi] -> [-pi,pi]
-  
+  phi += tp.getDTData().sector*M_PI/6.0; // add sector offset  
+
   return GlobalPoint( GlobalPoint::Polar( theta_gp.theta(),
 					  phi,
 					  theta_gp.mag() ) );

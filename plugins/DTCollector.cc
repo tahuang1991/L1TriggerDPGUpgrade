@@ -75,14 +75,16 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
 
 TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi,
 					   const int segment_number) const {
-  DTChamberId detid(digi.whNum(),digi.stNum(), digi.scNum());
+  // -1 or *-1 for regular detector labelling... why??
+  DTChamberId detid(digi.whNum(),digi.stNum(), digi.scNum() +1);
   return TriggerPrimitive(detid,digi,segment_number);
 }
 
 TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi_phi,
 					   const L1MuDTChambThDigi& digi_theta,
 					   const int bti_group) const {
-  DTChamberId detid(digi_phi.whNum(),digi_phi.stNum(), digi_phi.scNum());
+  // -1 or *-1 for regular detector labelling... why???
+  DTChamberId detid(digi_phi.whNum(),digi_phi.stNum(), digi_phi.scNum()+1);
   return TriggerPrimitive(detid,digi_phi,digi_theta,bti_group);
 }
 
