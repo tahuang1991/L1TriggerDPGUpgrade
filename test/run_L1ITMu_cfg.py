@@ -11,8 +11,8 @@ process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuTriggerPrimitiveProducer_cfi')
+process.load('L1Trigger.L1IntegratedMuonTrigger.L1CSCTFTrackConverter_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
@@ -24,12 +24,14 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1ITMUSequence = cms.Sequence(process.L1ITMuTriggerPrimitives)
+process.L1ITMUSequence = cms.Sequence( process.L1ITMuTriggerPrimitives +
+                                       process.L1CSCTFTrackConverter     )
 
 process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
 
 outCommands = process.FEVTDEBUGEventContent.outputCommands
 outCommands.append('keep *_L1ITMuTriggerPrimitives_*_*')
+outCommands.append('keep *_*Converter_*_*')
 
 process.FEVTDEBUGoutput = cms.OutputModule(
     "PoolOutputModule",

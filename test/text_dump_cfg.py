@@ -14,12 +14,6 @@ process.L1ITMuText = cms.EDAnalyzer(
     )
 )
 
-process.L1CSCTrackConverter = cms.EDProducer(
-    'L1CSCTFTrackConverter',
-    CSCTrackSrc = cms.InputTag('simCsctfTrackDigis',''),
-    TriggerPrimitiveSrc = cms.InputTag('L1ITMuTriggerPrimitives','')
-    )
-
 infile = 'file:L1ITMU.root'
 
 process.source = cms.Source(
@@ -27,8 +21,7 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1ITMUSequence = cms.Sequence(process.L1ITMuText+
-                                      process.L1CSCTrackConverter)
+process.L1ITMUSequence = cms.Sequence(process.L1ITMuText)
 
 process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
 
