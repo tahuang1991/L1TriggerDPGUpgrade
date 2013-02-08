@@ -60,11 +60,13 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   for( ; btrk != etrk; ++btrk ) {
     InternalTrack trk(btrk->first);
     
-    std::cout << "ME 1: " << btrk->me1ID() << std::endl 
-	      << "ME 2: " << btrk->me2ID() << std::endl
-	      << "ME 3: " << btrk->me3ID() << std::endl
-	      << "ME 4: " << btrk->me4ID() << std::endl
-	      << "MB 1: " << btrk->mb1ID() << std::endl;
+    std::cout << "Track eta:" << btrk->first.etaValue() 
+	      << " phi: " << btrk->first.phiValue() << std::endl;
+    std::cout << "ME 1: " << btrk->first.me1ID() << std::endl 
+	      << "ME 2: " << btrk->first.me2ID() << std::endl
+	      << "ME 3: " << btrk->first.me3ID() << std::endl
+	      << "ME 4: " << btrk->first.me4ID() << std::endl
+	      << "MB 1: " << btrk->first.mb1ID() << std::endl;
 
   }
 
