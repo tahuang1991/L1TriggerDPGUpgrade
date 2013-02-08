@@ -15,6 +15,8 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 
+#include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
+
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -58,6 +60,12 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   for( ; btrk != etrk; ++btrk ) {
     InternalTrack trk(btrk->first);
     
+    std::cout << "ME 1: " << btrk->me1ID() << std::endl 
+	      << "ME 2: " << btrk->me2ID() << std::endl
+	      << "ME 3: " << btrk->me3ID() << std::endl
+	      << "ME 4: " << btrk->me4ID() << std::endl
+	      << "MB 1: " << btrk->mb1ID() << std::endl;
+
   }
 
   ev.put(convertedTracks);
