@@ -190,8 +190,8 @@ namespace L1ITMu {
 	    address = *ista;
 	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
 	    expectedwheel = ( sp_wheel < 0 ? 
-			       dtid.wheel() - wheel_incr :
-			       dtid.wheel() + wheel_incr   );
+			       wheel - wheel_incr :
+			       wheel + wheel_incr   );
 	    dwheel = dtid.wheel();
 	    expectedsector = sector + relativeSector(address,station);
 	    dsector = dtid.sector();
