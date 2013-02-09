@@ -9,7 +9,7 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
 namespace {
-  // from the track is the VHDL address
+  // from the DT track is the VHDL address
   // not the raw address
   // for raw addresses (addr/2)%2 == 0 means same wheel
   bool isNextWheelAddr(const int addr, const int station) { 

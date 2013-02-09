@@ -26,6 +26,7 @@
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
+// this magic file contains a DT TrackClass -> mode LUT
 #include "L1Trigger/DTTrackFinder/src/L1MuDTTrackAssParam.h"
 
 using namespace L1ITMu;
@@ -82,6 +83,7 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	    }	    	   
 
 	    // this is a 4 bit word , the bit position indicates the station
+	    // if the bit is 1 then the station was used in track building
 	    const unsigned mode = tc2bitmap((TrackClass)dttrk->TCNum());
 	    TriggerPrimitiveList tplist =
 	      helpers::getPrimitivesByDTTriggerInfo(wheel,sector+1,
