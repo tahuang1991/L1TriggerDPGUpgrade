@@ -63,19 +63,21 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   ev.getByLabel(_trigPrimSrc,trigPrims);
     
-  int actual_wheel;
+  int wheel;
   // DT sector processors have wheels [-3,-2,-1,1,2,3] since 
   // wheel zero needs two SPs
-  for( int wheel = -3 ; wheel <= 3; ++wheel ) {
-    if( wheel == 0 ) continue;
-    actual_wheel = std::abs(wheel)-1;    
-    actual_wheel = wheel < 0 ? -actual_wheel : actual_wheel;
+  for( int sp_wheel = -3 ; sp_wheel <= 3; ++sp_wheel ) {
+    if( sp_wheel == 0 ) continue;
+    wheel = std::abs(sp_wheel)-1;    
+    wheel = sp_wheel < 0 ? -wheel : wheel;
     for( int sector = 0; sector <= 11; ++sector ) {
       for( int bx = min_bx; bx <= max_bx; ++bx ) {
 	for( int itrk = 1; itrk <=2; ++itrk ) {
 	  std::unique_ptr<L1MuDTTrackCand> dttrk;
-	  if( itrk == 1 ) dttrk.reset(dtTracks->dtTrackCand1(wheel,sector,bx));
-	  else            dttrk.reset(dtTracks->dtTrackCand2(wheel,sector,bx));
+	  if( itrk == 1 ) 
+	    dttrk.reset(dtTracks->dtTrackCand1(sp_wheel,sector,bx));
+	  else            
+	    dttrk.reset(dtTracks->dtTrackCand2(sp_wheel,sector,bx));
 	  
 	  if( dttrk ) {
 	    InternalTrack trk(*dttrk);
@@ -95,7 +97,8 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 		      << " TrkTag: " << dttrk->TrkTag() 
 		      << std::dec << std::endl;
 	    TriggerPrimitiveList tplist =
-	      helpers::getPrimitivesByDTTriggerInfo(actual_wheel,sector+1,
+	      helpers::getPrimitivesByDTTriggerInfo(wheel,
+						    sp_wheel,sector+1,
 						    trigPrims,mode,
 						    addrs);
 	    

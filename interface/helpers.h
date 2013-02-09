@@ -19,7 +19,8 @@ namespace L1ITMu {
 			    const edm::Handle<TriggerPrimitiveCollection>& tps,
 				    const std::vector<unsigned>& trkNmbs);
     TriggerPrimitiveList 
-      getPrimitivesByDTTriggerInfo(const int endcap,
+      getPrimitivesByDTTriggerInfo(const int wheel,
+				   const int sp_wheel,
 				   const int sector,
 			    const edm::Handle<TriggerPrimitiveCollection>& tps,
 				   const unsigned mode,

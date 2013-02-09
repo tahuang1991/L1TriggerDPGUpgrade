@@ -115,6 +115,7 @@ namespace L1ITMu {
 
     TriggerPrimitiveList 
     getPrimitivesByDTTriggerInfo(const int wheel,
+				 const int sp_wheel,
 				 const int sector,
 			    const edm::Handle<TriggerPrimitiveCollection>& tps,
 				 const unsigned mode,
@@ -147,14 +148,15 @@ namespace L1ITMu {
 	    calcwheel = wheel + (int)isExtrapAcrossWheel(address,station);
 	    dtrkNmb = address%2 + 1;
 	    
-	    std::cout <<"Track wheel: " << wheel 
+	    std::cout <<"Track wheel" << sp_wheel  
+		      <<" DT wheel: " << wheel 
 		      << " cross-wheel extrap : " 
 		      << isExtrapAcrossWheel(address,station)
 		      << " exp. trk. #: " << dtrkNmb
 		      << " sector: " << sector 
 		      << " station:address " 
 		      << station << ":" << address << std::endl;
-	    std::cout << "Segment : " << dtid << std::endl;
+	    std::cout << "Segment DetId: " << dtid << std::endl;
 	    tp->print(std::cout);
 	    if( false ) {
 	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
