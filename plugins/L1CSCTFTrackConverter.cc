@@ -15,8 +15,10 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
 #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
 
+#include "DataFormats/Common/interface/RefProd.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -43,13 +45,20 @@ private:
 L1CSCTFTrackConverter::L1CSCTFTrackConverter(const PSet& ps):
   _cscTrackSrc(ps.getParameter<edm::InputTag>("CSCTrackSrc")),
   _trigPrimSrc(ps.getParameter<edm::InputTag>("TriggerPrimitiveSrc")) {
-  produces<InternalTrackCollection>();
+  produces<CSCTrackCollection>("input");
+  produces<InternalTrackCollection>();  
 }
 
 void L1CSCTFTrackConverter::produce(edm::Event& ev, 
 				    const edm::EventSetup& es) {
   std::auto_ptr<InternalTrackCollection> 
-    convertedTracks (new InternalTrackCollection());
+    convertedTracks(new InternalTrackCollection());
+  std::auto_ptr<CSCTrackCollection> inputTracks(new CSCTrackCollection); 
+
+  // get the RefProd so we can make persistable references to
+  // the track the converted track was made from
+  edm::RefProd<CSCTrackCollection> csctfProd = 
+    ev.getRefBeforePut<CSCTrackCollection>("input");  
 
   edm::Handle<L1CSCTrackCollection> cscTracks;
   ev.getByLabel(_cscTrackSrc,cscTracks);
@@ -57,11 +66,16 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   ev.getByLabel(_trigPrimSrc,trigPrims);
   
-  auto btrk = cscTracks->cbegin();
+  auto btrk = cscTracks->cbegin();  
   auto etrk = cscTracks->cend();
   for( ; btrk != etrk; ++btrk ) {
+    inputTracks->push_back(btrk->first);
+    
     InternalTrack trk(btrk->first);
-        
+    CSCTrackRef parentRef(csctfProd,inputTracks->size() - 1);
+    RegionalCandBaseRef parentBaseRef(parentRef);
+    trk.setParent(parentBaseRef);
+
     std::vector<unsigned> trkNmbs;
     trkNmbs.reserve(5);
     trkNmbs.push_back(btrk->first.me1ID());
@@ -82,7 +96,7 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
     }
     convertedTracks->push_back(trk);
   }
-
+  ev.put(inputTracks,"input");
   ev.put(convertedTracks);
 }
 

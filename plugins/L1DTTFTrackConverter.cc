@@ -15,8 +15,10 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
 
+#include "DataFormats/Common/interface/RefProd.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -49,6 +51,7 @@ L1DTTFTrackConverter::L1DTTFTrackConverter(const PSet& ps):
   _trigPrimSrc(ps.getParameter<edm::InputTag>("TriggerPrimitiveSrc")),
   min_bx(ps.getParameter<int>("BX_min")),
   max_bx(ps.getParameter<int>("BX_max")) {
+  produces<DTTrackCollection>("input");
   produces<InternalTrackCollection>();
 }
 
@@ -56,6 +59,12 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 				    const edm::EventSetup& es) {
   std::auto_ptr<InternalTrackCollection> 
     convertedTracks (new InternalTrackCollection());
+  std::auto_ptr<DTTrackCollection> inputTracks(new DTTrackCollection);
+
+  // get the RefProd so we can make persistable references to
+  // the track the converted track was made from
+  edm::RefProd<DTTrackCollection> dttfProd = 
+    ev.getRefBeforePut<DTTrackCollection>("input");
 
   edm::Handle<L1MuDTTrackContainer> dtTracks;
   ev.getByLabel(_dtTrackSrc,dtTracks);
@@ -80,11 +89,18 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	    dttrk.reset(dtTracks->dtTrackCand2(sp_wheel,sector,bx));
 	  
 	  if( dttrk ) {
+	    inputTracks->push_back(*dttrk);
+
 	    InternalTrack trk(*dttrk);
+	    DTTrackRef parentRef(dttfProd,inputTracks->size() - 1);
+	    RegionalCandBaseRef parentBaseRef(parentRef);
+	    trk.setParent(parentBaseRef);
+
 	    std::vector<unsigned> addrs;
 	    addrs.reserve(4);	     	   
 
-	    // this is a 4 bit word , the bit position indicates the station
+	    // in DTs the mode is encoded by the track class
+	    // mode is a 4 bit word , the bit position indicates the station
 	    // if the bit is 1 then the station was used in track building
 	    const unsigned mode = tc2bitmap((TrackClass)dttrk->TCNum());
 	    TriggerPrimitiveList tplist =
@@ -106,7 +122,7 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
       }
     }
   }
-
+  ev.put(inputTracks,"input");
   ev.put(convertedTracks);
 }
 

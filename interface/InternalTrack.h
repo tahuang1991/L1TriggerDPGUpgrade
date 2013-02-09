@@ -9,7 +9,9 @@
 //       their meaning.
 //       To exploit that we also allow these tracks to be built out of
 //       old style regional cands so we can perform studies using them
-//       in the new framework
+//       in the new framework. So that debugging is easier in the case
+//       of the new track not matching it's parent, a reference to the
+//       parent track is stored.
 //
 // Author: L. Gray (FNAL)
 //

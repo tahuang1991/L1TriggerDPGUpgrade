@@ -63,18 +63,22 @@ namespace {
     RegionalCandRef     rfRef;
 
     DTTrackCollection dtTrkColl;
+    edm::Wrapper<DTTrackCollection> wdtTrkColl;
     DTTrackPtr dtTrkPtr;
     DTTrackRef dtTrackRef;
     
     CSCTrackCollection cscTrkColl;
+    edm::Wrapper<CSCTrackCollection> wcscTrkColl;
     CSCTrackPtr cscTrkPtr;
     CSCTrackRef cscTrkRef;
 
     edm::reftobase::Holder<L1MuRegionalCand,RegionalCandRef>  r2rholder;
     edm::reftobase::Holder<L1MuRegionalCand,DTTrackRef>  r2dtholder;
     edm::reftobase::Holder<L1MuRegionalCand,CSCTrackRef>  r2cscholder;
+    edm::reftobase::Holder<L1MuRegionalCand,InternalTrackRef>  r2itholder;
     edm::reftobase::RefHolder<RegionalCandRef>  r2rrefholder;
     edm::reftobase::RefHolder<DTTrackRef>  r2dtrefholder;
     edm::reftobase::RefHolder<CSCTrackRef>  r2cscrefholder;
+    edm::reftobase::RefHolder<InternalTrackRef>  r2itrefholder;
   };
 }

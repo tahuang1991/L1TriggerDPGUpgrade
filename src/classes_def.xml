@@ -47,22 +47,27 @@
   <class name="L1ITMu::CandidateTrackPtr"/>
 
   <class name="L1ITMu::DTTrackCollection"/>
+  <class name="edm::Wrapper<L1ITMu::DTTrackCollection>"/>
   <class name="L1ITMu::DTTrackPtr"/>
   <class name="L1ITMu::DTTrackRef"/>
 
   <class name="L1ITMu::CSCTrackCollection"/>
+  <class name="edm::Wrapper<L1ITMu::CSCTrackCollection>"/>
   <class name="L1ITMu::CSCTrackPtr"/>
   <class name="L1ITMu::CSCTrackRef"/>
 
   <class name="L1ITMu::RegionalCandBaseRef"/>
   <class name="L1ITMu::RegionalCandRef"/>
   <class name="L1ITMu::RegionalCandPtr"/>
+  <class name="edm::reftobase::BaseHolder<L1MuRegionalCand>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::RegionalCandRef>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::DTTrackRef>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::CSCTrackRef>"/>
+  <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::InternalTrackRef>"/>
   <class name="edm::reftobase::RefHolder<L1ITMu::RegionalCandRef>"/>
   <class name="edm::reftobase::RefHolder<L1ITMu::DTTrackRef>"/>
   <class name="edm::reftobase::RefHolder<L1ITMu::CSCTrackRef>"/>
+  <class name="edm::reftobase::RefHolder<L1ITMu::InternalTrackRef>"/>
   
  </selection>
 </lcgdict>
