@@ -28,7 +28,7 @@ namespace {
 	return true;
       }
     } else {
-      return (bool)addr;
+      return !((bool)addr);
     }
     return false;
   }  
