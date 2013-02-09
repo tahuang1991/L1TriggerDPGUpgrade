@@ -63,7 +63,13 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   ev.getByLabel(_trigPrimSrc,trigPrims);
     
-  for( int wheel = -2 ; wheel <= 2; ++wheel ) {
+  int actual_wheel;
+  // DT sector processors have wheels [-3,-2,-1,1,2,3] since 
+  // wheel zero needs two SPs
+  for( int wheel = -3 ; wheel <= 3; ++wheel ) {
+    if( wheel == 0 ) continue;
+    actual_wheel = std::abs(wheel)-1;    
+    actual_wheel = wheel < 0 ? -actual_wheel : actual_wheel;
     for( int sector = 0; sector <= 11; ++sector ) {
       for( int bx = min_bx; bx <= max_bx; ++bx ) {
 	for( int itrk = 1; itrk <=2; ++itrk ) {
@@ -89,7 +95,7 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 		      << " TrkTag: " << dttrk->TrkTag() 
 		      << std::dec << std::endl;
 	    TriggerPrimitiveList tplist =
-	      helpers::getPrimitivesByDTTriggerInfo(wheel,sector+1,
+	      helpers::getPrimitivesByDTTriggerInfo(actual_wheel,sector+1,
 						    trigPrims,mode,
 						    addrs);
 	    

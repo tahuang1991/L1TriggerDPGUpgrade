@@ -9,11 +9,13 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
 namespace {
+  // note: this helper function has been reverse engineered and 
+  //       may not be entirely correct
   // from the DT track is the VHDL address
   // not the raw address
   // for raw addresses (addr/2)%2 == 0 means extrapolation in
   // same wheel (not that the track is in the same wheel as the segment)  
-  bool isNextWheelAddr(const int addr, const int station) { 
+  bool isExtrapAcrossWheel(const int addr, const int station) { 
     if( station != 1 ) {
       switch(addr) {
       case 8:
@@ -142,12 +144,12 @@ namespace L1ITMu {
 	  if( station_used && station == dtid.station() ) {	    
 	    
 	    address = *ista;
-	    calcwheel = wheel + (int)isNextWheelAddr(address,station);
+	    calcwheel = wheel + (int)isExtrapAcrossWheel(address,station);
 	    dtrkNmb = address%2 + 1;
 	    
 	    std::cout <<"Track wheel: " << wheel 
 		      << " cross-wheel extrap : " 
-		      << isNextWheelAddr(address,station)
+		      << isExtrapAcrossWheel(address,station)
 		      << " exp. trk. #: " << dtrkNmb
 		      << " sector: " << sector 
 		      << " station:address " 
