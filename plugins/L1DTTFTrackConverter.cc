@@ -82,32 +82,16 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	  if( dttrk ) {
 	    InternalTrack trk(*dttrk);
 	    std::vector<unsigned> addrs;
-	    addrs.reserve(4);
-	    
-	    for( int station = 1; station <= 4; ++ station ) {
-	      std::cout << "MB " << station << " : " 
-			<< dttrk->stNum(station) << std::endl;
-	      addrs.push_back(dttrk->stNum(station));
-	    }	    	   
+	    addrs.reserve(4);	     	   
 
 	    // this is a 4 bit word , the bit position indicates the station
 	    // if the bit is 1 then the station was used in track building
 	    const unsigned mode = tc2bitmap((TrackClass)dttrk->TCNum());
-	    std::cout << " Track mode: " << std::hex << mode 
-		      << " TrkTag: " << dttrk->TrkTag() 
-		      << std::dec << std::endl;
 	    TriggerPrimitiveList tplist =
 	      helpers::getPrimitivesByDTTriggerInfo(wheel,
 						    sp_wheel,sector+1,
 						    trigPrims,mode,
 						    addrs);
-	    unsigned nexpsegments = 0;
-
-	    for( int station = 1; station <= 4; ++station ) {
-	      if( mode & (1 << (station-1)) ) {
-		++nexpsegments;
-	      }
-	    }	    
 	    
 	    auto stub = tplist.cbegin();
 	    auto stend = tplist.cend();
