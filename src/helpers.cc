@@ -16,7 +16,8 @@ namespace {
   //
   // schematic diagram of DT codes with corresponding VHDL addresses in ():
   // the phi direction seems to be the direction with respect to the
-  // previous segment ( this is why station one only has addresses 1,2 )
+  // track's sector processor. 
+  // ( this is why station one only has addresses 1,2 )
   //         --------------------------------------
   //         |   4 (10)  5 (11) |   6 (2)  7 (3)  |   ( next sector )
   //      P  ------------+------------------------- 
@@ -201,16 +202,6 @@ namespace L1ITMu {
 	    if( expectedsector == dsector &&
 		expectedwheel  == dwheel  && 
 		expectedtrkNmb == dtrkNmb    ) {
-	      std::cout <<"Track wheel: " << sp_wheel  
-		      <<" DT wheel: " << wheel 
-		      << " cross-wheel extrap : " 
-		      << isExtrapAcrossWheel(address,station)
-		      << " exp. trk. #: " << dtrkNmb
-		      << " sector: " << sector 
-		      << " station:address " 
-		      << station << ":" << address << std::endl;
-	      std::cout << "Segment DetId: " << dtid << std::endl;
-	      tp->print(std::cout);
 	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	    }
 	  }		  	   

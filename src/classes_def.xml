@@ -22,16 +22,29 @@
   <class name="edm::Wrapper<L1ITMu::TriggerPrimitiveCollection>"/>
   <class name="L1ITMu::TriggerPrimitiveRef"/> 
   <class name="L1ITMu::TriggerPrimitivePtr"/>
-  <class name="std::vector<L1ITMu::TriggerPrimitiveRef>"/>
+  <class name="L1ITMu::TriggerPrimitiveList"/>
+  <class name="L1ITMu::TriggerPrimitiveStationMap"/>
 
-  <class name="L1ITMu::InternalTrack" ClassVersion="10">
+  <class name="L1ITMu::InternalTrack" ClassVersion="11">
    <version ClassVersion="10" checksum="3413851472"/>
+   <version ClassVersion="11" checksum="3197524209"/>
   </class>
   <class name="edm::Wrapper<L1ITMu::InternalTrack>"/>
   <class name="L1ITMu::InternalTrackCollection"/>
   <class name="edm::Wrapper<L1ITMu::InternalTrackCollection>"/>
   <class name="L1ITMu::InternalTrackRef"/>
   <class name="L1ITMu::InternalTrackPtr"/>
+
+  <class name="L1ITMu::CandidateTrack" ClassVersion="10">
+   <version ClassVersion="10" checksum="4284624899"/>
+  </class>
+  <class name="edm::Wrapper<L1ITMu::CandidateTrack>"/>
+  <class name="L1ITMu::CandidateTrackCollection"/>
+  <class name="edm::Wrapper<L1ITMu::CandidateTrackCollection>"/>
+  <class name="L1ITMu::CandidateTrackRef"/>
+  <class name="L1ITMu::CandidateTrackPtr"/>
+
+  <class name="edm::RefToBase<L1MuRegionalCand>"/>
 
  </selection>
 </lcgdict>

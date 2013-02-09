@@ -2,8 +2,12 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/CandidateTrack.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/CandidateTrackFwd.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
+
+#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 
 namespace {
   using namespace L1ITMu;
@@ -23,7 +27,8 @@ namespace {
     edm::Wrapper<TriggerPrimitiveCollection> wvtrigPrim;
 
     TriggerPrimitiveRef rtrigPrim;
-    std::vector<TriggerPrimitiveRef> rvtripPrim;
+    TriggerPrimitiveList rvtrigPrim;
+    TriggerPrimitiveStationMap smtrigPrim;
     
     TriggerPrimitivePtr ptrigPrim;   
 
@@ -36,5 +41,17 @@ namespace {
 
     InternalTrackRef rtk;
     InternalTrackPtr ptk;
+
+    // Candidate tracks
+    CandidateTrack cctk;
+    edm::Wrapper<CandidateTrack> wcctk;
+
+    CandidateTrackCollection ccctk;
+    edm::Wrapper<CandidateTrackCollection> wccctk;
+
+    CandidateTrackRef rcctk;
+    CandidateTrackPtr pcctk;
+    
+    edm::RefToBase<L1MuRegionalCand> r2bregcand;
   };
 }

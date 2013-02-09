@@ -13,13 +13,32 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTCand.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "DataFormats/Common/interface/Ref.h"
 
 namespace L1ITMu{
+  
   class CandidateTrack : public L1MuGMTCand {
   public:
     CandidateTrack() {}
-  private:
-    std::vector<TriggerPrimitiveRef> _associatedStubs;
+    ~CandidateTrack() {}
+
+    CandidateTrack(const edm::Ref<InternalTrackCollection>&);
+    
+    edm::Ref<InternalTrackCollection> parent() const { return _parent; }
+             
+    const TriggerPrimitiveStationMap& getStubs() const 
+      { return _parent->getStubs(); }
+
+    unsigned long mode()     const { return _parent->mode(); }
+    unsigned long dtMode()   const { return _parent->dtMode(); }
+    unsigned long cscMode()  const { return _parent->cscMode(); }
+    unsigned long rpcbMode() const { return _parent->rpcbMode(); }
+    unsigned long rpcfMode() const { return _parent->rpcfMode(); }
+
+  private:    
+    edm::Ref<InternalTrackCollection> _parent;
   };
 }
 

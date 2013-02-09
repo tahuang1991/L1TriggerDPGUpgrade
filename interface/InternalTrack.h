@@ -17,6 +17,7 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
+#include "DataFormats/Common/interface/RefToBase.h"
 
 class L1MuDTTrackCand;
 namespace csc {
@@ -25,7 +26,7 @@ namespace csc {
 
 namespace L1ITMu{
   class InternalTrack : public L1MuRegionalCand {
-    typedef std::vector<TriggerPrimitiveRef> stublist;
+    enum subsystem_offset{ kDT, kCSC, kRPCb, kRPCf };
   public:
     InternalTrack() {}
     ~InternalTrack() {}
@@ -34,12 +35,31 @@ namespace L1ITMu{
     InternalTrack(const csc::L1Track&);
     InternalTrack(const L1MuRegionalCand&); // for RPCs
     
-    void addStub(const TriggerPrimitiveRef& stub) 
-         { _associatedStubs.push_back(stub); }
-    const stublist& getStubs() const { return _associatedStubs; }
+    // return the persistent pointer to the parent of this internal track
+    // may be null if this has no parent
+    edm::RefToBase<L1MuRegionalCand> parent() const { return _parent; }
+    void setParent(const edm::RefToBase<L1MuRegionalCand>& parent)
+       { _parent = parent; }
+
+    void addStub(const TriggerPrimitiveRef& stub) ;
+         
+    const TriggerPrimitiveStationMap& getStubs() const 
+      { return _associatedStubs; }
+
+    unsigned long mode()     const { return (_mode & 0xffff); }
+    unsigned long dtMode()   const { return (_mode & 0x000f); }
+    unsigned long cscMode()  const { return (_mode & 0x00f0)>>4; }
+    unsigned long rpcbMode() const { return (_mode & 0x0f00)>>8; }
+    unsigned long rpcfMode() const { return (_mode & 0xf000)>>12; }
 
   private:
-    stublist _associatedStubs;
+    TriggerPrimitiveStationMap _associatedStubs;
+    // this represents the mode considering all available muon detector types
+    // 0 DT 4 bits | CSC 4 bits | RPCb 4 bits | RPC f 4 bits
+    // using an unsigned long since we may want to add GEMs later
+    unsigned long _mode; 
+    //pointer to parent, if this was created from a CSC/DT/RPC track
+    edm::RefToBase<L1MuRegionalCand> _parent;
   };
 }
 
