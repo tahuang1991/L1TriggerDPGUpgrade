@@ -7,6 +7,10 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
+#include "L1Trigger/L1IntergratedMuonTrigger/interface/RegionalTracksFwd.h"
+
+#include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
+#include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 
 namespace {
@@ -52,6 +56,22 @@ namespace {
     CandidateTrackRef rcctk;
     CandidateTrackPtr pcctk;
     
-    edm::Ref<std::vector<L1MuRegionalCand> > rregcand;
+    // regional muon system tracks removed from their containers
+    // so we can save references to them
+    RegionalCandBaseRef rcR2B;
+    RegionalCandPtr     rcPtr;
+    RegionalCandRef     rfRef;
+
+    DTTrackCollection dtTrkColl;
+    DTTrackPtr dtTrkPtr;
+    DTTrackRef dtTrackRef;
+    
+    CSCTrackCollection cscTrkColl;
+    CSCTrackPtr cscTrkPtr;
+    CSCTrackRef cscTrkRef;
+
+    edm::reftobase::Holder<L1MuRegionalCand,RegionalCandRef>  r2rholder;
+    edm::reftobase::Holder<L1MuRegionalCand,DTTrackRef>  r2dtholder;
+    edm::reftobase::Holder<L1MuRegionalCand,CSCTrackRef>  r2rholder;
   };
 }
