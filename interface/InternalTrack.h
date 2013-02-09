@@ -17,7 +17,7 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
-#include "DataFormats/Common/interface/RefToBase.h"
+#include "DataFormats/Common/interface/Ref.h"
 
 class L1MuDTTrackCand;
 namespace csc {
@@ -26,6 +26,7 @@ namespace csc {
 
 namespace L1ITMu{
   class InternalTrack : public L1MuRegionalCand {
+    typedef std::vector<L1MuRegionalCand> L1MuCandCollection;
     enum subsystem_offset{ kDT, kCSC, kRPCb, kRPCf };
   public:
     InternalTrack() {}
@@ -37,8 +38,8 @@ namespace L1ITMu{
     
     // return the persistent pointer to the parent of this internal track
     // may be null if this has no parent
-    edm::RefToBase<L1MuRegionalCand> parent() const { return _parent; }
-    void setParent(const edm::RefToBase<L1MuRegionalCand>& parent)
+    edm::Ref<L1MuCandCollection> parent() const { return _parent; }
+    void setParent(const edm::Ref<L1MuCandCollection>& parent)
        { _parent = parent; }
 
     void addStub(const TriggerPrimitiveRef& stub) ;
@@ -59,7 +60,7 @@ namespace L1ITMu{
     // using an unsigned long since we may want to add GEMs later
     unsigned long _mode; 
     //pointer to parent, if this was created from a CSC/DT/RPC track
-    edm::RefToBase<L1MuRegionalCand> _parent;
+    edm::Ref<L1MuCandCollection> _parent;
   };
 }
 

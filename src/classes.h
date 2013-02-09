@@ -52,6 +52,6 @@ namespace {
     CandidateTrackRef rcctk;
     CandidateTrackPtr pcctk;
     
-    edm::RefToBase<L1MuRegionalCand> r2bregcand;
+    edm::Ref<std::vector<L1MuRegionalCand> > rregcand;
   };
 }
