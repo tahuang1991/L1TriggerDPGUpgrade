@@ -85,6 +85,9 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 	    // this is a 4 bit word , the bit position indicates the station
 	    // if the bit is 1 then the station was used in track building
 	    const unsigned mode = tc2bitmap((TrackClass)dttrk->TCNum());
+	    std::cout << " Track mode: " << std::hex << mode 
+		      << " TrkTag: " << dttrk->TrkTag() 
+		      << std::dec << std::endl;
 	    TriggerPrimitiveList tplist =
 	      helpers::getPrimitivesByDTTriggerInfo(wheel,sector+1,
 						    trigPrims,mode,
