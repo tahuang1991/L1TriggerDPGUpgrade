@@ -16,6 +16,8 @@
 // Author: L. Gray (FNAL)
 //
 
+#include <iostream>
+
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
@@ -55,8 +57,11 @@ namespace L1ITMu{
     unsigned long rpcbMode() const { return (_mode & 0x0f00)>>8; }
     unsigned long rpcfMode() const { return (_mode & 0xf000)>>12; }
 
+    void print(std::ostream&) const;
+
   private:
     TriggerPrimitiveStationMap _associatedStubs;
+    int _endcap, _wheel, _sector;
     // this represents the mode considering all available muon detector types
     // 0 DT 4 bits | CSC 4 bits | RPCb 4 bits | RPC f 4 bits
     // using an unsigned long since we may want to add GEMs later

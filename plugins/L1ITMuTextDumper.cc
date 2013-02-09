@@ -20,6 +20,9 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
@@ -38,7 +41,7 @@ public:
 private:
   bool _dogen;
   edm::InputTag _geninput;
-  std::vector<edm::InputTag> _tpinputs;
+  std::vector<edm::InputTag> _tpinputs, _convTrkInputs;
 };
 
 L1ITMuTextDumper::L1ITMuTextDumper(const PSet& p) {
@@ -46,6 +49,8 @@ L1ITMuTextDumper::L1ITMuTextDumper(const PSet& p) {
     _geninput = p.getUntrackedParameter<edm::InputTag>("genSrc");
   }
   _tpinputs = p.getParameter<std::vector<edm::InputTag> >("primitiveSrcs");
+  _convTrkInputs = 
+    p.getParameter<std::vector<edm::InputTag> >("converterSrcs");
 }
 
 void L1ITMuTextDumper::analyze(const edm::Event& ev, 
@@ -66,18 +71,32 @@ void L1ITMuTextDumper::analyze(const edm::Event& ev,
     }
   }
   // dump the trigger primitive digis
-  auto src = _tpinputs.cbegin();
-  auto end = _tpinputs.cend();
-  for( ; src != end; ++src ) {
+  auto tpsrc = _tpinputs.cbegin();
+  auto tpend = _tpinputs.cend();
+  for( ; tpsrc != tpend; ++tpsrc ) {
     edm::Handle<TriggerPrimitiveCollection> tps;
-    ev.getByLabel(*src,tps);
+    ev.getByLabel(*tpsrc,tps);
     auto tp = tps->cbegin();
     auto tpend = tps->cend();
     
-    std::cout << "Dumping trigger primitives from : " << *src << std::endl;
+    std::cout << "Dumping trigger primitives from : " << *tpsrc << std::endl;
     for( ; tp != tpend; ++tp ) {
       tp->print(std::cout);
     }    
+  }
+  // dump tracks made from track converters
+  auto cvtksrc = _convTrkInputs.cbegin();
+  auto cvtkend = _convTrkInputs.cend();
+  for( ; cvtksrc != cvtkend; ++cvtksrc ) {
+    edm::Handle<InternalTrackCollection> trks;
+    ev.getByLabel(*cvtksrc,trks);
+    auto trk = trks->cbegin();
+    auto trend = trks->cend();
+
+    std::cout << "Dumping converted tracks from : " << *cvtksrc << std::endl;
+    for( ; trk != trend; ++trk ) {
+      trk->print(std::cout);
+    }
   }
 }
 

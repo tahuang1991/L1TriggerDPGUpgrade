@@ -25,11 +25,12 @@
   <class name="L1ITMu::TriggerPrimitiveList"/>
   <class name="L1ITMu::TriggerPrimitiveStationMap"/>
 
-  <class name="L1ITMu::InternalTrack" ClassVersion="13">
+  <class name="L1ITMu::InternalTrack" ClassVersion="14">
    <version ClassVersion="10" checksum="3413851472"/>
    <version ClassVersion="11" checksum="3197524209"/>
    <version ClassVersion="12" checksum="130718761"/>
    <version ClassVersion="13" checksum="3197524209"/>
+   <version ClassVersion="14" checksum="4146066621"/>
   </class>
   <class name="edm::Wrapper<L1ITMu::InternalTrack>"/>
   <class name="L1ITMu::InternalTrackCollection"/>
