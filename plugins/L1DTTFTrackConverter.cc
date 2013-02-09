@@ -101,6 +101,20 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 						    sp_wheel,sector+1,
 						    trigPrims,mode,
 						    addrs);
+	    unsigned nexpsegments = 0;
+
+	    for( int station = 1; station <= 4; ++station ) {
+	      if( mode & (1 << (station-1)) ) {
+		++nexpsegments;
+	      }
+	    }
+
+	    if( nexpsegments == tplist.size() ) {
+	      std::cout << "Found all expected DT segments!" << std::endl;
+	    } else {
+	      std::cout << "Failed finding all expected DT segments!" 
+			<< std::endl;
+	    }
 	    
 	    auto stub = tplist.cbegin();
 	    auto stend = tplist.cend();

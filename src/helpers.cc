@@ -9,13 +9,24 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
 
 namespace {
-  // note: this helper function has been reverse engineered and 
-  //       may not be entirely correct
-  // from the DT track is the VHDL address
-  // not the raw address
-  // for raw addresses (addr/2)%2 == 0 means extrapolation in
-  // same wheel (not that the track is in the same wheel as the segment)  
-  bool isExtrapAcrossWheel(const int addr, const int station) { 
+  // DT TF relative segment address explanation
+  //
+  // a code of '15' (stations 2,3,4) or '3' (station 1 only)
+  // means there was no valid track extrapolation in this DT station
+  //
+  // schematic diagram of DT codes with corresponding VHDL addresses in ():
+  // the phi direction seems to be the direction with respect to the
+  // previous segment ( this is why station one only has addresses 1,2 )
+  //         --------------------------------------
+  //         |   4 (10)  5 (11) |   6 (2)  7 (3)  |   ( next sector )
+  //      P  ------------+------------------------- 
+  //      H  |   0 (8)   1 (9)  |   2 (0)  3 (1)  |   ( this sector )
+  //      I  ------------+-------------------------
+  //         |   8 (12)  9 (13) |  10 (4) 11 (5)  |   ( prev sector )
+  //         ------------+-------------------------
+  //               this Wheel       next Wheel
+ 
+  bool isExtrapAcrossWheel(const int addr, const int station) {     
     if( station != 1 ) {
       switch(addr) {
       case 8:
@@ -33,7 +44,38 @@ namespace {
       return !((bool)addr);
     }
     return false;
-  }  
+  } 
+  
+  int relativeSector(const int addr, const int station) {
+    if( station != 1 ){
+      switch(addr) {
+      case 12:
+      case 13:
+      case 4:
+      case 5:
+	return -1;
+	break;
+      case 8:
+      case 9:
+      case 0:
+      case 1:
+	return 0;
+	break;
+      case 10:
+      case 11:
+      case 2:
+      case 3:
+	return 1;
+	break;
+      default:
+	break;
+      }
+    }
+    return 0;
+  }
+  
+  
+
 }
 
 namespace L1ITMu {
@@ -133,8 +175,9 @@ namespace L1ITMu {
       int station, address;      
       // dt chamber identifiers
       DTChamberId dtid;
-      int dwheel, dsector,calcwheel,calcsector;
-      unsigned dtrkNmb;
+      int wheel_incr;
+      int expectedwheel, dwheel, expectedsector, dsector;
+      unsigned expectedtrkNmb,dtrkNmb;
       
       for( ; tp != tend; ++tp ) {
 	for( ista = sbeg; ista != send; ++ista ) {
@@ -145,10 +188,20 @@ namespace L1ITMu {
 	  if( station_used && station == dtid.station() ) {	    
 	    
 	    address = *ista;
-	    calcwheel = wheel + (int)isExtrapAcrossWheel(address,station);
-	    dtrkNmb = address%2 + 1;
+	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
+	    expectedwheel = ( sp_wheel < 0 ? 
+			       dtid.wheel() - wheel_incr :
+			       dtid.wheel() + wheel_incr   );
+	    dwheel = dtid.wheel();
+	    expectedsector = sector + relativeSector(address,station);
+	    dsector = dtid.sector();
+	    expectedtrkNmb = address%2 + 1;
+	    dtrkNmb = tp->getDTData().segment_number;
 	    
-	    std::cout <<"Track wheel" << sp_wheel  
+	    if( expectedsector == dsector &&
+		expectedwheel  == dwheel  && 
+		expectedtrkNmb == dtrkNmb    ) {
+	      std::cout <<"Track wheel: " << sp_wheel  
 		      <<" DT wheel: " << wheel 
 		      << " cross-wheel extrap : " 
 		      << isExtrapAcrossWheel(address,station)
@@ -156,11 +209,10 @@ namespace L1ITMu {
 		      << " sector: " << sector 
 		      << " station:address " 
 		      << station << ":" << address << std::endl;
-	    std::cout << "Segment DetId: " << dtid << std::endl;
-	    tp->print(std::cout);
-	    if( false ) {
+	      std::cout << "Segment DetId: " << dtid << std::endl;
+	      tp->print(std::cout);
 	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
-	    }	
+	    }
 	  }		  	   
 	}	
       }
