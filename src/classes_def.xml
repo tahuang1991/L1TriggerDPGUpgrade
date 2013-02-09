@@ -25,10 +25,11 @@
   <class name="L1ITMu::TriggerPrimitiveList"/>
   <class name="L1ITMu::TriggerPrimitiveStationMap"/>
 
-  <class name="L1ITMu::InternalTrack" ClassVersion="12">
+  <class name="L1ITMu::InternalTrack" ClassVersion="13">
    <version ClassVersion="10" checksum="3413851472"/>
    <version ClassVersion="11" checksum="3197524209"/>
    <version ClassVersion="12" checksum="130718761"/>
+   <version ClassVersion="13" checksum="3197524209"/>
   </class>
   <class name="edm::Wrapper<L1ITMu::InternalTrack>"/>
   <class name="L1ITMu::InternalTrackCollection"/>
@@ -45,6 +46,23 @@
   <class name="L1ITMu::CandidateTrackRef"/>
   <class name="L1ITMu::CandidateTrackPtr"/>
 
-  <class name="edm::Ref<std::vector<L1MuRegionalCand>, L1MuRegionalCand, edm::refhelper::FindUsingAdvance<std::vector<L1MuRegionalCand>, L1MuRegionalCand> >"/>
+  <class name="L1ITMu::DTTrackCollection"/>
+  <class name="L1ITMu::DTTrackPtr"/>
+  <class name="L1ITMu::DTTrackRef"/>
+
+  <class name="L1ITMu::CSCTrackCollection"/>
+  <class name="L1ITMu::CSCTrackPtr"/>
+  <class name="L1ITMu::CSCTrackRef"/>
+
+  <class name="L1ITMu::RegionalCandBaseRef"/>
+  <class name="L1ITMu::RegionalCandRef"/>
+  <class name="L1ITMu::RegionalCandPtr"/>
+  <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::RegionalCandRef>"/>
+  <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::DTTrackRef>"/>
+  <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::CSCTrackRef>"/>
+  <class name="edm::reftobase::RefHolder<L1ITMu::RegionalCandRef>"/>
+  <class name="edm::reftobase::RefHolder<L1ITMu::DTTrackRef>"/>
+  <class name="edm::reftobase::RefHolder<L1ITMu::CSCTrackRef>"/>
+  
  </selection>
 </lcgdict>

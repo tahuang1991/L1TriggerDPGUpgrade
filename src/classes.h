@@ -7,7 +7,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
-#include "L1Trigger/L1IntergratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
 
 #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
@@ -72,6 +72,9 @@ namespace {
 
     edm::reftobase::Holder<L1MuRegionalCand,RegionalCandRef>  r2rholder;
     edm::reftobase::Holder<L1MuRegionalCand,DTTrackRef>  r2dtholder;
-    edm::reftobase::Holder<L1MuRegionalCand,CSCTrackRef>  r2rholder;
+    edm::reftobase::Holder<L1MuRegionalCand,CSCTrackRef>  r2cscholder;
+    edm::reftobase::RefHolder<RegionalCandRef>  r2rrefholder;
+    edm::reftobase::RefHolder<DTTrackRef>  r2dtrefholder;
+    edm::reftobase::RefHolder<CSCTrackRef>  r2cscrefholder;
   };
 }
