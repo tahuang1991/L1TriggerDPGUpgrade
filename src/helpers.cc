@@ -11,7 +11,8 @@
 namespace {
   // from the DT track is the VHDL address
   // not the raw address
-  // for raw addresses (addr/2)%2 == 0 means same wheel
+  // for raw addresses (addr/2)%2 == 0 means extrapolation in
+  // same wheel (not that the track is in the same wheel as the segment)  
   bool isNextWheelAddr(const int addr, const int station) { 
     if( station != 1 ) {
       switch(addr) {
@@ -126,7 +127,7 @@ namespace L1ITMu {
       auto send = trkNmbs.cend();
       
       // the station and relative address
-      unsigned station, address;      
+      int station, address;      
       // dt chamber identifiers
       DTChamberId dtid;
       int dwheel, dsector,calcwheel,calcsector;
@@ -137,15 +138,16 @@ namespace L1ITMu {
 	  if( tp->subsystem() != TriggerPrimitive::kDT ) continue;
 	  station = (ista - sbeg) + 1;
 	  bool station_used = mode & ( 0x1 << (station-1) );
-	  if( station_used ) {
-	    dtid = tp->detId<DTChamberId>();
+	  dtid = tp->detId<DTChamberId>();
+	  if( station_used && station == dtid.station() ) {	    
 	    
 	    address = *ista;
 	    calcwheel = wheel + (int)isNextWheelAddr(address,station);
 	    dtrkNmb = address%2 + 1;
 	    
 	    std::cout <<"Track wheel: " << wheel 
-		      << " calcwheel : " << calcwheel
+		      << " cross-wheel extrap : " 
+		      << isNextWheelAddr(address,station)
 		      << " exp. trk. #: " << dtrkNmb
 		      << " sector: " << sector 
 		      << " station:address " 
