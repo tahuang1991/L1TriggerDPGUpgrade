@@ -77,6 +77,7 @@ void InternalTrack::print(std::ostream& out) const {
 	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
 	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
 	    << std::dec << std::endl;
+  std::cout << "\tQuality: " << quality() << std::endl;
   DTTrackRef dtparent;
   CSCTrackRef cscparent;
   unsigned mode;
@@ -108,6 +109,7 @@ void InternalTrack::print(std::ostream& out) const {
       std::cout << "DT-Based Internal Track did not find expected DT"
 		<< " segment in station 4!" << std::endl;
     }
+    std::cout << "\t Parent Quality: " << dtparent->quality() << std::endl;
     break;
   case 1: // RPCb 
     break;
@@ -142,6 +144,7 @@ void InternalTrack::print(std::ostream& out) const {
       std::cout << "CSC-Based Internal Track did not find expected DT"
 		<< " segment in station 1!" << std::endl;
     }
+    std::cout << "\t Parent Quality: " << cscparent->quality() << std::endl;
     break;
   case 3: // RPCf
     break;
