@@ -86,6 +86,7 @@ void InternalTrack::print(std::ostream& out) const {
     dtparent = _parent.castTo<DTTrackRef>();
     mode = tc2bitmap((TrackClass)dtparent->TCNum());
     std::cout << "\tParent is a DT Track!" << std::endl;
+    std::cout << "\t Parent Track Class: " << dtparent->TCNum() << std::endl;
     std::cout << "\t Parent Mode: " << std::hex
 	      << mode
 	      << std::dec << std::endl;
