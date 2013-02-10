@@ -137,7 +137,7 @@ namespace L1ITMu {
 	      if( std::abs(dtid.wheel()) != 2 && dtid.station() != 1 )
 		continue;
 	      twheel = ( endcap == 1 ? 2 : -2 );
-	      tfirstsector = 2*sector - 1;
+	      tfirstsector = 2*sector;
 	      dwheel = dtid.wheel();
 	      dsector = dtid.sector();
 	      dtrkNmb = tp->getDTData().segment_number;	      
