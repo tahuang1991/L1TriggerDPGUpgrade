@@ -98,7 +98,10 @@ namespace L1ITMu {
     //DT      
     TriggerPrimitive(const DTChamberId&,		     
 		     const L1MuDTChambPhDigi&,
-		     const int segment_number);  
+		     const int segment_number);
+    TriggerPrimitive(const DTChamberId&,		     
+		     const L1MuDTChambThDigi&,
+		     const int segment_number);
     TriggerPrimitive(const DTChamberId&,		     
 		     const L1MuDTChambPhDigi&,
 		     const L1MuDTChambThDigi&,

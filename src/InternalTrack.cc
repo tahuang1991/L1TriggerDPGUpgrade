@@ -79,17 +79,35 @@ void InternalTrack::print(std::ostream& out) const {
 	    << std::dec << std::endl;
   DTTrackRef dtparent;
   CSCTrackRef cscparent;
+  unsigned mode;
   switch( type_idx() ) {
   case 0: // DT    
     dtparent = _parent.castTo<DTTrackRef>();
+    mode = tc2bitmap((TrackClass)dtparent->TCNum());
     std::cout << "\tParent is a DT Track!" << std::endl;
     std::cout << "\t Parent Mode: " << std::hex
-	      << tc2bitmap((TrackClass)dtparent->TCNum()) 
+	      << mode
 	      << std::dec << std::endl;
     std::cout << "\t  MB 1: " << dtparent->stNum(1)
 	      << "\t  MB 2: " << dtparent->stNum(2)
 	      << "\t  MB 3: " << dtparent->stNum(3)
 	      << "\t  MB 4: " << dtparent->stNum(4) << std::endl;
+    if( (mode & 0x1) != (dtMode() & 0x1) ) {
+      std::cout << "DT-Based Internal Track did not find expected DT"
+		<< " segment in station 1!" << std::endl;
+    }
+    if( (mode & 0x2) != (dtMode() & 0x2) ) {
+      std::cout << "DT-Based Internal Track did not find expected DT"
+		<< " segment in station 2!" << std::endl;
+    }
+    if(	(mode & 0x4) != (dtMode() & 0x4) ) {
+      std::cout << "DT-Based Internal Track did not find expected DT"
+		<< " segment in station 3!" << std::endl;
+    }
+    if(	(mode & 0x8) != (dtMode() & 0x8) ) {
+      std::cout << "DT-Based Internal Track did not find expected DT"
+		<< " segment in station 4!" << std::endl;
+    }
     break;
   case 1: // RPCb 
     break;
@@ -104,6 +122,26 @@ void InternalTrack::print(std::ostream& out) const {
 	      << "\t  ME 3: " << cscparent->me3ID() 
 	      << "\t  ME 4: " << cscparent->me4ID() 
 	      << "\t  MB 1: " << cscparent->mb1ID() << std::endl;
+    if( (bool)(cscparent->me1ID()) != (bool)(cscMode() & 0x1) ) {
+      std::cout << "CSC-Based Internal Track did not find expected CSC"
+		<< " segment in station 1!" << std::endl;
+    }
+    if( (bool)(cscparent->me2ID()) != (bool)(cscMode() & 0x2) ) {
+      std::cout << "CSC-Based Internal Track did not find expected CSC"
+		<< " segment in station 2!" << std::endl;
+    }
+    if(	(bool)(cscparent->me3ID()) != (bool)(cscMode() & 0x4) ) {
+      std::cout << "CSC-Based Internal Track did not find expected CSC"
+		<< " segment in station 3!" << std::endl;
+    }
+    if(	(bool)(cscparent->me4ID()) != (bool)(cscMode() & 0x8) ) {
+      std::cout << "CSC-Based Internal Track did not find expected CSC"
+		<< " segment in station 4!" << std::endl;
+    }
+    if(	(bool)(cscparent->mb1ID()) != (bool)(dtMode() & 0x1)  ) {
+      std::cout << "CSC-Based Internal Track did not find expected DT"
+		<< " segment in station 1!" << std::endl;
+    }
     break;
   case 3: // RPCf
     break;

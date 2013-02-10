@@ -42,6 +42,29 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
+				   const L1MuDTChambThDigi& digi_th,
+				   const int theta_bti_group):
+  _id(detid),
+  _subsystem(TriggerPrimitive::kDT) {
+  calculateDTGlobalSector(detid,_globalsector,_subsector);
+  // fill in information from theta trigger
+  _dt.theta_bti_group = theta_bti_group;
+  _dt.segment_number = digi_th.position(theta_bti_group);
+  _dt.theta_code = digi_th.code(theta_bti_group);
+  _dt.theta_quality = digi_th.quality(theta_bti_group);
+  // now phi trigger
+  _dt.bx = digi_th.bxNum();
+  _dt.wheel = digi_th.whNum();
+  _dt.sector = digi_th.scNum();
+  _dt.station = digi_th.stNum();
+  _dt.radialAngle = -1;
+  _dt.bendingAngle = -1;
+  _dt.qualityCode = -1;
+  _dt.Ts2TagCode = -1;
+  _dt.BxCntCode = -1;
+}
+
+TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
 				   const L1MuDTChambThDigi& digi_th,
 				   const int theta_bti_group):

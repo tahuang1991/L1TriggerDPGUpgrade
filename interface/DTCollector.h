@@ -27,9 +27,11 @@ namespace L1ITMu {
   private:
     TriggerPrimitive processDigis(const L1MuDTChambPhDigi&,
 				  const int segment_number) const;
+    TriggerPrimitive processDigis(const L1MuDTChambThDigi&,
+				  const int bti_group) const;
     TriggerPrimitive processDigis(const L1MuDTChambPhDigi&,
 				  const L1MuDTChambThDigi&,
-				  const int bti_group) const;
+				  const int bti_group) const;    
     int findBTIGroupForThetaDigi(const L1MuDTChambThDigi&,
 				 const int position) const;
 				  
