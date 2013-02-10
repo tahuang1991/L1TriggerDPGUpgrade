@@ -98,6 +98,9 @@ void L1DTTFTrackConverter::produce(edm::Event& ev,
 
 	    std::vector<unsigned> addrs;
 	    addrs.reserve(4);	     	   
+	    for( int station = 1; station <= 4; ++ station ) {
+	      addrs.push_back(dttrk->stNum(station));
+	    }	
 
 	    // in DTs the mode is encoded by the track class
 	    // mode is a 4 bit word , the bit position indicates the station
