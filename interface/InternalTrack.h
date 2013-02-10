@@ -52,10 +52,10 @@ namespace L1ITMu{
       { return _associatedStubs; }
 
     unsigned long mode()     const { return (_mode & 0xffff); }
-    unsigned long dtMode()   const { return (_mode & 0x000f); }
-    unsigned long cscMode()  const { return (_mode & 0x00f0)>>4; }
-    unsigned long rpcbMode() const { return (_mode & 0x0f00)>>8; }
-    unsigned long rpcfMode() const { return (_mode & 0xf000)>>12; }
+    unsigned long dtMode()   const { return (_mode & 0xf<<4*kDT )>>4*kDT; }
+    unsigned long cscMode()  const { return (_mode & 0xf<<4*kCSC)>>4*kCSC; }
+    unsigned long rpcbMode() const { return (_mode & 0xf<<4*kRPCb)>>4*kRPCb; }
+    unsigned long rpcfMode() const { return (_mode & 0xf<<4*kRPCf)>>4*kRPCf; }
 
     void print(std::ostream&) const;
 
@@ -65,6 +65,8 @@ namespace L1ITMu{
     // this represents the mode considering all available muon detector types
     // 0 DT 4 bits | CSC 4 bits | RPCb 4 bits | RPC f 4 bits
     // using an unsigned long since we may want to add GEMs later
+    // so cscMode() will return only the CSC part of the tracks contributing
+    // to a CSC track (if this track was built from one)
     unsigned long _mode; 
     //pointer to parent, if this was created from a CSC/DT/RPC track
     RegionalCandBaseRef _parent;
