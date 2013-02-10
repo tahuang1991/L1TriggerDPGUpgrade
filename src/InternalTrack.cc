@@ -94,7 +94,12 @@ void InternalTrack::print(std::ostream& out) const {
     std::cout << "\tParent is a CSC Track!" << std::endl;
     std::cout << "\t Parent Mode: " << std::hex
 	      << cscparent->mode() 
-	      << std::dec << std::endl;
+	      << std::dec << std::endl
+	      << "\t  ME 1: " << cscparent->me1ID() 
+	      << "\t  ME 2: " << cscparent->me2ID() 
+	      << "\t  ME 3: " << cscparent->me3ID() 
+	      << "\t  ME 4: " << cscparent->me4ID() 
+	      << "\t  MB 1: " << cscparent->mb1ID() << std::endl;
     break;
   case 3: // RPCf
     break;
