@@ -194,6 +194,7 @@ namespace L1ITMu {
 	    expectedwheel = ( sp_wheel < 0 ? 
 			       wheel - wheel_incr :
 			       wheel + wheel_incr   );
+	    expectedwheel = ( expectedwheel == 13 ? 1 : expectedwheel);
 	    dwheel = dtid.wheel();
 	    expectedsector = sector + relativeSector(address,station);
 	    dsector = dtid.sector();
