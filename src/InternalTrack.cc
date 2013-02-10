@@ -54,14 +54,18 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
       << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }
-  const unsigned bit = 1 << (4*offset + station - 1);
+  const unsigned shift = 4*offset + station - 1;
+  const unsigned bit = 1 << shift;
    // add this track to the mode
   _mode = _mode | bit;
-  if( _associatedStubs.count(bit) == 0 ) {
-    _associatedStubs[bit] = TriggerPrimitiveList();
+  if( _associatedStubs.count(offset) == 0 ) {
+    _associatedStubs[shift] = TriggerPrimitiveList();
   }   
-  _associatedStubs[bit].push_back(stub);
+  _associatedStubs[shift].push_back(stub);
 }
+
+// this magic file contains a DT TrackClass -> mode LUT
+#include "L1Trigger/DTTrackFinder/src/L1MuDTTrackAssParam.h"
 
 void InternalTrack::print(std::ostream& out) const {
   std::cout << "Internal Track -- endcap: " << std::dec << _endcap
@@ -70,6 +74,35 @@ void InternalTrack::print(std::ostream& out) const {
   std::cout << "\tMode: " << std::hex  
 	    << mode() << std::dec << std::endl;
   std::cout << "\tMode Breakdown: " << std::hex
-	    << " DT Mode : " << dtMode() << " CSC Mode: " 
-	    << cscMode() << std::dec << std::endl;
+	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
+	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
+	    << std::dec << std::endl;
+  DTTrackRef dtparent;
+  CSCTrackRef cscparent;
+  switch( type_idx() ) {
+  case 0: // DT    
+    dtparent = _parent.castTo<DTTrackRef>();
+    std::cout << "\tParent is a DT Track!" << std::endl;
+    std::cout << "\t Parent Mode: " << std::hex
+	      << tc2bitmap((TrackClass)dtparent->TCNum()) 
+	      << std::dec << std::endl;
+    break;
+  case 1: // RPCb 
+    break;
+  case 2: // CSC    
+    cscparent = _parent.castTo<CSCTrackRef>();
+    std::cout << "\tParent is a CSC Track!" << std::endl;
+    std::cout << "\t Parent Mode: " << std::hex
+	      << cscparent->mode() 
+	      << std::dec << std::endl;
+    break;
+  case 3: // RPCf
+    break;
+  case 4: // L1ITMu ?
+    break;
+  default:
+    throw cms::Exception("Unknown Track Type") 
+      << "L1ITMu::InternalTrack is of unknown track type: " << type_idx()
+      << std::endl;
+  }
 }
