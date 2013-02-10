@@ -138,7 +138,7 @@ namespace L1ITMu {
 		continue;
 	      twheel = ( endcap == 1 ? 2 : -2 );
 	      // sectors go from 1-12
-	      tsector = 2*sector + *ista;
+	      tsector = 2*sector + *ista -1;
 	      tsector = (tsector == 13 ? 1 : tsector);
 	      dwheel = dtid.wheel();
 	      dsector = dtid.sector();
