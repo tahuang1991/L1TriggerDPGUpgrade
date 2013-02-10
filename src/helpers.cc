@@ -104,8 +104,8 @@ namespace L1ITMu {
       unsigned ctrkNmb;
       // dt chamber identifiers
       DTChamberId dtid;
-      int twheel, tfirstsector, dwheel, dsector;
-      unsigned dtrkNmb;
+      int twheel, tsector, dwheel, dsector;
+      //unsigned dtrkNmb;
       
       for( ; tp != tend; ++tp ) {
 	for( ista = sbeg; ista != send; ++ista ) {	  
@@ -137,13 +137,14 @@ namespace L1ITMu {
 	      if( std::abs(dtid.wheel()) != 2 && dtid.station() != 1 )
 		continue;
 	      twheel = ( endcap == 1 ? 2 : -2 );
-	      tfirstsector = 2*sector;
+	      // sectors go from 1-12
+	      tsector = 2*sector + *ista;
+	      tsector = (tsector == 13 ? 1 : tsector);
 	      dwheel = dtid.wheel();
 	      dsector = dtid.sector();
-	      dtrkNmb = tp->getDTData().segment_number;	      
+	      //dtrkNmb = tp->getDTData().segment_number;	      
 	      if( twheel == dwheel && 
-		  (dsector == tfirstsector || dsector == tfirstsector+1) &&
-		  dtrkNmb == *ista ) {
+		  (dsector == tsector ) ) {
 		result.push_back(TriggerPrimitiveRef(tps,tp-tbeg));
 	      }
 	    }	    
