@@ -86,6 +86,10 @@ void InternalTrack::print(std::ostream& out) const {
     std::cout << "\t Parent Mode: " << std::hex
 	      << tc2bitmap((TrackClass)dtparent->TCNum()) 
 	      << std::dec << std::endl;
+    std::cout << "\t  MB 1: " << dtparent->stNum(1)
+	      << "\tMB 2: " << dtparent->stNum(2)
+	      << "\tMB 3: " << dtparent->stNum(3)
+	      << "\tMB 4: " << dtparent->stNum(4) << std::endl;
     break;
   case 1: // RPCb 
     break;
@@ -96,10 +100,10 @@ void InternalTrack::print(std::ostream& out) const {
 	      << cscparent->mode() 
 	      << std::dec << std::endl
 	      << "\t  ME 1: " << cscparent->me1ID() 
-	      << "\t  ME 2: " << cscparent->me2ID() 
-	      << "\t  ME 3: " << cscparent->me3ID() 
-	      << "\t  ME 4: " << cscparent->me4ID() 
-	      << "\t  MB 1: " << cscparent->mb1ID() << std::endl;
+	      << "\tME 2: " << cscparent->me2ID() 
+	      << "\tME 3: " << cscparent->me3ID() 
+	      << "\tME 4: " << cscparent->me4ID() 
+	      << "\tMB 1: " << cscparent->mb1ID() << std::endl;
     break;
   case 3: // RPCf
     break;
