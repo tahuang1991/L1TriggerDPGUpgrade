@@ -193,10 +193,11 @@ namespace L1ITMu {
 	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
 	    expectedwheel = ( sp_wheel < 0 ? 
 			       wheel - wheel_incr :
-			       wheel + wheel_incr   );
-	    expectedwheel = ( expectedwheel == 13 ? 1 : expectedwheel);
+			       wheel + wheel_incr   );	    
 	    dwheel = dtid.wheel();
 	    expectedsector = sector + relativeSector(address,station);
+	    expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
+	    expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
 	    dsector = dtid.sector();
 	    expectedtrkNmb = address%2 + 1;
 	    dtrkNmb = tp->getDTData().segment_number;
