@@ -226,7 +226,8 @@ namespace L1ITMu {
 	    // matching endcap to DT SP wheel means product > 0
 	    // mode bits still apply so we can lazy continue
 	    if(  !station_used || station != 3 || 
-		 cscid.station() != 1 || address != 0  ) continue;
+		 cscid.station() != 1 || 
+		 expectedwheel*cscid.zendcap() != 4 ) continue;
 	     csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
 	     csubsector = 
 	       CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
