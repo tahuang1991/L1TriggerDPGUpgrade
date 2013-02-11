@@ -54,6 +54,10 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
       << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }
+  if( idx_type() == 2 && offset == kDT && station == 2 ) {
+    stub->print(std::cout);
+  }
+
   const unsigned shift = 4*offset + station - 1;
   const unsigned bit = 1 << shift;
    // add this track to the mode
