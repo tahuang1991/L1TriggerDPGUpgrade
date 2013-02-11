@@ -97,6 +97,11 @@ GeometryTranslator::getRPCSpecificPoint(const TriggerPrimitive& tp) const {
   const LocalPoint lp = roll->centreOfStrip(strip);
   const GlobalPoint gp = roll->toGlobal(lp);
 
+  const LocalPoint lp1 = roll->centreOfStrip(strip+1);
+  const GlobalPoint gp1 = roll->toGlobal(lp1);
+
+  std::cout << "phi width of strip: " << (gp - gp1).phi() << std::endl;
+  
   roll.release();
  
   return gp;
