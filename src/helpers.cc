@@ -233,16 +233,18 @@ namespace L1ITMu {
 	    csubsector = 
 	      CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
 	    csector_asdt = 2*csector + csubsector - 1;
+	    csector_asdt = ( csector_asdt == 13 ? 1 : csector_asdt);
 	    expectedsector = sector + relativeSector(address,station);
 	    expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
 	    expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
-	    std::cout << " DT - CSC match: " << sp_wheel << ' ' 
-		      << expectedsector << ' ' << cscid.zendcap() 
-		      << ' ' << csector_asdt << std::endl;
-
-	     if( expectedsector == csector_asdt ) {
-	       result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
-	     }
+	    
+	    if( expectedsector == csector_asdt &&
+		expectedwheel*cscid.zendcap() == 4) {
+	      std::cout << " DT - CSC match: " << expectedwheel << ' ' 
+			<< expectedsector << ' ' << 4*cscid.zendcap() 
+			<< ' ' << csector_asdt << std::endl;
+	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
+	    }
 	    break;
 	  default: // don't care about RPCs
 	    continue;
