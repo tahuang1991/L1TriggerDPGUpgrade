@@ -103,7 +103,7 @@ void InternalTrack::print(std::ostream& out) const {
 		<< " segment in station 2!" << std::endl;
     }
     if( std::abs(dtparent->whNum()) == 3 ) {
-      if( dtparent->stNum(3) == 0 ) { // CSC track!
+      if( dtparent->stNum(3) == 0 || dtparent->stNum(3) == 1) { // CSC track!
 	if( (mode & 0x4) != ((cscMode() & 0x1)<<2) ) {
 	  std::cout << "DT-Based Internal Track did not find expected CSC"
 		    << " segment in station 1!" << std::endl;

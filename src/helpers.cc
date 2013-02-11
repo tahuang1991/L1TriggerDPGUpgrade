@@ -134,8 +134,8 @@ namespace L1ITMu {
 	  case 5:
 	    if( tp->subsystem() == TriggerPrimitive::kDT ) {
 	      dtid = tp->detId<DTChamberId>();	      
-	      if( std::abs(dtid.wheel()) != 2 && dtid.station() != 1 )
-		continue;
+	      if( std::abs(dtid.wheel()) != 2 && 
+		  dtid.station() != 1 ) continue;
 	      twheel = ( endcap == 1 ? 2 : -2 );
 	      // sectors go from 1-12
 	      tsector = 2*sector + *ista -1;
@@ -215,8 +215,7 @@ namespace L1ITMu {
 	    break;
 	  case TriggerPrimitive::kCSC:
 	    cscid = tp->detId<CSCDetId>();
-	    // the relative address for CSC segments is always 0
-	    // matching endcap to DT SP wheel means product == 4
+	    // the relative address for CSC segments is always 0 or 1	    
 	    // station 1 in CSCs is 3 in DTs for the trigger
 	    // address == 0,1 means next wheel (CSC station 1 in this case)
 	    // sp_wheel*cscid.zendcap() should simply always be 3
