@@ -134,7 +134,7 @@ namespace L1ITMu {
 	  case 5:
 	    if( tp->subsystem() == TriggerPrimitive::kDT ) {
 	      dtid = tp->detId<DTChamberId>();	      
-	      if( std::abs(dtid.wheel()) != 2 && 
+	      if( std::abs(dtid.wheel()) != 2 || 
 		  dtid.station() != 1 ) continue;
 	      twheel = ( endcap == 1 ? 2 : -2 );
 	      // sectors go from 1-12
