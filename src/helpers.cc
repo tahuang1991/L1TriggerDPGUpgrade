@@ -182,7 +182,7 @@ namespace L1ITMu {
       unsigned expectedtrkNmb,dtrkNmb;
       // csc chamber ids
       CSCDetId cscid;
-      unsigned cendcap, csector, csubsector;
+      unsigned csector, csubsector;
       int csector_asdt;
 
       for( ; tp != tend; ++tp ) {
@@ -220,14 +220,13 @@ namespace L1ITMu {
 	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
 	    expectedwheel = ( sp_wheel < 0 ? 
 			      wheel - wheel_incr :
-			      wheel + wheel_incr   );
-	    cendcap = cscid.endcap();
+			      wheel + wheel_incr   );	    
 	    // station 1 in CSCs is 3 in DTs for the trigger	    
 	    // the relative address for CSC segments is always 0
 	    // matching endcap to DT SP wheel means product > 0
 	    // mode bits still apply so we can lazy continue
-	    if(  !station_used || station != 3 || cscid.station() != 1 || 
-		 address != 0 || expectedwheel*cscid.zendcap() != 4 ) continue;
+	    if(  !station_used || station != 3 || 
+		 cscid.station() != 1 || address != 0  ) continue;
 	     csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
 	     csubsector = 
 	       CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
@@ -235,6 +234,8 @@ namespace L1ITMu {
 	     expectedsector = sector + relativeSector(address,station);
 	     expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
 	     expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
+	     std::cout << " DT - CSC match: " << expectedsector 
+		       << ' ' << csector_asdt << std::endl;
 	     if( expectedsector == csector_asdt ) {
 	       result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	     }
