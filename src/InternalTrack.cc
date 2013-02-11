@@ -54,7 +54,7 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
       << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }
-  if( idx_type() == 2 && offset == kDT && station == 2 ) {
+  if( type_idx() == 2 && offset == kDT && station == 2 ) {
     stub->print(std::cout);
   }
 
