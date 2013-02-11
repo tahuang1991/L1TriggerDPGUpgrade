@@ -1,0 +1,8 @@
+*.pyc
+CVS
+__init__.py
+*~
+*.root
+*.txt
+\#*\#
+*.generated
