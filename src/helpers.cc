@@ -182,7 +182,7 @@ namespace L1ITMu {
       unsigned expectedtrkNmb,dtrkNmb;
       // csc chamber ids
       CSCDetId cscid;
-      unsigned csector, csubsector;
+      unsigned csector, csubsector, ctrkNmb;
       int csector_asdt;
 
       for( ; tp != tend; ++tp ) {
@@ -215,24 +215,16 @@ namespace L1ITMu {
 	    break;
 	  case TriggerPrimitive::kCSC:
 	    cscid = tp->detId<CSCDetId>();
-	    // station 1 in CSCs is 3 in DTs for the trigger
-	    // address == 0 means next wheel (CSC station 1 in this case)
-	    // sp_wheel*cscid.zendcap() should simply always be 3
-	    // given the first two conditions
-	    if( !station_used || station != 3 || 
-		cscid.station() != 1 || address != 0 ||
-		sp_wheel*cscid.zendcap() != 3 ) continue;
-	    
-	    // see if the track expects a segment in "wheel 4" which is 
-	    // CSC station one	    
-	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
-	    expectedwheel = ( sp_wheel < 0 ? 
-			      sp_wheel - wheel_incr :
-			      sp_wheel + wheel_incr   );	    
 	    // the relative address for CSC segments is always 0
 	    // matching endcap to DT SP wheel means product == 4
-	    // mode bits still apply so we can lazy continue
-	    
+	    // station 1 in CSCs is 3 in DTs for the trigger
+	    // address == 0,1 means next wheel (CSC station 1 in this case)
+	    // sp_wheel*cscid.zendcap() should simply always be 3
+	    // to ensure we are looking at the correct side of CMS
+	    if( !station_used || station != 3 || 
+		cscid.station() != 1 || !(address == 0 || address == 1) ||
+		sp_wheel*cscid.zendcap() != 3 ) continue;
+	    	    
 	    csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
 	    csubsector = 
 	      CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
@@ -242,10 +234,12 @@ namespace L1ITMu {
 	    expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
 	    expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
 	    
-	    if( expectedsector == csector_asdt ) {
-	      std::cout << " DT - CSC match: " << expectedwheel << ' ' 
-			<< expectedsector << ' ' << 4*cscid.zendcap() 
-			<< ' ' << csector_asdt << std::endl;
+	    // expected track number in this case is the MPC link ( I think )!
+	    expectedtrkNmb = address + 1; // 0->1, 1->2
+	    ctrkNmb = tp->getCSCData().mpclink;
+
+	    if( expectedsector == csector_asdt &&
+		expectedtrkNmb == ctrkNmb         ) {	      
 	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	    }
 	    break;
