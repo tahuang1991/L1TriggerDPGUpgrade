@@ -218,8 +218,7 @@ namespace L1ITMu {
 	    // station 1 in CSCs is 3 in DTs for the trigger
 	    if( !station_used || station != 3 || 
 		cscid.station() != 1 || address != 0 ) continue;
-	    std::cout << " DT - CSC match: " << expectedsector 
-		       << ' ' << csector_asdt << std::endl;
+	    
 	    // see if the track expects a segment in "wheel 4" which is 
 	    // CSC station one	    
 	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
@@ -229,15 +228,18 @@ namespace L1ITMu {
 	    // the relative address for CSC segments is always 0
 	    // matching endcap to DT SP wheel means product == 4
 	    // mode bits still apply so we can lazy continue
-	    if(  expectedwheel*cscid.zendcap() != 4 ) continue;
-	     csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
-	     csubsector = 
-	       CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
-	     csector_asdt = 2*csector + csubsector - 1;
-	     expectedsector = sector + relativeSector(address,station);
-	     expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
-	     expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
-	     
+	    
+	    csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
+	    csubsector = 
+	      CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
+	    csector_asdt = 2*csector + csubsector - 1;
+	    expectedsector = sector + relativeSector(address,station);
+	    expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
+	    expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
+	    std::cout << " DT - CSC match: " << sp_wheel << ' ' 
+		      << expectedsector << ' ' << cscid.zendcap() 
+		      << ' ' << csector_asdt << std::endl;
+
 	     if( expectedsector == csector_asdt ) {
 	       result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	     }
