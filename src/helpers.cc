@@ -180,20 +180,25 @@ namespace L1ITMu {
       int wheel_incr;
       int expectedwheel, dwheel, expectedsector, dsector;
       unsigned expectedtrkNmb,dtrkNmb;
-      
+      // csc chamber ids
+      CSCDetId cscid;
+      unsigned cendcap, csector, csubsector;
+      int csector_asdt;
+
       for( ; tp != tend; ++tp ) {
 	for( ista = sbeg; ista != send; ++ista ) {
-	  if( tp->subsystem() != TriggerPrimitive::kDT ) continue;
 	  station = (ista - sbeg) + 1;
 	  bool station_used = mode & ( 0x1 << (station-1) );
-	  dtid = tp->detId<DTChamberId>();
-	  if( station_used && station == dtid.station() ) {	    
-	    
-	    address = *ista;
+	  address = *ista;
+	  switch( tp->subsystem() ) {
+	  case TriggerPrimitive::kDT:	       	    
+	    dtid = tp->detId<DTChamberId>();
+	    if( !station_used || station != dtid.station() ) continue;
 	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
 	    expectedwheel = ( sp_wheel < 0 ? 
-			       wheel - wheel_incr :
-			       wheel + wheel_incr   );	    
+			      wheel - wheel_incr :
+			      wheel + wheel_incr   );
+	    
 	    dwheel = dtid.wheel();
 	    expectedsector = sector + relativeSector(address,station);
 	    expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
@@ -207,6 +212,35 @@ namespace L1ITMu {
 		expectedtrkNmb == dtrkNmb    ) {
 	      result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
 	    }
+	    break;
+	  case TriggerPrimitive::kCSC:
+	    cscid = tp->detId<CSCDetId>();
+	    // see if the track expects a segment in "wheel 4" which is 
+	    // CSC station one	    
+	    wheel_incr = (isExtrapAcrossWheel(address,station) ? 1 : 0);
+	    expectedwheel = ( sp_wheel < 0 ? 
+			      wheel - wheel_incr :
+			      wheel + wheel_incr   );
+	    cendcap = cscid.endcap();
+	    // station 1 in CSCs is 3 in DTs for the trigger	    
+	    // the relative address for CSC segments is always 0
+	    // matching endcap to DT SP wheel means product > 0
+	    // mode bits still apply so we can lazy continue
+	    if(  !station_used || station != 3 || cscid.station() != 1 || 
+		 address != 0 || expectedwheel*cscid.zendcap() != 4 ) continue;
+	     csector = CSCTriggerNumbering::triggerSectorFromLabels(cscid);
+	     csubsector = 
+	       CSCTriggerNumbering::triggerSubSectorFromLabels(cscid);
+	     csector_asdt = 2*csector + csubsector - 1;
+	     expectedsector = sector + relativeSector(address,station);
+	     expectedsector = ( expectedsector == 0 ? 12 : expectedsector);
+	     expectedsector = ( expectedsector == 13 ? 1 : expectedsector);
+	     if( expectedsector == csector_asdt ) {
+	       result.push_back(TriggerPrimitiveRef(tps,tp - tbeg));
+	     }
+	    break;
+	  default: // don't care about RPCs
+	    continue;
 	  }		  	   
 	}	
       }
