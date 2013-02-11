@@ -1,0 +1,4 @@
+*.pyc
+CVS
+__init__.py
+*~
