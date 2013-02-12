@@ -15,6 +15,11 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
 
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
+
+#include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
+
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -33,11 +38,12 @@ public:
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
-  edm::InputTag _rpcTrackSrc, _trigPrimSrc;
+  edm::InputTag _rpcTrackSrc, _rpcLinkSrc, _trigPrimSrc;
 };
 
 L1RPCTFTrackConverter::L1RPCTFTrackConverter(const PSet& ps):
   _rpcTrackSrc(ps.getParameter<edm::InputTag>("RPCTrackSrc")),
+  _rpcLinkSrc(ps.getParameter<edm::InputTag>("RPCL1LinkSrc")),
   _trigPrimSrc(ps.getParameter<edm::InputTag>("TriggerPrimitiveSrc")) {
   produces<InternalTrackCollection>();
 }
@@ -46,6 +52,24 @@ void L1RPCTFTrackConverter::produce(edm::Event& ev,
 				    const edm::EventSetup& es) {
   std::auto_ptr<InternalTrackCollection> 
     convertedTracks (new InternalTrackCollection());
+  std::auto_ptr<RegionalCandCollection>
+    inputTracks(new RegionalCandCollection);
+
+  edm::RefProd<RegionalCandCollection> rpcpacProd = 
+    ev.getRefBeforePut<RegionalCandCollection>("input");  
+
+  edm::Handle<std::vector<RPCDigiL1Link> > rpclinks;
+  ev.getByLabel(_rpcLinkSrc,rpclinks);
+
+  edm::Handle<RegionalCandCollection> rpctracks;
+  ev.getByLabel(_rpcTrackSrc,rpctracks);
+
+  edm::Handle<TriggerPrimitiveCollection> trigPrims;
+  ev.getByLabel(_trigPrimSrc,trigPrims);
+
+  assert(rpclinks.size() == rpctracks.size() && ""
+
+  ev.put(inputTracks,"input");
   ev.put(convertedTracks);
 }
 
