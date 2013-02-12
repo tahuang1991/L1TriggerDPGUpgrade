@@ -33,11 +33,12 @@ public:
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
-  edm::InputTag _rpcTrackSrc, _trigPrimSrc;
+  edm::InputTag _rpcTrackSrc, _rpcL1LinkSrc, _trigPrimSrc;
 };
 
 L1RPCTFTrackConverter::L1RPCTFTrackConverter(const PSet& ps):
   _rpcTrackSrc(ps.getParameter<edm::InputTag>("RPCTrackSrc")),
+  _rpcL1LinkSrc(ps.getParameter<edm::InputTag>("RPCL1LinkSrc")),
   _trigPrimSrc(ps.getParameter<edm::InputTag>("TriggerPrimitiveSrc")) {
   produces<InternalTrackCollection>();
 }
