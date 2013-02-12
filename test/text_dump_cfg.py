@@ -9,12 +9,13 @@ process.L1ITMuText = cms.EDAnalyzer(
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1ITMuTriggerPrimitives','CSC'),
     cms.InputTag('L1ITMuTriggerPrimitives','DT'),
-    cms.InputTag('L1ITMuTriggerPrimitives','RPCb'),
-    cms.InputTag('L1ITMuTriggerPrimitives','RPCf')
+    cms.InputTag('L1ITMuTriggerPrimitives','RPC')
     ),
     converterSrcs = cms.VInputTag(
     cms.InputTag('L1CSCTFTrackConverter'),
-    cms.InputTag('L1DTTFTrackConverter')
+    cms.InputTag('L1DTTFTrackConverter'),
+    cms.InputTag('L1RPCbTFTrackConverter'),
+    cms.InputTag('L1RPCfTFTrackConverter')
     )
 )
 

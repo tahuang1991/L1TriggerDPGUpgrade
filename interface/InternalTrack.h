@@ -38,13 +38,16 @@ namespace L1ITMu{
     
     InternalTrack(const L1MuDTTrackCand&);
     InternalTrack(const csc::L1Track&);
-    InternalTrack(const L1MuRegionalCand&); // for RPCs
+    InternalTrack(const L1MuRegionalCand&,
+		  const RPCL1LinkRef&); // for RPCs
     
     // return the persistent pointer to the parent of this internal track
     // may be null if this has no parent
     RegionalCandBaseRef parent() const { return _parent; }
     void setParent(const RegionalCandBaseRef& parent)
        { _parent = parent; }
+
+    RPCL1LinkRef parentRPCLink() const { return _parentlink; }
 
     void addStub(const TriggerPrimitiveRef& stub) ;
          
@@ -70,6 +73,8 @@ namespace L1ITMu{
     unsigned long _mode; 
     //pointer to parent, if this was created from a CSC/DT/RPC track
     RegionalCandBaseRef _parent;
+    //pointer to RPC-L1 link, if an rpc track
+    RPCL1LinkRef _parentlink;
   };
 }
 

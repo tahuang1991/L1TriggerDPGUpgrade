@@ -1,5 +1,6 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/RPCCollector.h"
-#include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
+#include "DataFormats/RPCDigi/interface/RPCDigi.h"
+#include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -16,24 +17,21 @@ void RPCCollector::
 extractPrimitives(const edm::Event& ev, 
 		  const edm::EventSetup& es, 
 		  std::vector<TriggerPrimitive>& out) const {
-  edm::Handle<std::vector<RPCDigiL1Link> > rpcDigis;  
+  edm::Handle<RPCDigiCollection> rpcDigis;  
   ev.getByLabel(_src,rpcDigis);
   
-  auto digi = rpcDigis->begin();
-  auto end  = rpcDigis->end();
-
-  for( ; digi != end; ++digi ) {
-    for( unsigned layer = 1; layer <= digi->nlayer(); ++layer ){      
-      if( ! digi->empty(layer) ) {
-	RPCDetId id(digi->rawdetId(layer));
-	out.push_back(TriggerPrimitive(id,
-				       digi->strip(layer),
-				       layer,
-				       digi->bx(layer))
-		      );
-      }
+  auto chamber = rpcDigis->begin();
+  auto chend  = rpcDigis->end();
+  for( ; chamber != chend; ++chamber ) {
+    auto digi = (*chamber).second.first;
+    auto dend = (*chamber).second.second;
+    for( ; digi != dend; ++digi ) {
+      out.push_back(TriggerPrimitive((*chamber).first,
+				     digi->strip(),
+				     (*chamber).first.layer(),
+				     digi->bx()));
     }
-  }
+  }  
 }
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"

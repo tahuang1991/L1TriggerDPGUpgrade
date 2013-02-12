@@ -25,9 +25,14 @@ InternalTrack::InternalTrack(const csc::L1Track& csctrack):
   _sector = csctrack.sector();
 }
 
-InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack):
+InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack,
+			     const RPCL1LinkRef& rpclink):
   L1MuRegionalCand(rpctrack) {
+  _parentlink = rpclink;
   _mode = 0;
+  _endcap = -99;
+  _wheel  = -99;
+  _sector = -99;
 }
 
 void InternalTrack::addStub(const TriggerPrimitiveRef& stub) { 
@@ -47,7 +52,7 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
     offset = kRPCb;
     if(stub->detId<RPCDetId>().region() != 0) 
       offset = kRPCf;
-    station = stub->detId<RPCDetId>().station();    
+    station = stub->detId<RPCDetId>().station(); 
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
@@ -59,7 +64,7 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   const unsigned bit = 1 << shift;
    // add this track to the mode
   _mode = _mode | bit;
-  if( _associatedStubs.count(offset) == 0 ) {
+  if( _associatedStubs.count(shift) == 0 ) {
     _associatedStubs[shift] = TriggerPrimitiveList();
   }   
   _associatedStubs[shift].push_back(stub);
@@ -81,6 +86,7 @@ void InternalTrack::print(std::ostream& out) const {
   std::cout << "\tQuality: " << quality() << std::endl;
   DTTrackRef dtparent;
   CSCTrackRef cscparent;
+  RegionalCandRef rpcparent;
   unsigned mode;
   switch( type_idx() ) {
   case 0: // DT    
@@ -127,7 +133,12 @@ void InternalTrack::print(std::ostream& out) const {
     }
     std::cout << "\t Parent Quality: " << dtparent->quality() << std::endl;
     break;
-  case 1: // RPCb 
+  case 1: // RPCb
+    rpcparent = _parent.castTo<RegionalCandRef>();
+    std::cout << "\tParent is a RPCb Track!" << std::endl;
+    std::cout << "\t Parent Quality: " << rpcparent->quality() << std::endl;
+    std::cout << "\t Parent phi: " << rpcparent->phi_packed() << std::endl;
+    std::cout << "\t Parent eta: " << rpcparent->eta_packed() << std::endl;
     break;
   case 2: // CSC    
     cscparent = _parent.castTo<CSCTrackRef>();
@@ -163,6 +174,11 @@ void InternalTrack::print(std::ostream& out) const {
     std::cout << "\t Parent Quality: " << cscparent->quality() << std::endl;
     break;
   case 3: // RPCf
+    rpcparent = _parent.castTo<RegionalCandRef>();
+    std::cout << "\tParent is a RPCf Track!" << std::endl;
+    std::cout << "\t Parent Quality: " << rpcparent->quality() << std::endl;
+    std::cout << "\t Parent phi: " << rpcparent->phi_packed() << std::endl;
+    std::cout << "\t Parent eta: " << rpcparent->eta_packed() << std::endl;
     break;
   case 4: // L1ITMu ?
     break;
