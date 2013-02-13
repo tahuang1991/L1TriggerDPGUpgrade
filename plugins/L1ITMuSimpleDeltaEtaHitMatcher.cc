@@ -24,7 +24,7 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
-#include "L1Trigger/L1IntegratedMuonTRigger/interface/InternalTrackFwd.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -66,22 +66,27 @@ void L1ITMuSimpleDeltaEtaHitMatcher::produce(edm::Event& ev,
   auto egen = genps->cend();
   for( ; bgen != egen; ++bgen ) {
     if( std::abs(bgen->pdgId()) == 13 ) {
+      InternalTrack trk;
       std::cout << "Generated Muon pdgId:" << bgen->pdgId() 
 		<< " pt: " << bgen->pt()
 		<< " eta: " << bgen->eta() 
 		<< " phi: " << bgen->phi() << std::endl;
       
       auto tp = tps->cbegin();
+      auto tpbeg = tps->cbegin();
       auto tpend = tps->cend();
       for( ; tp != tpend; ++tp ) {
-	double deta = std::abs(bgen->eta() - tp->eta());
+	TriggerPrimitiveRef tpref(tps,tp - tpbeg);
+	double deta = std::abs(bgen->eta() - tp->getCMSGlobalEta());
 	std::cout << deta << std::endl;
-	if( deta < _detaWindow ) 
+	if( deta < _detaWindow ) {
+	  trk.addStub(tpref);
+	}
       }
+      if(trk.mode() != 0x0) out->push_back(trk);
     }
-  }
-  
-  ev.put(master_out);
+  }  
+  ev.put(out);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
