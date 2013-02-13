@@ -9,6 +9,7 @@
 
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
 
+#include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
 #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
@@ -71,6 +72,9 @@ namespace {
     edm::Wrapper<CSCTrackCollection> wcscTrkColl;
     CSCTrackPtr cscTrkPtr;
     CSCTrackRef cscTrkRef;
+
+    RPCL1LinkPtr prpcL1link;
+    RPCL1LinkRef rrpcL1link;
 
     edm::reftobase::Holder<L1MuRegionalCand,RegionalCandRef>  r2rholder;
     edm::reftobase::Holder<L1MuRegionalCand,DTTrackRef>  r2dtholder;

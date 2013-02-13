@@ -25,12 +25,13 @@
   <class name="L1ITMu::TriggerPrimitiveList"/>
   <class name="L1ITMu::TriggerPrimitiveStationMap"/>
 
-  <class name="L1ITMu::InternalTrack" ClassVersion="14">
+  <class name="L1ITMu::InternalTrack" ClassVersion="15">
    <version ClassVersion="10" checksum="3413851472"/>
    <version ClassVersion="11" checksum="3197524209"/>
    <version ClassVersion="12" checksum="130718761"/>
    <version ClassVersion="13" checksum="3197524209"/>
    <version ClassVersion="14" checksum="4146066621"/>
+   <version ClassVersion="15" checksum="3119306217"/>
   </class>
   <class name="edm::Wrapper<L1ITMu::InternalTrack>"/>
   <class name="L1ITMu::InternalTrackCollection"/>
@@ -60,6 +61,10 @@
   <class name="L1ITMu::RegionalCandBaseRef"/>
   <class name="L1ITMu::RegionalCandRef"/>
   <class name="L1ITMu::RegionalCandPtr"/>
+
+  <class name="L1ITMu::RPCL1LinkPtr"/>
+  <class name="L1ITMu::RPCL1LinkRef"/>
+
   <class name="edm::reftobase::BaseHolder<L1MuRegionalCand>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::RegionalCandRef>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1ITMu::DTTrackRef>"/>

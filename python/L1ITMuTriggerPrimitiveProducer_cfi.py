@@ -9,7 +9,7 @@ L1ITMuTriggerPrimitives = cms.EDProducer(
                      BX_min = cms.int32(dttfDigis.BX_min.value()),
                      BX_max = cms.int32(dttfDigis.BX_max.value()) ) ,
     RPC = cms.PSet( collectorType = cms.string('RPCCollector'),
-                    src = cms.InputTag('simRpcDigis') ),
+                    src = cms.InputTag('simMuonRPCDigis') ),
     CSC  = cms.PSet( collectorType = cms.string('CSCCollector'),
                      src = cms.InputTag('simCscTriggerPrimitiveDigis',
                                         'MPCSORTED') )

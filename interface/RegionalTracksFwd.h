@@ -8,6 +8,7 @@
 
 class L1MuRegionalCand;
 class L1MuDTTrackCand;
+class RPCDigiL1Link;
 namespace csc {
   class L1Track;
 }
@@ -25,6 +26,10 @@ namespace L1ITMu {
   typedef std::vector<csc::L1Track>  CSCTrackCollection;
   typedef edm::Ptr<csc::L1Track> CSCTrackPtr;
   typedef edm::Ref<CSCTrackCollection> CSCTrackRef;
+
+  typedef std::vector<RPCDigiL1Link> RPCL1LinkCollection;
+  typedef edm::Ptr<RPCDigiL1Link> RPCL1LinkPtr;
+  typedef edm::Ref<RPCL1LinkCollection> RPCL1LinkRef;
 }
 
 #endif
