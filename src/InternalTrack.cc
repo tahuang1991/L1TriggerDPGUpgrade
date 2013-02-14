@@ -35,6 +35,11 @@ InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack,
   _sector = -99;
 }
 
+unsigned InternalTrack::type_idx() const {
+  if( _parent.isNonnull() ) return L1MuRegionalCand::type_idx();
+  return _type;
+}
+
 void InternalTrack::addStub(const TriggerPrimitiveRef& stub) { 
   unsigned station;
   subsystem_offset offset;
@@ -77,6 +82,8 @@ void InternalTrack::print(std::ostream& out) const {
   std::cout << "Internal Track -- endcap: " << std::dec << _endcap
 	    << " wheel: " << _wheel 
 	    << " sector: " << _sector << std::endl;
+  std::cout << "\t eta index: " << eta_packed() 
+	    << "\t phi index: " << phi_packed() << std::endl;
   std::cout << "\tMode: " << std::hex  
 	    << mode() << std::dec << std::endl;
   std::cout << "\tMode Breakdown: " << std::hex

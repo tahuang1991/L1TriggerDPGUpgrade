@@ -15,7 +15,8 @@ process.L1ITMuText = cms.EDAnalyzer(
     cms.InputTag('L1CSCTFTrackConverter'),
     cms.InputTag('L1DTTFTrackConverter'),
     cms.InputTag('L1RPCbTFTrackConverter'),
-    cms.InputTag('L1RPCfTFTrackConverter')
+    cms.InputTag('L1RPCfTFTrackConverter'),
+    cms.InputTag('L1ITMuSimpleDeltaEtaHitMatcher')
     )
 )
 

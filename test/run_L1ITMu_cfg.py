@@ -15,11 +15,13 @@ process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuTriggerPrimitiveProducer_c
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1CSCTFTrackConverter_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1DTTFTrackConverter_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1RPCTFTrackConverter_cfi')
+process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuSimpleDeltaEtaHitMatcher_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
 
-infile = 'file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root'
+infile = ['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
+infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
 
 process.source = cms.Source(
     'PoolSource',
@@ -29,13 +31,15 @@ process.source = cms.Source(
 process.L1ITMUSequence = cms.Sequence( process.L1ITMuTriggerPrimitives +
                                        process.L1CSCTFTrackConverter   +
                                        process.L1DTTFTrackConverter    +
-                                       process.L1RPCTFTrackConverters    )
+                                       process.L1RPCTFTrackConverters  +
+                                       process.L1ITMuSimpleDeltaEtaHitMatcher )
 
 process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
 
 outCommands = process.FEVTDEBUGEventContent.outputCommands
 outCommands.append('keep *_L1ITMuTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
+outCommands.append('keep *_*Matcher_*_*')
 
 process.FEVTDEBUGoutput = cms.OutputModule(
     "PoolOutputModule",

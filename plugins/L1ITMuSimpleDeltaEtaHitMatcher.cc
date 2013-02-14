@@ -45,8 +45,8 @@ private:
 };
 
 L1ITMuSimpleDeltaEtaHitMatcher::L1ITMuSimpleDeltaEtaHitMatcher(const PSet& p) :
-  _trigPrimSrc(p.getParameter<edm::InputTag>("TriggerPrimtiveSrc")),
-  _genSrc(p.getParameter<edm::InputTag>("GenSrc")),
+  _trigPrimSrc(p.getParameter<edm::InputTag>("TriggerPrimitiveSrc")),
+  _genSrc(p.getParameter<edm::InputTag>("genSrc")),
   _detaWindow(p.getParameter<double>("DetaWindowSize")) {  
   produces<InternalTrackCollection>();
 }
@@ -67,10 +67,14 @@ void L1ITMuSimpleDeltaEtaHitMatcher::produce(edm::Event& ev,
   for( ; bgen != egen; ++bgen ) {
     if( std::abs(bgen->pdgId()) == 13 ) {
       InternalTrack trk;
+      trk.setType(4);
+      //std::cout << trk.type_idx() << std::endl;
+      /*
       std::cout << "Generated Muon pdgId:" << bgen->pdgId() 
 		<< " pt: " << bgen->pt()
 		<< " eta: " << bgen->eta() 
 		<< " phi: " << bgen->phi() << std::endl;
+      */
       
       auto tp = tps->cbegin();
       auto tpbeg = tps->cbegin();
@@ -78,7 +82,6 @@ void L1ITMuSimpleDeltaEtaHitMatcher::produce(edm::Event& ev,
       for( ; tp != tpend; ++tp ) {
 	TriggerPrimitiveRef tpref(tps,tp - tpbeg);
 	double deta = std::abs(bgen->eta() - tp->getCMSGlobalEta());
-	std::cout << deta << std::endl;
 	if( deta < _detaWindow ) {
 	  trk.addStub(tpref);
 	}
