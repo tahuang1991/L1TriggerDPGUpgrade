@@ -71,7 +71,22 @@ void L1CSCTFTrackConverter::produce(edm::Event& ev,
   for( ; btrk != etrk; ++btrk ) {
     inputTracks->push_back(btrk->first);
     
-    InternalTrack trk(btrk->first);
+    // set the global position and pt bits for this CSC track
+    unsigned global_phi = ( inputTracks->back().localPhi() + 
+			    ((inputTracks->back().sector() - 1)*24) + 6 );
+    unsigned eta_sign = ( inputTracks->back().endcap() == 1 ? 0 : 1 );
+    unsigned global_eta = ( inputTracks->back().eta_packed() +
+			    (eta_sign << (L1MuRegionalCand::ETA_LENGTH -1)) );
+    unsigned rank = inputTracks->back().rank();
+    unsigned qual = rank >> L1MuRegionalCand::PT_LENGTH;
+    unsigned pt   = rank & ( ( 1 << L1MuRegionalCand::PT_LENGTH ) - 1 );
+    if(global_phi > 143) global_phi -= 143;	
+    inputTracks->back().setPhiPacked( global_phi & 0xff );
+    inputTracks->back().setEtaPacked( global_eta & 0x3f );    
+    inputTracks->back().setQualityPacked(qual);
+    inputTracks->back().setPtPacked(pt);
+
+    InternalTrack trk(inputTracks->back());
     CSCTrackRef parentRef(csctfProd,inputTracks->size() - 1);
     RegionalCandBaseRef parentBaseRef(parentRef);
     trk.setParent(parentBaseRef);
