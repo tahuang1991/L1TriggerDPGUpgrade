@@ -31,7 +31,7 @@ namespace csc {
 
 namespace L1ITMu{
   class InternalTrack : public L1MuRegionalCand {
-    enum subsystem_offset{ kDT, kCSC, kRPCb, kRPCf };
+    enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
   public:
     InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
     ~InternalTrack() {}
@@ -70,7 +70,7 @@ namespace L1ITMu{
     int _endcap, _wheel, _sector;
     unsigned _type;
     // this represents the mode considering all available muon detector types
-    // 0 DT 4 bits | CSC 4 bits | RPCb 4 bits | RPC f 4 bits
+    // 0 DT 4 bits | RPCb 4 bits | CSC 4 bits | RPC f 4 bits
     // using an unsigned long since we may want to add GEMs later
     // so cscMode() will return only the CSC part of the tracks contributing
     // to a CSC track (if this track was built from one)
