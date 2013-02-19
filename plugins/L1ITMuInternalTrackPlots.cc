@@ -21,6 +21,7 @@
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TTree.h"
 #include "TH1F.h"
@@ -29,6 +30,11 @@
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+// detector ID types
+#include "DataFormats/MuonDetId/interface/DTChamberId.h"
+#include "DataFormats/MuonDetId/interface/CSCDetId.h"
+#include "DataFormats/MuonDetId/interface/RPCDetId.h"
 
 using namespace L1ITMu;
 
@@ -47,8 +53,8 @@ public:
 
   void analyze(const edm::Event&, const edm::EventSetup&);  
 private:
-  std::string convertSubModeToName(const TriggerPrimitive&,
-				   const TriggerPrimitive&) const;
+  std::string convertStubsToName(const TriggerPrimitive&,
+				 const TriggerPrimitive&) const;
   deltas_map makeCombinations(const InternalTrack& ) const;
   bool _dogen;
   edm::InputTag _geninput;
@@ -90,11 +96,21 @@ void L1ITMuInternalTrackPlotter::analyze(const edm::Event& ev,
 	gen_phi->Fill(bgen->phi());
 	gen_pt->Fill(bgen->pt());
       }
-    }
+    }    
   }
   
-  edm::Handle<InternalTrackCollection> trks;
-  ev.getByLabel(_trkInput,trks);
+  auto src = _trkInput.cbegin();
+  auto send = _trkInput.cend();
+  for( ; src != send; ++src ) {
+    edm::Handle<InternalTrackCollection> trks;
+    ev.getByLabel(*src,trks);
+    
+    auto trk = trks->cbegin();
+    auto tend = trks->cend();
+    for( ; trk != tend; ++trk ) {
+      makeCombinations(*trk);
+    }
+  }
 }
 
 // take a pair of positions within a mode and make a name!
@@ -114,16 +130,21 @@ convertStubsToName(const TriggerPrimitive& tp1,
   switch(type1) {
   case TriggerPrimitive::kDT:
     name1 = std::string("DT");
-    dtid = tp1.detId<DTChamberId>();
+    dtid = tp1.detId<DTChamberId>();    
     station1 = dtid.station();
+    break;
   case TriggerPrimitive::kCSC:
     name1 = std::string("CSC");
     cscid = tp1.detId<CSCDetId>();
     station1 = cscid.station();
+    break;
   case TriggerPrimitive::kRPC:
     rpcid = tp1.detId<RPCDetId>();
     name1 = (rpcid.region() == 0 ? std::string("RPCb") : std::string("RPCf"));
     station1 = rpcid.station();
+    break;
+  default:
+    break;
   }
 
   switch(type2) {
@@ -131,22 +152,48 @@ convertStubsToName(const TriggerPrimitive& tp1,
     name2 = std::string("DT");
     dtid = tp2.detId<DTChamberId>();
     station2 = dtid.station();
+    break;
   case TriggerPrimitive::kCSC:
     name2 = std::string("CSC");
     cscid = tp2.detId<CSCDetId>();
     station2 = cscid.station();
+    break;
   case TriggerPrimitive::kRPC:
     rpcid = tp2.detId<RPCDetId>();
     name2 = (rpcid.region() == 0 ? std::string("RPCb") : std::string("RPCf"));
     station2 = rpcid.station();
+    break;
+  default:
+    break;
   }
 
-  return std::string(Form("%s%i_%s%i",name1,station1,name2,station2));
+  return std::string(Form("%s%i_%s%i",
+			  name1.c_str(),station1,
+			  name2.c_str(),station2));
 }
 
 // this function takes the list of used 
-deltas_map L1ITMuInternalTrackPlotter::
-makeCombinations(const InternalTrack& ) const {
+std::map<std::string,double> L1ITMuInternalTrackPlotter::
+makeCombinations(const InternalTrack& track) const {
+  unsigned station1, station2, subsystem1, subsystem2;  
+  TriggerPrimitiveStationMap stubs = track.getStubs();
+  for( station1 = 1; station1 <= 4; ++station1 ) {
+    for( subsystem1 = 0; subsystem1 <= 3; ++subsystem1 ) {
+      const unsigned idx1 = 4*subsystem1+station1-1;
+      if( !stubs.count(idx1) ) continue;
+      TriggerPrimitiveList tps1 = stubs[idx1];
+      for( station2 = station1+1; station2 <= 4; ++station2 ) {
+	for( subsystem2 = 0; subsystem2 <=3; ++subsystem2 ) {
+	  const unsigned idx2 = 4*subsystem2+station2-1;
+	    if( !stubs.count(idx2) ) continue;
+	    TriggerPrimitiveList tps2 = stubs[idx2];
+	    std::cout << station1 << ' ' << subsystem1 << ' ' 
+		      << station2 << ' ' << subsystem2 << std::endl;
+	}// loop over subsystem in outer station
+      }// loop over outer station
+    }// loop over subsystem in inner station
+  }// loop over inner station
+  return deltas_map();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

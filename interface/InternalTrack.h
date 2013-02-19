@@ -30,9 +30,9 @@ namespace csc {
 }
 
 namespace L1ITMu{
-  class InternalTrack : public L1MuRegionalCand {
-    enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
+  class InternalTrack : public L1MuRegionalCand {   
   public:
+    enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
     InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
     ~InternalTrack() {}
     
