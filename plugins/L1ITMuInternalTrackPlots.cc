@@ -70,7 +70,7 @@ L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
   if( (_dogen = p.getUntrackedParameter<bool>("doGen",false)) ) {
     _geninput = p.getParameter<edm::InputTag>("genSrc");
   }
-  _trkInput = p.getParameter<std::vector<edm::InputTag> >("trackSrc");
+  _trkInput = p.getParameter<std::vector<edm::InputTag> >("trackSrcs");
 
   edm::Service<TFileService> _fs;
 
@@ -118,7 +118,7 @@ std::string L1ITMuInternalTrackPlotter::
 convertStubsToName(const TriggerPrimitive& tp1,
 		   const TriggerPrimitive& tp2) const {
   std::string name1,name2;
-  unsigned station1,station2;
+  unsigned station1=0,station2=0;
   TriggerPrimitive::subsystem_type type1, type2;
   CSCDetId cscid;
   RPCDetId rpcid;
@@ -175,7 +175,8 @@ convertStubsToName(const TriggerPrimitive& tp1,
 // this function takes the list of used 
 std::map<std::string,double> L1ITMuInternalTrackPlotter::
 makeCombinations(const InternalTrack& track) const {
-  unsigned station1, station2, subsystem1, subsystem2;  
+  unsigned station1, station2, subsystem1, subsystem2;
+  int bx1, bx2;  
   TriggerPrimitiveStationMap stubs = track.getStubs();
   for( station1 = 1; station1 <= 4; ++station1 ) {
     for( subsystem1 = 0; subsystem1 <= 3; ++subsystem1 ) {
@@ -187,8 +188,29 @@ makeCombinations(const InternalTrack& track) const {
 	  const unsigned idx2 = 4*subsystem2+station2-1;
 	    if( !stubs.count(idx2) ) continue;
 	    TriggerPrimitiveList tps2 = stubs[idx2];
-	    std::cout << station1 << ' ' << subsystem1 << ' ' 
-		      << station2 << ' ' << subsystem2 << std::endl;
+	    
+	    auto tp1 = tps1.cbegin();
+	    auto tp1end = tps1.cend();
+	    auto tp2beg = tps2.cbegin();
+	    auto tp2 = tps2.cbegin();
+	    auto tp2end = tps2.cend();
+	    
+	    for( ; tp1 != tp1end; ++ tp1 ) {
+	      for( tp2 = tp2beg; tp2 != tp2end; ++tp2 ) {
+		bx1 = ( subsystem1 != 2 ? 
+			(*tp1)->getBX() : (*tp1)->getBX() - 6 );
+		bx2 = ( subsystem2 != 2 ? 
+			(*tp2)->getBX() : (*tp2)->getBX() - 6 );
+		std::cout << convertStubsToName(**tp1,**tp2) << " : " 
+			  << bx1 << ' ' << bx2
+			  << std::endl;
+		
+		if( bx1 == bx2 ) {
+		  (*tp1)->print(std::cout);
+		  (*tp2)->print(std::cout);
+		}
+	      }
+	    }	    
 	}// loop over subsystem in outer station
       }// loop over outer station
     }// loop over subsystem in inner station
