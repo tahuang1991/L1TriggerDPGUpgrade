@@ -56,6 +56,8 @@ private:
   std::string convertStubsToName(const TriggerPrimitive&,
 				 const TriggerPrimitive&) const;
   deltas_map makeCombinations(const InternalTrack& ) const;
+  TriggerPrimitiveRef getBestTriggerPrimitive(const TriggerPrimitiveList&,
+					      unsigned) const;
   bool _dogen;
   edm::InputTag _geninput;
   std::vector<edm::InputTag> _trkInput;
@@ -188,34 +190,55 @@ makeCombinations(const InternalTrack& track) const {
 	  const unsigned idx2 = 4*subsystem2+station2-1;
 	    if( !stubs.count(idx2) ) continue;
 	    TriggerPrimitiveList tps2 = stubs[idx2];
-	    
-	    auto tp1 = tps1.cbegin();
-	    auto tp1end = tps1.cend();
-	    auto tp2beg = tps2.cbegin();
-	    auto tp2 = tps2.cbegin();
-	    auto tp2end = tps2.cend();
-	    
-	    for( ; tp1 != tp1end; ++ tp1 ) {
-	      for( tp2 = tp2beg; tp2 != tp2end; ++tp2 ) {
-		bx1 = ( subsystem1 != 2 ? 
-			(*tp1)->getBX() : (*tp1)->getBX() - 6 );
-		bx2 = ( subsystem2 != 2 ? 
-			(*tp2)->getBX() : (*tp2)->getBX() - 6 );
-		std::cout << convertStubsToName(**tp1,**tp2) << " : " 
-			  << bx1 << ' ' << bx2
-			  << std::endl;
-		
-		if( bx1 == bx2 ) {
-		  (*tp1)->print(std::cout);
-		  (*tp2)->print(std::cout);
-		}
-	      }
-	    }	    
+	    	    
+	    getBestTriggerPrimitive(tps1, subsystem1);
+	    getBestTriggerPrimitive(tps2, subsystem2);
+	       
 	}// loop over subsystem in outer station
       }// loop over outer station
     }// loop over subsystem in inner station
   }// loop over inner station
   return deltas_map();
+}
+
+TriggerPrimitiveRef L1ITMuInternalTrackPlotter::
+getBestTriggerPrimitive(const TriggerPrimitiveList& list, 
+			unsigned subsystem) const {
+  TriggerPrimitiveRef result;
+  unsigned bestquality = 0, qualtemp; // for CSCs / DTs
+  float strip = 0; // average strip for RPCS
+  auto tp = list.begin();
+  auto tpend = list.end();
+  for( ; tp != tpend; ++tp ) {
+    switch( subsystem ) {
+    case 0: // DTs
+      qualtemp = 0;
+      if( (*tp)->getDTData().qualityCode != -1 ) {
+	qualtemp += (~((*tp)->getDTData().qualityCode)&0x7) << 1;	
+      }
+      if( (*tp)->getDTData().theta_quality != -1 ) {
+	qualtemp += (~((*tp)->getDTData().theta_quality)&0x1);
+      }
+      if( qualtemp > bestquality ) {
+	bestquality = qualtemp;
+	result = *tp;
+      }
+      break;
+    case 2: // CSCs
+      qualtemp = (*tp)->getCSCData().quality;
+      if ( qualtemp > bestquality ) {
+	bestquality = qualtemp;
+	result = *tp;
+      }
+      break;
+    case 1:
+    case 3: // RPCb/f
+      break;
+    default:
+      break;
+    }
+  }
+  return result;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
