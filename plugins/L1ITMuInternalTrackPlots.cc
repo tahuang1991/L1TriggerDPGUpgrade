@@ -206,12 +206,13 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
 			unsigned subsystem) const {
   TriggerPrimitiveRef result;
   unsigned bestquality = 0, qualtemp; // for CSCs / DTs
-  float strip = 0; // average strip for RPCS
+  float stripavg, lsize; // average strip for RPCS
   auto tp = list.begin();
   auto tpend = list.end();
-  for( ; tp != tpend; ++tp ) {
-    switch( subsystem ) {
-    case 0: // DTs
+  
+  switch( subsystem ) {
+  case 0: // DTs
+    for( ; tp != tpend; ++tp ) {
       qualtemp = 0;
       if( (*tp)->getDTData().qualityCode != -1 ) {
 	qualtemp += (~((*tp)->getDTData().qualityCode)&0x7) << 1;	
@@ -223,20 +224,33 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
 	bestquality = qualtemp;
 	result = *tp;
       }
+    }
       break;
-    case 2: // CSCs
-      qualtemp = (*tp)->getCSCData().quality;
+  case 2: // CSCs
+    for( ; tp != tpend; ++tp ) {
+      qualtemp = (*tp)->getCSCData().quality;      
       if ( qualtemp > bestquality ) {
 	bestquality = qualtemp;
 	result = *tp;
       }
-      break;
-    case 1:
-    case 3: // RPCb/f
-      break;
-    default:
-      break;
     }
+    break;
+  case 1:
+  case 3: // RPCb/f
+    stripavg = 0;
+    lsize = list.size();
+    for( ; tp != tpend; ++tp ) {
+      stripavg += (*tp)->getRPCData().strip;
+    }
+    stripavg = stripavg/lsize;
+    tp = list.cbegin();
+    for( ; tp != tpend; ++tp ) {
+      if( (*tp)->getRPCData().strip == unsigned(stripavg) )
+	result = *tp;
+    }
+    break;
+  default:
+    break;
   }
   return result;
 }
