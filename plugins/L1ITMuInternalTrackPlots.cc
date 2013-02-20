@@ -55,17 +55,18 @@ public:
 private:
   std::string convertStubsToName(const TriggerPrimitive&,
 				 const TriggerPrimitive&) const;
-  deltas_map makeCombinations(const InternalTrack& ) const;
+  deltas_map makeCombinations(const InternalTrack&,double );
   TriggerPrimitiveRef getBestTriggerPrimitive(const TriggerPrimitiveList&,
 					      unsigned) const;
+  edm::Service<TFileService> _fs;
   bool _dogen;
   edm::InputTag _geninput;
   std::vector<edm::InputTag> _trkInput;
   // gen histograms
   hist1dfp gen_eta, gen_phi, gen_pt;  
   // track histograms
-  hist1dmap detahists;
-  hist1dmap dphihists;
+  hist2dmap detahists;
+  hist2dmap dphihists;
 };
 
 L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
@@ -73,8 +74,6 @@ L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
     _geninput = p.getParameter<edm::InputTag>("genSrc");
   }
   _trkInput = p.getParameter<std::vector<edm::InputTag> >("trackSrcs");
-
-  edm::Service<TFileService> _fs;
 
   if( _dogen ) {
     gen_eta = _fs->make<TH1F>("hgen_eta","Generated Eta",100,-2.5,2.5);
@@ -87,6 +86,7 @@ L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
 void L1ITMuInternalTrackPlotter::analyze(const edm::Event& ev, 
 					const edm::EventSetup& es) {
   //dump the generated muons in the event (if requested)
+  
   if( _dogen ) {
     edm::Handle<reco::GenParticleCollection> genps;
     ev.getByLabel(_geninput,genps);
@@ -97,22 +97,23 @@ void L1ITMuInternalTrackPlotter::analyze(const edm::Event& ev,
 	gen_eta->Fill(bgen->eta());
 	gen_phi->Fill(bgen->phi());
 	gen_pt->Fill(bgen->pt());
+
+	auto src = _trkInput.cbegin();
+	auto send = _trkInput.cend();
+	for( ; src != send; ++src ) {
+	  edm::Handle<InternalTrackCollection> trks;
+	  ev.getByLabel(*src,trks);
+	  
+	  auto trk = trks->cbegin();
+	  auto tend = trks->cend();
+	  for( ; trk != tend; ++trk ) {
+	    makeCombinations(*trk, bgen->pt());
+	  }
+	}
+
       }
     }    
-  }
-  
-  auto src = _trkInput.cbegin();
-  auto send = _trkInput.cend();
-  for( ; src != send; ++src ) {
-    edm::Handle<InternalTrackCollection> trks;
-    ev.getByLabel(*src,trks);
-    
-    auto trk = trks->cbegin();
-    auto tend = trks->cend();
-    for( ; trk != tend; ++trk ) {
-      makeCombinations(*trk);
-    }
-  }
+  }  
 }
 
 // take a pair of positions within a mode and make a name!
@@ -176,7 +177,7 @@ convertStubsToName(const TriggerPrimitive& tp1,
 
 // this function takes the list of used 
 std::map<std::string,double> L1ITMuInternalTrackPlotter::
-makeCombinations(const InternalTrack& track) const {
+makeCombinations(const InternalTrack& track, double pt) {
   unsigned station1, station2, subsystem1, subsystem2;
   int bx1, bx2;  
   TriggerPrimitiveStationMap stubs = track.getStubs();
@@ -185,14 +186,52 @@ makeCombinations(const InternalTrack& track) const {
       const unsigned idx1 = 4*subsystem1+station1-1;
       if( !stubs.count(idx1) ) continue;
       TriggerPrimitiveList tps1 = stubs[idx1];
-      for( station2 = station1+1; station2 <= 4; ++station2 ) {
+      for( station2 = 0; station2 <= 4; ++station2 ) {
 	for( subsystem2 = 0; subsystem2 <=3; ++subsystem2 ) {
+	  if( subsystem1 == subsystem2 && station1 == station2 ) continue;
 	  const unsigned idx2 = 4*subsystem2+station2-1;
 	    if( !stubs.count(idx2) ) continue;
 	    TriggerPrimitiveList tps2 = stubs[idx2];
 	    	    
-	    getBestTriggerPrimitive(tps1, subsystem1);
-	    getBestTriggerPrimitive(tps2, subsystem2);
+	    TriggerPrimitiveRef one = 
+	      getBestTriggerPrimitive(tps1, subsystem1);
+	    TriggerPrimitiveRef two = 
+	      getBestTriggerPrimitive(tps2, subsystem2);
+
+	    if( one.isNonnull() && two.isNonnull() ) {
+	      std::string name =  convertStubsToName(*one,*two);
+	      double phi1, phi2, eta1, eta2;
+	      phi1 = one->getCMSGlobalPhi();
+	      phi2 = two->getCMSGlobalPhi();
+	      eta1 = one->getCMSGlobalEta();
+	      eta2 = two->getCMSGlobalEta();
+
+	      if( !detahists.count(name) ) {
+		detahists[name] = 
+		  _fs->make<TH2F>(Form("h%s_deta",name.c_str()),
+				  Form("%s #Delta#eta vs. 1/p_{T}; 1/p_{T} GeV^{-1}; #Delta#eta",
+				       name.c_str()),
+				  1000,0,1,
+				  500,-0.5,0.5);
+	      } 
+
+	      if( !dphihists.count(name) ) {
+		dphihists[name] = 
+		  _fs->make<TH2F>(Form("h%s_dphi",name.c_str()),
+				  Form("%s #Delta#phi vs. 1/p_{T}; 1/p_{T} GeV^{-1}; #Delta#phi (rad)",
+				       name.c_str()),
+				  5000,0,1,
+				  500,-0.5,0.5);
+	      }
+
+	      detahists[name]->Fill(1.0/pt,eta2-eta1);
+	      dphihists[name]->Fill(1.0/pt,phi2-phi1);
+
+	      //std::cout << "dphi: "<< (phi2 - phi1) << ' ' 
+	      //<< "deta: " << (eta2 - eta1) << std::endl;
+	      //one->print(std::cout);
+	      //two->print(std::cout);
+	    }
 	       
 	}// loop over subsystem in outer station
       }// loop over outer station
@@ -201,14 +240,15 @@ makeCombinations(const InternalTrack& track) const {
   return deltas_map();
 }
 
+// this can return null if we're using a quality zero stub
 TriggerPrimitiveRef L1ITMuInternalTrackPlotter::
 getBestTriggerPrimitive(const TriggerPrimitiveList& list, 
 			unsigned subsystem) const {
   TriggerPrimitiveRef result;
   unsigned bestquality = 0, qualtemp; // for CSCs / DTs
-  float stripavg, lsize; // average strip for RPCS
-  auto tp = list.begin();
-  auto tpend = list.end();
+  float phiavg, bestdphi, lsize; // average strip for RPCS
+  auto tp = list.cbegin();
+  auto tpend = list.cend();
   
   switch( subsystem ) {
   case 0: // DTs
@@ -237,16 +277,19 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
     break;
   case 1:
   case 3: // RPCb/f
-    stripavg = 0;
+    phiavg = 0;
     lsize = list.size();
     for( ; tp != tpend; ++tp ) {
-      stripavg += (*tp)->getRPCData().strip;
+      phiavg += (*tp)->getCMSGlobalPhi();
     }
-    stripavg = stripavg/lsize;
+    phiavg = phiavg/lsize;    
     tp = list.cbegin();
-    for( ; tp != tpend; ++tp ) {
-      if( (*tp)->getRPCData().strip == unsigned(stripavg) )
+    bestdphi = 100;
+    for( ; tp != tpend; ++tp ) {      
+      if( std::abs((*tp)->getCMSGlobalPhi() - phiavg) < bestdphi ) {
 	result = *tp;
+	bestdphi = std::abs((*tp)->getCMSGlobalPhi() - phiavg);
+      }
     }
     break;
   default:

@@ -22,6 +22,8 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
 
 infile = ['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
 infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
+infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
+infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
 
 process.source = cms.Source(
     'PoolSource',
@@ -36,7 +38,14 @@ process.L1ITMUSequence = cms.Sequence( process.L1ITMuTriggerPrimitives +
 
 process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
 
-outCommands = process.FEVTDEBUGEventContent.outputCommands
+outCommands = cms.untracked.vstring('drop *')
+outCommands.append('keep *_genParticles_*_*')
+outCommands.append('keep *_simCsctfDigis_*_*')
+outCommands.append('keep *_simDttfDigis_*_*')
+outCommands.append('keep *_simRpcTriggerDigis_*_*')
+outCommands.append('keep *_simMuonRPCDigis_*_*')
+outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_L1ITMuTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
 outCommands.append('keep *_*Matcher_*_*')
