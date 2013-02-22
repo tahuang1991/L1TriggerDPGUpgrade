@@ -9,14 +9,16 @@
 // Author: L. Gray (FNAL)
 //
 #include <vector>
+#include <memory>
 #include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollector.h"
+#include "L1Trigger/L1IntegratedMuonTrigger/interface/DTBunchCrossingCleaner.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 class L1MuDTChambPhDigi;
 class L1MuDTChambThDigi;
 
 namespace L1ITMu {
-  
+
   class DTCollector: public SubsystemCollector {
   public:
     DTCollector(const edm::ParameterSet&);
@@ -33,9 +35,9 @@ namespace L1ITMu {
 				  const L1MuDTChambThDigi&,
 				  const int bti_group) const;    
     int findBTIGroupForThetaDigi(const L1MuDTChambThDigi&,
-				 const int position) const;
-				  
+				 const int position) const;    
     const int bx_min, bx_max;
+    std::unique_ptr<DTBunchCrossingCleaner> _bxc;
   };
 }
 

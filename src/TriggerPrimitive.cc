@@ -38,7 +38,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
   _dt.bendingAngle = digi_phi.phiB();
   _dt.qualityCode = digi_phi.code();
   _dt.Ts2TagCode = digi_phi.Ts2Tag();
-  _dt.BxCntCode = digi_phi.BxCnt();  
+  _dt.BxCntCode = digi_phi.BxCnt();
 }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
@@ -145,6 +145,41 @@ TriggerPrimitive& TriggerPrimitive::operator=(const TriggerPrimitive& tp) {
   this->_eta = tp._eta;
   this->_phi = tp._phi;
   return *this;
+}
+
+bool TriggerPrimitive::operator==(const TriggerPrimitive& tp) const {
+  return ( this->_dt.bx == tp._dt.bx && 
+	   this->_dt.wheel == tp._dt.wheel && 
+	   this->_dt.sector == tp._dt.sector && 
+	   this->_dt.station == tp._dt.station && 
+	   this->_dt.radialAngle == tp._dt.radialAngle && 
+	   this->_dt.bendingAngle == tp._dt.bendingAngle &&
+	   this->_dt.qualityCode == tp._dt.qualityCode && 
+	   this->_dt.Ts2TagCode == tp._dt.Ts2TagCode && 
+	   this->_dt.BxCntCode == tp._dt.BxCntCode && 
+	   this->_dt.theta_bti_group == tp._dt.theta_bti_group && 
+	   this->_dt.segment_number == tp._dt.segment_number && 
+	   this->_dt.theta_code == tp._dt.theta_code && 
+	   this->_dt.theta_quality == tp._dt.theta_quality && 
+	   this->_csc.trknmb == tp._csc.trknmb &&
+	   this->_csc.valid == tp._csc.valid &&
+	   this->_csc.quality == tp._csc.quality &&
+	   this->_csc.keywire == tp._csc.keywire &&
+	   this->_csc.strip == tp._csc.strip &&
+	   this->_csc.pattern == tp._csc.pattern &&
+	   this->_csc.bend == tp._csc.bend &&
+	   this->_csc.bx == tp._csc.bx &&
+	   this->_csc.mpclink == tp._csc.mpclink &&
+	   this->_csc.bx0 == tp._csc.bx0 &&
+	   this->_csc.syncErr == tp._csc.syncErr &&
+	   this->_csc.cscID == tp._csc.cscID &&
+	   this->_rpc.strip == tp._rpc.strip &&
+	   this->_rpc.layer == tp._rpc.layer &&
+	   this->_rpc.bx == tp._rpc.bx &&
+	   this->_id == tp._id &&
+	   this->_subsystem == tp._subsystem &&
+	   this->_globalsector == tp._globalsector &&
+	   this->_subsector == tp._subsector );	     
 }
 
 const int TriggerPrimitive::getBX() const {
