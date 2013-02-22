@@ -179,7 +179,7 @@ convertStubsToName(const TriggerPrimitive& tp1,
 std::map<std::string,double> L1ITMuInternalTrackPlotter::
 makeCombinations(const InternalTrack& track, double pt) {
   unsigned station1, station2, subsystem1, subsystem2;
-  int bx1, bx2;  
+  //int bx1, bx2;  
   TriggerPrimitiveStationMap stubs = track.getStubs();
   for( station1 = 1; station1 <= 4; ++station1 ) {
     for( subsystem1 = 0; subsystem1 <= 3; ++subsystem1 ) {

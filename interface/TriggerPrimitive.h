@@ -49,12 +49,16 @@ namespace L1ITMu {
     // within a subsystem
     // for RPCs you have to unroll the digi-link and raw det-id
     struct RPCData {
+      RPCData() : strip(0), layer(0), bx(0) {}
       unsigned strip;
       unsigned layer;
       uint16_t bx;
     };
 
     struct CSCData {
+      CSCData() : trknmb(0), valid(0), quality(0), keywire(0), strip(0),
+		  pattern(0), bend(0), bx(0), mpclink(0), bx0(0), syncErr(0),
+		  cscID(0) {}
       uint16_t trknmb;
       uint16_t valid;
       uint16_t quality;
@@ -70,6 +74,10 @@ namespace L1ITMu {
     };
 
     struct DTData {
+      DTData() : bx(0), wheel(0), sector(0), station(0), radialAngle(0),
+		 bendingAngle(0), qualityCode(0), Ts2TagCode(0), BxCntCode(0),
+		 theta_bti_group(0), segment_number(0), theta_code(0),
+		 theta_quality(0) {}
       // from ChambPhDigi (corresponds to a TRACO)
       // this gives us directly the phi
       int bx; // relative? bx number
@@ -119,6 +127,7 @@ namespace L1ITMu {
     TriggerPrimitive(const TriggerPrimitive&);
 
     TriggerPrimitive& operator=(const TriggerPrimitive& tp);
+    bool operator==(const TriggerPrimitive& tp) const;
 
     // return the subsystem we belong to
     const subsystem_type subsystem() const { return _subsystem; }    
@@ -140,8 +149,8 @@ namespace L1ITMu {
     // accessors to raw subsystem data
     const DTData  getDTData()  const { return _dt;  }
     const CSCData getCSCData() const { return _csc; }
-    const RPCData getRPCData() const { return _rpc; }    
-
+    const RPCData getRPCData() const { return _rpc; }      
+    
     // consistent accessors to common information    
     const int getBX() const;
     
@@ -174,7 +183,7 @@ namespace L1ITMu {
     unsigned _globalsector; // [1,6] in 60 degree sectors
     unsigned _subsector; // [1,2] in 30 degree partitions of a sector 
     double _eta,_phi; // global pseudorapidity, phi
-    double _theta; // bend angle with respect to ray from (0,0,0)
+    double _theta; // bend angle with respect to ray from (0,0,0)    
   };
 
 }

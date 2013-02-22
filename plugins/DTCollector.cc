@@ -14,11 +14,18 @@ DTCollector::DTCollector( const edm::ParameterSet& ps ):
   SubsystemCollector(ps),
   bx_min(ps.getParameter<int>("BX_min")),
   bx_max(ps.getParameter<int>("BX_max")) {
+  if( ps.getParameter<bool>("runBunchCrossingCleaner") ) {
+    edm::ParameterSet bxccfg = ps.getParameterSet("bxCleanerCfg");
+    _bxc.reset(new DTBunchCrossingCleaner(bxccfg));
+  } else {
+    _bxc.reset(NULL);
+  }
 }
 
 void DTCollector::extractPrimitives(const edm::Event& ev, 
 				    const edm::EventSetup& es, 
-				    std::vector<TriggerPrimitive>& out) const {
+				    TriggerPrimitiveCollection& out) const {
+  TriggerPrimitiveCollection cleaned, temp, chamb_list;
   edm::Handle<L1MuDTChambPhContainer> phiDigis;
   edm::Handle<L1MuDTChambThContainer> thetaDigis;
   ev.getByLabel(_src,phiDigis);
@@ -26,6 +33,7 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
   for( int wheel = -2; wheel <= 2 ; ++wheel ) {    
     for( int station = 1; station <= 4; ++station ) {
       for( int sector = 0; sector <= 11; ++sector ) {
+	chamb_list.clear();
 	for( int bx = bx_min; bx <= bx_max; ++bx) {	  
 	  std::unique_ptr<L1MuDTChambPhDigi> phi_segm_1(
 	    phiDigis->chPhiSegm1(wheel,station,sector,bx)
@@ -44,32 +52,43 @@ void DTCollector::extractPrimitives(const edm::Event& ev,
 	  }
 
 	  if( phi_segm_1 && bti_group_1 != -1 ) {	   	      
-	    out.push_back(processDigis(*phi_segm_1,*theta_segm,bti_group_1));
+	    chamb_list.push_back(processDigis(*phi_segm_1,
+					      *theta_segm,
+					      bti_group_1));
 	  } else if ( phi_segm_1 && bti_group_1 == -1 ) {
-	    out.push_back(processDigis(*phi_segm_1,1));
+	    chamb_list.push_back(processDigis(*phi_segm_1,1));
 	  } else if ( !phi_segm_1 && bti_group_1 != -1 ) {
-	    out.push_back(processDigis(*theta_segm,bti_group_1));
+	    chamb_list.push_back(processDigis(*theta_segm,bti_group_1));
 	  }      
 	  
 	  if( phi_segm_2 && bti_group_2 != -1) {	    
-	    out.push_back(processDigis(*phi_segm_2,*theta_segm,bti_group_2));
+	    chamb_list.push_back(processDigis(*phi_segm_2,
+					      *theta_segm,
+					      bti_group_2));
 	  } else if ( phi_segm_2 && bti_group_2 == -1 ) {
-	    out.push_back(processDigis(*phi_segm_2,2));	    
+	    chamb_list.push_back(processDigis(*phi_segm_2,2));	    
 	  } else if ( !phi_segm_2 && bti_group_2 != -1 ) {
-	    out.push_back(processDigis(*phi_segm_2,bti_group_2));	    
+	    chamb_list.push_back(processDigis(*phi_segm_2,bti_group_2));
 	  }
 	  
 	  phi_segm_1.release();
 	  phi_segm_2.release();
 	  theta_segm.release();
 	}
+	if( _bxc ) {
+	  temp = _bxc->clean(chamb_list);
+	  cleaned.insert(cleaned.end(),temp.begin(),temp.end());
+	} else {
+	  cleaned.insert(cleaned.end(),chamb_list.begin(),chamb_list.end());
+	}
       }
     }
   }
+  out.insert(out.end(),cleaned.begin(),cleaned.end());
 }
 
 TriggerPrimitive DTCollector::processDigis(const L1MuDTChambPhDigi& digi,
-					   const int segment_number) const {    
+					   const int segment_number) const {
   DTChamberId detid(digi.whNum(),digi.stNum(),digi.scNum()+1);
   return TriggerPrimitive(detid,digi,segment_number);
 }
