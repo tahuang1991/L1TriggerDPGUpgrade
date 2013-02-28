@@ -15,7 +15,10 @@
 #include <algorithm>
 
 namespace L1ITMu {
-  class L1ITMuTrackSeeder {
+  class TrackSeeder {
+  public:
+    TrackSeeder();
+    ~TrackSeeder();
   };
 }
 
