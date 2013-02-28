@@ -209,7 +209,7 @@ makeCombinations(const InternalTrack& track, double pt) {
 	      if( !detahists.count(name) ) {
 		detahists[name] = 
 		  _fs->make<TH2F>(Form("h%s_deta",name.c_str()),
-				  Form("%s #Delta#eta vs. 1/p_{T}; 1/p_{T} GeV^{-1}; #Delta#eta",
+				  Form("%s #Delta#eta vs. 1/p_{T}; 1/p_{T}^{True} GeV^{-1}; #Delta#eta",
 				       name.c_str()),
 				  1000,0,1,
 				  500,-0.5,0.5);
@@ -218,7 +218,7 @@ makeCombinations(const InternalTrack& track, double pt) {
 	      if( !dphihists.count(name) ) {
 		dphihists[name] = 
 		  _fs->make<TH2F>(Form("h%s_dphi",name.c_str()),
-				  Form("%s #Delta#phi vs. 1/p_{T}; 1/p_{T} GeV^{-1}; #Delta#phi (rad)",
+				  Form("%s #Delta#phi vs. 1/p_{T}; 1/p_{T}^{True} GeV^{-1}; #Delta#phi (rad)",
 				       name.c_str()),
 				  5000,0,1,
 				  500,-0.5,0.5);
