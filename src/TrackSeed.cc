@@ -9,7 +9,48 @@
 
 using namespace L1ITMu;
 
-unsigned TrackSeed::type_idx() const {  
+TrackSeed::TrackSeed( const TriggerPrimitiveRef& tp) {
+  switch( tp->subsystem() ) {
+  case TriggerPrimitive::kCSC:
+    _type = kCSCOnly;
+    break;
+  case TriggerPrimitive::kDT:
+    _type = kDTOnly;
+    break;
+  case TriggerPrimitive::kRPC: // one hit seeds from RPCs not allowed    
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  addStub(tp);  
+}
+
+TrackSeed::TrackSeed( const TriggerPrimitiveRef& tp1,
+		      const TriggerPrimitiveRef& tp2 ) {
+  if( ( tp1->subsystem() == TriggerPrimitive::kCSC &&
+	tp2->subsystem() == TriggerPrimitive::kRPC ) ||
+      ( tp1->subsystem() == TriggerPrimitive::kRPC &&
+	tp2->subsystem() == TriggerPrimitive::kCSC )    ) {
+    _type = kCSCRPC;
+  } else if( ( tp1->subsystem() == TriggerPrimitive::kDT &&
+	       tp2->subsystem() == TriggerPrimitive::kRPC ) ||
+	     ( tp1->subsystem() == TriggerPrimitive::kRPC &&
+	       tp2->subsystem() == TriggerPrimitive::kCSC )    ) {
+    _type = kDTRPC;
+  } else if( tp1->subsystem() == TriggerPrimitive::kRPC &&
+	     tp2->subsystem() == TriggerPrimitive::kRPC    ) {
+    _type = kRPCRPC;
+  } else {
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  addStub(tp1);
+  addStub(tp2);
+}
+
+TrackSeed::seed_type TrackSeed::type_idx() const {  
   return _type;
 }
 
@@ -47,9 +88,6 @@ void TrackSeed::addStub(const TriggerPrimitiveRef& stub) {
   }   
   _associatedStubs[shift].push_back(stub);
 }
-
-// this magic file contains a DT TrackClass -> mode LUT
-#include "L1Trigger/DTTrackFinder/src/L1MuDTTrackAssParam.h"
 
 void TrackSeed::print(std::ostream& out) const {
   std::cout << "Track Seed -- endcap: " << std::dec << _endcap
