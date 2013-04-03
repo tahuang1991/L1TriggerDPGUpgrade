@@ -1,10 +1,10 @@
-#ifndef __L1ITMU_CANDIDATETRACKFWD_H__
-#define __L1ITMU_CANDIDATETRACKFWD_H__
+#ifndef __L1TMUON_CANDIDATETRACKFWD_H__
+#define __L1TMUON_CANDIDATETRACKFWD_H__
 
 #include <vector>
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Common/interface/Ptr.h"
-namespace L1ITMu {
+namespace L1TMuon {
   class CandidateTrack;
 
   typedef std::vector<CandidateTrack> CandidateTrackCollection;

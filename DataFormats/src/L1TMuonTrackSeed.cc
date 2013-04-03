@@ -1,4 +1,4 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TrackSeed.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTrackSeed.h"
 
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackCand.h"
 #include "DataFormats/L1CSCTrackFinder/interface/L1Track.h"
@@ -7,7 +7,7 @@
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 unsigned TrackSeed::type_idx() const {  
   return _type;

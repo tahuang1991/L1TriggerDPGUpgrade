@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_TRIGGERPRIMITIVE_H__
-#define __L1ITMU_TRIGGERPRIMITIVE_H__
+#ifndef __L1TMUON_TRIGGERPRIMITIVE_H__
+#define __L1TMUON_TRIGGERPRIMITIVE_H__
 // 
-// Class: L1ITMu::TriggerPrimitive
+// Class: L1TMuon::TriggerPrimitive
 //
 // Info: This class implements a unifying layer between DT, CSC and RPC
 //       trigger primitives (TPs) such that TPs from different subsystems
@@ -37,7 +37,7 @@ class CSCDetId;
 class RPCDigiL1Link;
 class RPCDetId;
 
-namespace L1ITMu {
+namespace L1TMuon {
 
   class TriggerPrimitive {
   public:

@@ -1,4 +1,4 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
 
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackCand.h"
 #include "DataFormats/L1CSCTrackFinder/interface/L1Track.h"
@@ -7,7 +7,7 @@
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 InternalTrack::InternalTrack(const L1MuDTTrackCand& dttrack):
   L1MuRegionalCand(dttrack) {

@@ -1,0 +1,19 @@
+<export>
+  <lib name="1"/>
+  <use name="L1TriggerDPGUpgrade/DataFormats"/>
+  <use name="Geometry/Records"/>
+
+  <use name="L1Trigger/DTTrackFinder"/>
+  <use name="Geometry/DTGeometry"/>
+  <use name="L1Trigger/DTUtilities"/>
+
+  <use name="Geometry/CSCGeometry"/>
+  <use name="L1Trigger/CSCCommonTrigger"/>
+
+  <use name="Geometry/RPCGeometry"/>  
+</export>
+
+<use name="FWCore/PluginManager"/>
+
+
+

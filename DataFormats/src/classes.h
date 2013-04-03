@@ -1,13 +1,13 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/CandidateTrack.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/CandidateTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonCandidateTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonCandidateTrackFwd.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
 
 #include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
 #include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
@@ -15,7 +15,7 @@
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 
 namespace {
-  using namespace L1ITMu;
+  using namespace L1TMuon;
   struct dictionary {
     // trigger primitive information
     TriggerPrimitive::RPCData rpcD;

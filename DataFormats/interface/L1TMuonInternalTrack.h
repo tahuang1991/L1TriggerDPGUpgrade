@@ -1,22 +1,27 @@
-#ifndef __L1ITMU_TRACKSEED_H__
-#define __L1ITMU_TRACKSEED_H__
+#ifndef __L1TMUON_INTERNALTRACK_H__
+#define __L1TMUON_INTERNALTRACK_H__
 // 
-// Class: L1ITMu::TrackSeed 
+// Class: L1TMuon::InternalTrack
 //
-// Info: This track represents a DT(1 station), CSC (1 station), 
-//       CSC+RPC (2 station), DT+RPC (2 station), or RPC+RPC (2 station)
-//       based track seed, from which a full multi-station track can be
-//       built.
+// Info: This class represents (one of the) internal tracks processed
+//       by L1ITMu before sending off to the GT or whatever comes after.
+//       As such, they are similar to the L1MuRegionalCands in terms of
+//       their meaning.
+//       To exploit that we also allow these tracks to be built out of
+//       old style regional cands so we can perform studies using them
+//       in the new framework. So that debugging is easier in the case
+//       of the new track not matching it's parent, a reference to the
+//       parent track is stored.
 //
 // Author: L. Gray (FNAL)
 //
 
 #include <iostream>
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
 class L1MuDTTrackCand;
@@ -24,13 +29,17 @@ namespace csc {
   class L1Track;
 }
 
-namespace L1ITMu{
-  class TrackSeed {   
+namespace L1TMuon{
+  class InternalTrack : public L1MuRegionalCand {   
   public:
-    enum seed_type{ kDTOnly, kCSCOnly, kCSCRPC, kDTRPC };
     enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
-    TrackSeed():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
-    ~TrackSeed() {}
+    InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
+    ~InternalTrack() {}
+    
+    InternalTrack(const L1MuDTTrackCand&);
+    InternalTrack(const csc::L1Track&);
+    InternalTrack(const L1MuRegionalCand&,
+		  const RPCL1LinkRef&); // for RPCs
     
     void setType(unsigned type) { _type = type; }
     unsigned type_idx() const;

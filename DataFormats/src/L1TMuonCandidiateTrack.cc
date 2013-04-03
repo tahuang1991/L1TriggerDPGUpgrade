@@ -1,6 +1,6 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/CandidateTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonCandidateTrack.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 CandidateTrack::
 CandidateTrack(const edm::Ref<InternalTrackCollection>& parent):

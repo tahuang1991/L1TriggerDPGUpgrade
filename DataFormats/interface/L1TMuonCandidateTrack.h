@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_CANDIDATETRACK_H__
-#define __L1ITMU_CANDIDATETRACK_H__
+#ifndef __L1TMUON_CANDIDATETRACK_H__
+#define __L1TMUON_CANDIDATETRACK_H__
 // 
-// Class: L1ITMu::CandidateTrack
+// Class: L1TMuon::CandidateTrack
 //
 // Info: This class represents (one of the) final tracks output by
 //       L1ITMu after sorting. It is just a L1MuGMTCand with a few
@@ -10,23 +10,23 @@
 // Author: L. Gray (FNAL)
 //
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTCand.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
 #include "DataFormats/Common/interface/Ref.h"
 
-namespace L1ITMu{
+namespace L1TMuon{
   
   class CandidateTrack : public L1MuGMTCand {
   public:
     CandidateTrack() {}
     ~CandidateTrack() {}
 
-    CandidateTrack(const edm::Ref<InternalTrackCollection>&);
+    CandidateTrack(const InternalTrackRef&);
     
-    edm::Ref<InternalTrackCollection> parent() const { return _parent; }
+    InternalTrackRef parent() const { return _parent; }
              
     const TriggerPrimitiveStationMap& getStubs() const 
       { return _parent->getStubs(); }
@@ -38,7 +38,7 @@ namespace L1ITMu{
     unsigned long rpcfMode() const { return _parent->rpcfMode(); }
 
   private:    
-    edm::Ref<InternalTrackCollection> _parent;
+    InternalTrackRef _parent;
   };
 }
 

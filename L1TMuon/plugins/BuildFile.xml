@@ -1,5 +1,4 @@
-
-<library file="*.cc" name="L1TriggerL1IntegratedMuonTriggerPlugins"> 
+<library file="*.cc" name="L1TriggerDPGUpgradeL1TMuonPlugins"> 
   <use name="L1Trigger/L1IntegratedMuonTrigger"/>
   <use name="L1Trigger/DTTrackFinder"/>
   <use name="FWCore/ServiceRegistry"/>

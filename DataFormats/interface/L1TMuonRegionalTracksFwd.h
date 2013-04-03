@@ -1,5 +1,5 @@
-#ifndef __L1ITMU_REGIONALTRACKSFWD_H__
-#define __L1ITMU_REGIONALTRACKSFWD_H__
+#ifndef __L1TMUON_REGIONALTRACKSFWD_H__
+#define __L1TMUON_REGIONALTRACKSFWD_H__
 
 #include <vector>
 #include "DataFormats/Common/interface/Ref.h"
@@ -13,7 +13,7 @@ namespace csc {
   class L1Track;
 }
 
-namespace L1ITMu {
+namespace L1TMuon {
   typedef std::vector<L1MuRegionalCand> RegionalCandCollection;
   typedef edm::RefToBase<L1MuRegionalCand> RegionalCandBaseRef;
   typedef edm::Ptr<L1MuRegionalCand> RegionalCandPtr;
