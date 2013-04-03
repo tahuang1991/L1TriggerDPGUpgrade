@@ -19,16 +19,12 @@
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
-<<<<<<< HEAD
 class L1MuDTTrackCand;
 namespace csc {
   class L1Track;
 }
 
 namespace L1TMuon{
-=======
-namespace L1ITMu{
->>>>>>> d0685f9421b2c9407823fcdf74ed4031b14759c4
   class TrackSeed {   
   public:
     enum seed_type{ kDTOnly, kCSCOnly, kCSCRPC, kDTRPC, kRPCRPC, kNSeedTypes };
