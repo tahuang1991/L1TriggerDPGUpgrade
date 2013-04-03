@@ -2,20 +2,20 @@
 // Class: L1DTTFTrackConverter
 //
 // Info: This producer eats DTTF tracks (pre GMT) and matches them to 
-//       L1ITMu::TriggerPrimitives. In the process of doing so it
-//       converts the DTTF tracks into a collection L1ITMu::InternalTrack
+//       L1TMuon::TriggerPrimitives. In the process of doing so it
+//       converts the DTTF tracks into a collection L1TMuon::InternalTrack
 //       each of which contains the track stubs it was matched to.
 //
 // Author: L. Gray (FNAL)
 //
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTTrackContainer.h"
 
 #include "DataFormats/Common/interface/RefProd.h"
@@ -26,12 +26,12 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/helpers.h"
 
 // this magic file contains a DT TrackClass -> mode LUT
 #include "L1Trigger/DTTrackFinder/src/L1MuDTTrackAssParam.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef edm::ParameterSet PSet;
 

@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_TRACKSEEDER_H__
-#define __L1ITMU_TRACKSEEDER_H__
+#ifndef __L1TMUON_TRACKSEEDER_H__
+#define __L1TMUON_TRACKSEEDER_H__
 // 
-// Class: L1ITMu::TrackSeeder
+// Class: L1TMuon::TrackSeeder
 //
 // Info: This class takes a list of stubs in an eta-phi slice and attempts
 //       to find seeds for tracks. A track seed defines a reference point
@@ -14,7 +14,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace L1ITMu {
+namespace L1TMuon {
   class TrackSeeder {
   public:
     TrackSeeder();

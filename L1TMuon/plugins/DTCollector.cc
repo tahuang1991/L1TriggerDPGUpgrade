@@ -1,4 +1,4 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/DTCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/DTCollector.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhContainer.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThContainer.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
@@ -8,7 +8,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 DTCollector::DTCollector( const edm::ParameterSet& ps ):
   SubsystemCollector(ps),
@@ -117,5 +117,5 @@ findBTIGroupForThetaDigi(const L1MuDTChambThDigi& digi,
   return result;
 }
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollectorFactory.h"
 DEFINE_EDM_PLUGIN( SubsystemCollectorFactory, DTCollector, "DTCollector");

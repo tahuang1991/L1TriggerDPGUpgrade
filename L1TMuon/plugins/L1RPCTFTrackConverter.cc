@@ -9,13 +9,13 @@
 // Author: L. Gray (FNAL)
 //
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/RegionalTracksFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
@@ -28,7 +28,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef edm::ParameterSet PSet;
 

@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_GEOMETRYTRANSLATOR_H__
-#define __L1ITMU_GEOMETRYTRANSLATOR_H__
+#ifndef __L1TMUON_GEOMETRYTRANSLATOR_H__
+#define __L1TMUON_GEOMETRYTRANSLATOR_H__
 // 
-// Class: L1ITMu::GeometryTranslator
+// Class: L1TMuon::GeometryTranslator
 //
 // Info: This class implements a the translations from packed bits or
 //       digi information into local or global CMS coordinates for all
@@ -29,7 +29,7 @@ class CSCGeometry;
 class CSCLayer;
 class DTGeometry;
 
-namespace L1ITMu{
+namespace L1TMuon{
   class TriggerPrimitive;
 
   class GeometryTranslator {

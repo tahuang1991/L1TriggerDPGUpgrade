@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_SUBSYSTEMCOLLECTOR_H__
-#define __L1ITMU_SUBSYSTEMCOLLECTOR_H__
+#ifndef __L1TMUON_SUBSYSTEMCOLLECTOR_H__
+#define __L1TMUON_SUBSYSTEMCOLLECTOR_H__
 // 
-// Class: L1ITMu::SubsystemCollector
+// Class: L1TMuon::SubsystemCollector
 //
 // Info: This is the base class for a object that eats a specified subsystem
 //       and turns those digis into L1ITMu::TriggerPrimitives
@@ -9,7 +9,7 @@
 // Author: L. Gray (FNAL)
 //
 #include <vector>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 namespace edm {
@@ -18,7 +18,7 @@ namespace edm {
   class EventSetup;
 }
 
-namespace L1ITMu {
+namespace L1TMuon {
   
   class SubsystemCollector {
   public:

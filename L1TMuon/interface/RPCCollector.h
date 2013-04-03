@@ -1,18 +1,18 @@
-#ifndef __L1ITMU_RPCCOLLECTOR_H__
-#define __L1ITMU_RPCCOLLECTOR_H__
+#ifndef __L1TMUON_RPCCOLLECTOR_H__
+#define __L1TMUON_RPCCOLLECTOR_H__
 // 
-// Class: L1ITMu::RPCCollector
+// Class: L1TMuon::RPCCollector
 //
-// Info: Processes RPC digis into ITMu trigger primitives. 
+// Info: Processes RPC digis into L1TMuon trigger primitives. 
 //       Positional information is not assigned here.
 //
 // Author: L. Gray (FNAL)
 //
 #include <vector>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollector.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-namespace L1ITMu {
+namespace L1TMuon {
   
   class RPCCollector: public SubsystemCollector {
   public:

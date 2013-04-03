@@ -1,5 +1,5 @@
 // 
-// Class: L1ITMuInternalTrackPlotter
+// Class: L1TMuonInternalTrackPlotter
 //
 // Info: Processes a track into histograms of delta-phis and such
 //
@@ -15,11 +15,11 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -36,11 +36,11 @@
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef edm::ParameterSet PSet;
 
-class L1ITMuInternalTrackPlotter : public edm::EDAnalyzer {  
+class L1TMuonInternalTrackPlotter : public edm::EDAnalyzer {  
   typedef TH1F* hist1dfp;
   typedef TH2F* hist2dfp;
   typedef std::map<std::string,hist1dfp> hist1dmap;
@@ -48,8 +48,8 @@ class L1ITMuInternalTrackPlotter : public edm::EDAnalyzer {
   typedef std::map<std::string,double> deltas_map;
   
 public:
-  L1ITMuInternalTrackPlotter(const PSet&);
-  ~L1ITMuInternalTrackPlotter() {}
+  L1TMuonInternalTrackPlotter(const PSet&);
+  ~L1TMuonInternalTrackPlotter() {}
 
   void analyze(const edm::Event&, const edm::EventSetup&);  
 private:
@@ -69,7 +69,7 @@ private:
   hist2dmap dphihists;
 };
 
-L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
+L1TMuonInternalTrackPlotter::L1TMuonInternalTrackPlotter(const PSet& p) {
   if( (_dogen = p.getUntrackedParameter<bool>("doGen",false)) ) {
     _geninput = p.getParameter<edm::InputTag>("genSrc");
   }
@@ -83,7 +83,7 @@ L1ITMuInternalTrackPlotter::L1ITMuInternalTrackPlotter(const PSet& p) {
   
 }
 
-void L1ITMuInternalTrackPlotter::analyze(const edm::Event& ev, 
+void L1TMuonInternalTrackPlotter::analyze(const edm::Event& ev, 
 					const edm::EventSetup& es) {
   //dump the generated muons in the event (if requested)
   
@@ -117,7 +117,7 @@ void L1ITMuInternalTrackPlotter::analyze(const edm::Event& ev,
 }
 
 // take a pair of positions within a mode and make a name!
-std::string L1ITMuInternalTrackPlotter::
+std::string L1TMuonInternalTrackPlotter::
 convertStubsToName(const TriggerPrimitive& tp1,
 		   const TriggerPrimitive& tp2) const {
   std::string name1,name2;
@@ -176,7 +176,7 @@ convertStubsToName(const TriggerPrimitive& tp1,
 }
 
 // this function takes the list of used 
-std::map<std::string,double> L1ITMuInternalTrackPlotter::
+std::map<std::string,double> L1TMuonInternalTrackPlotter::
 makeCombinations(const InternalTrack& track, double pt) {
   unsigned station1, station2, subsystem1, subsystem2;
   //int bx1, bx2;  
@@ -241,7 +241,7 @@ makeCombinations(const InternalTrack& track, double pt) {
 }
 
 // this can return null if we're using a quality zero stub
-TriggerPrimitiveRef L1ITMuInternalTrackPlotter::
+TriggerPrimitiveRef L1TMuonInternalTrackPlotter::
 getBestTriggerPrimitive(const TriggerPrimitiveList& list, 
 			unsigned subsystem) const {
   TriggerPrimitiveRef result;
@@ -299,4 +299,4 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1ITMuInternalTrackPlotter);
+DEFINE_FWK_MODULE(L1TMuonInternalTrackPlotter);

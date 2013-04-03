@@ -1,6 +1,6 @@
 #include <algorithm>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/DTBunchCrossingCleaner.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/DTBunchCrossingCleaner.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -10,7 +10,7 @@
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 namespace {
   typedef edm::ParameterSet PSet;

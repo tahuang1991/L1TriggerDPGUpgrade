@@ -1,5 +1,5 @@
 // 
-// Class: L1ITMuTextDumper
+// Class: L1TMuonTextDumper
 //
 // Info: Just a simple text dumper for manual debugging
 //
@@ -15,27 +15,27 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/GeometryTranslator.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/GeometryTranslator.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollectorFactory.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef edm::ParameterSet PSet;
 
-class L1ITMuTextDumper : public edm::EDAnalyzer {
+class L1TMuonTextDumper : public edm::EDAnalyzer {
 public:
-  L1ITMuTextDumper(const PSet&);
-  ~L1ITMuTextDumper() {}
+  L1TMuonTextDumper(const PSet&);
+  ~L1TMuonTextDumper() {}
 
   void analyze(const edm::Event&, const edm::EventSetup&);  
 private:
@@ -44,7 +44,7 @@ private:
   std::vector<edm::InputTag> _tpinputs, _convTrkInputs;
 };
 
-L1ITMuTextDumper::L1ITMuTextDumper(const PSet& p) {
+L1TMuonTextDumper::L1TMuonTextDumper(const PSet& p) {
   if( (_dogen = p.getUntrackedParameter<bool>("doGen",false)) ) {
     _geninput = p.getUntrackedParameter<edm::InputTag>("genSrc");
   }
@@ -53,7 +53,7 @@ L1ITMuTextDumper::L1ITMuTextDumper(const PSet& p) {
     p.getParameter<std::vector<edm::InputTag> >("converterSrcs");
 }
 
-void L1ITMuTextDumper::analyze(const edm::Event& ev, 
+void L1TMuonTextDumper::analyze(const edm::Event& ev, 
 			       const edm::EventSetup& es) {
   //dump the generated muons in the event (if requested)
   if( _dogen ) {
@@ -101,4 +101,4 @@ void L1ITMuTextDumper::analyze(const edm::Event& ev,
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1ITMuTextDumper);
+DEFINE_FWK_MODULE(L1TMuonTextDumper);

@@ -1,4 +1,4 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/RPCCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/RPCCollector.h"
 #include "DataFormats/RPCDigi/interface/RPCDigi.h"
 #include "DataFormats/RPCDigi/interface/RPCDigiCollection.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
@@ -7,7 +7,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 RPCCollector::RPCCollector( const edm::ParameterSet& ps ):
   SubsystemCollector(ps) {
@@ -34,5 +34,5 @@ extractPrimitives(const edm::Event& ev,
   }  
 }
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollectorFactory.h"
 DEFINE_EDM_PLUGIN( SubsystemCollectorFactory, RPCCollector, "RPCCollector");

@@ -1,23 +1,23 @@
-#ifndef __L1ITMU_DTCOLLECTOR_H__
-#define __L1ITMU_DTCOLLECTOR_H__
+#ifndef __L1TMUON_DTCOLLECTOR_H__
+#define __L1TMUON_DTCOLLECTOR_H__
 // 
-// Class: L1ITMu::DTCollector
+// Class: L1TMuon::DTCollector
 //
-// Info: Processes the DT digis into ITMu trigger primitives. 
+// Info: Processes the DT digis into L1TMuon trigger primitives. 
 //       Positional information is not assigned here.
 //
 // Author: L. Gray (FNAL)
 //
 #include <vector>
 #include <memory>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollector.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/DTBunchCrossingCleaner.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/DTBunchCrossingCleaner.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 class L1MuDTChambPhDigi;
 class L1MuDTChambThDigi;
 
-namespace L1ITMu {
+namespace L1TMuon {
 
   class DTCollector: public SubsystemCollector {
   public:

@@ -1,5 +1,5 @@
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/GeometryTranslator.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/GeometryTranslator.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 
 // event setup stuff / geometries
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -15,7 +15,7 @@
 
 #include <cmath> // for pi
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 GeometryTranslator::GeometryTranslator():  
   _geom_cache_id(0ULL) {

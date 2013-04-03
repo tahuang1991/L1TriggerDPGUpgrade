@@ -1,18 +1,18 @@
-#ifndef __L1ITMU_SUBSYSTEMCOLLECTORFACTORY_H__
-#define __L1ITMU_SUBSYSTEMCOLLECTORFACTORY_H__
+#ifndef __L1TMUON_SUBSYSTEMCOLLECTORFACTORY_H__
+#define __L1TMUON_SUBSYSTEMCOLLECTORFACTORY_H__
 
 // 
-// Class: L1ITMu::SubsystemCollectorFactory
+// Class: L1TMuon::SubsystemCollectorFactory
 //
 // Info: Factory that produces a specified type of SubsystemCollector
 //
 // Author: L. Gray (FNAL)
 //
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollector.h"
 #include "FWCore/PluginManager/interface/PluginFactory.h"
 
-namespace L1ITMu {
+namespace L1TMuon {
   typedef 
     edmplugin::PluginFactory<SubsystemCollector*(const edm::ParameterSet&)>
     SubsystemCollectorFactory;

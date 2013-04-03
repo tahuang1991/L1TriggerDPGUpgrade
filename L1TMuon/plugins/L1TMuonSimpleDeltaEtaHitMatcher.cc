@@ -18,25 +18,25 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/GeometryTranslator.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/GeometryTranslator.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrack.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/InternalTrackFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef edm::ParameterSet PSet;
 
-class L1ITMuSimpleDeltaEtaHitMatcher : public edm::EDProducer {
+class L1TMuonSimpleDeltaEtaHitMatcher : public edm::EDProducer {
 public:
-  L1ITMuSimpleDeltaEtaHitMatcher(const PSet&);
-  ~L1ITMuSimpleDeltaEtaHitMatcher() {}
+  L1TMuonSimpleDeltaEtaHitMatcher(const PSet&);
+  ~L1TMuonSimpleDeltaEtaHitMatcher() {}
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
@@ -44,14 +44,14 @@ private:
   double _detaWindow;
 };
 
-L1ITMuSimpleDeltaEtaHitMatcher::L1ITMuSimpleDeltaEtaHitMatcher(const PSet& p) :
+L1TMuonSimpleDeltaEtaHitMatcher::L1TMuonSimpleDeltaEtaHitMatcher(const PSet& p) :
   _trigPrimSrc(p.getParameter<edm::InputTag>("TriggerPrimitiveSrc")),
   _genSrc(p.getParameter<edm::InputTag>("genSrc")),
   _detaWindow(p.getParameter<double>("DetaWindowSize")) {  
   produces<InternalTrackCollection>();
 }
 
-void L1ITMuSimpleDeltaEtaHitMatcher::produce(edm::Event& ev, 
+void L1TMuonSimpleDeltaEtaHitMatcher::produce(edm::Event& ev, 
 					     const edm::EventSetup& es) {
   std::auto_ptr<InternalTrackCollection> 
     out(new InternalTrackCollection);
@@ -93,4 +93,4 @@ void L1ITMuSimpleDeltaEtaHitMatcher::produce(edm::Event& ev,
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1ITMuSimpleDeltaEtaHitMatcher);
+DEFINE_FWK_MODULE(L1TMuonSimpleDeltaEtaHitMatcher);

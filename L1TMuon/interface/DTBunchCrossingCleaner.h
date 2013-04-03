@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_DTBUNCHCROSSINGCLEANER_H__
-#define __L1ITMU_DTBUNCHCROSSINGCLEANER_H__
+#ifndef __L1TMUON_DTBUNCHCROSSINGCLEANER_H__
+#define __L1TMUON_DTBUNCHCROSSINGCLEANER_H__
 // 
-// Class: L1ITMu::DTBunchCrossingCleaner
+// Class: L1TMuon::DTBunchCrossingCleaner
 //
 // Info: This class analyzes the output of a DT chamber and produces
 //       a reduced set of trigger primitives combining theta and phi
@@ -10,14 +10,14 @@
 // Author: L. Gray (FNAL)
 //
 #include <vector>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
 namespace edm{
   class ParameterSet;
 }
 
-namespace L1ITMu {
+namespace L1TMuon {
   
   class DTBunchCrossingCleaner {
   public:

@@ -1,5 +1,5 @@
-#ifndef __L1ITMU_HELPERS_H__
-#define __L1ITMU_HELPERS_H__
+#ifndef __L1TMUON_HELPERS_H__
+#define __L1TMUON_HELPERS_H__
 // 
 // Info: This is a collection of helpful free functions to making dealing
 //       trigger primitives a bit more straight forward.
@@ -7,11 +7,11 @@
 // Author: L. Gray (FNAL)
 //
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "DataFormats/Common/interface/Handle.h"
 
-namespace L1ITMu {
+namespace L1TMuon {
   namespace helpers {
     TriggerPrimitiveList
       getPrimitivesByCSCTriggerInfo(const int endcap,

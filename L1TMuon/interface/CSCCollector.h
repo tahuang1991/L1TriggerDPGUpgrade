@@ -1,7 +1,7 @@
-#ifndef __L1ITMU_CSCCOLLECTOR_H__
-#define __L1ITMU_CSCCOLLECTOR_H__
+#ifndef __L1TMUON_CSCCOLLECTOR_H__
+#define __L1TMUON_CSCCOLLECTOR_H__
 // 
-// Class: L1ITMu::CSCCollector
+// Class: L1TMuon::CSCCollector
 //
 // Info: Processes CSC digis into ITMu trigger primitives. 
 //       Positional information is not assigned here.
@@ -9,10 +9,10 @@
 // Author: L. Gray (FNAL)
 //
 #include <vector>
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollector.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollector.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-namespace L1ITMu {
+namespace L1TMuon {
   
   class CSCCollector: public SubsystemCollector {
   public:

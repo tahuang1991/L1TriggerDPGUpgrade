@@ -1,5 +1,5 @@
 // 
-// Class: L1ITMuTriggerPrimitiveProducer
+// Class: L1TMuonTriggerPrimitiveProducer
 //
 // Info: This producer runs the subsystem collectors for each subsystem
 //       specified in its configuration file.
@@ -18,14 +18,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/GeometryTranslator.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/GeometryTranslator.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitive.h"
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/TriggerPrimitiveFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/SubsystemCollectorFactory.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/SubsystemCollectorFactory.h"
 
-using namespace L1ITMu;
+using namespace L1TMuon;
 
 typedef std::vector<std::string> vstring;
 typedef std::map<std::string,std::unique_ptr<SubsystemCollector> > 
@@ -33,10 +33,10 @@ collector_list;
 typedef std::unique_ptr<SubsystemCollector> collector_ptr;
 typedef edm::ParameterSet PSet;
 
-class L1ITMuTriggerPrimitiveProducer : public edm::EDProducer {
+class L1TMuonTriggerPrimitiveProducer : public edm::EDProducer {
 public:
-  L1ITMuTriggerPrimitiveProducer(const PSet&);
-  ~L1ITMuTriggerPrimitiveProducer() {}
+  L1TMuonTriggerPrimitiveProducer(const PSet&);
+  ~L1TMuonTriggerPrimitiveProducer() {}
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
@@ -44,7 +44,7 @@ private:
   std::unique_ptr<GeometryTranslator> geom;
 };
 
-L1ITMuTriggerPrimitiveProducer::L1ITMuTriggerPrimitiveProducer(const PSet& p) {
+L1TMuonTriggerPrimitiveProducer::L1TMuonTriggerPrimitiveProducer(const PSet& p) {
   std::unique_ptr<SubsystemCollectorFactory> 
     factory(SubsystemCollectorFactory::get());
   
@@ -66,7 +66,7 @@ L1ITMuTriggerPrimitiveProducer::L1ITMuTriggerPrimitiveProducer(const PSet& p) {
   factory.release();
 }
 
-void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev, 
+void L1TMuonTriggerPrimitiveProducer::produce(edm::Event& ev, 
 					     const edm::EventSetup& es) {
   std::auto_ptr<TriggerPrimitiveCollection> 
     master_out(new TriggerPrimitiveCollection);
@@ -106,4 +106,4 @@ void L1ITMuTriggerPrimitiveProducer::produce(edm::Event& ev,
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1ITMuTriggerPrimitiveProducer);
+DEFINE_FWK_MODULE(L1TMuonTriggerPrimitiveProducer);

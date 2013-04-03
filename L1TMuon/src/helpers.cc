@@ -6,7 +6,7 @@
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 
-#include "L1Trigger/L1IntegratedMuonTrigger/interface/helpers.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/helpers.h"
 
 namespace {
   // DT TF relative segment address explanation
@@ -79,7 +79,7 @@ namespace {
 
 }
 
-namespace L1ITMu {
+namespace L1TMuon {
   namespace helpers {
     
     TriggerPrimitiveList 
