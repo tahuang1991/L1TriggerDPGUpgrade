@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('L1ITMU')
+process = cms.Process('L1TMUON')
 
 
 process.load('Configuration.StandardSequences.Services_cff')
@@ -11,11 +11,11 @@ process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuTriggerPrimitiveProducer_cfi')
+process.load('L1Trigger.L1IntegratedMuonTrigger.L1TMuonTriggerPrimitiveProducer_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1CSCTFTrackConverter_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1DTTFTrackConverter_cfi')
 process.load('L1Trigger.L1IntegratedMuonTrigger.L1RPCTFTrackConverter_cfi')
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1ITMuSimpleDeltaEtaHitMatcher_cfi')
+process.load('L1Trigger.L1IntegratedMuonTrigger.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
@@ -30,13 +30,13 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1ITMUSequence = cms.Sequence( process.L1ITMuTriggerPrimitives +
-                                       process.L1CSCTFTrackConverter   +
-                                       process.L1DTTFTrackConverter    +
-                                       process.L1RPCTFTrackConverters  +
-                                       process.L1ITMuSimpleDeltaEtaHitMatcher )
+process.L1TMuonSeq = cms.Sequence( process.L1ITMuTriggerPrimitives +
+                                   process.L1CSCTFTrackConverter   +
+                                   process.L1DTTFTrackConverter    +
+                                   process.L1RPCTFTrackConverters  +
+                                   process.L1TMuonSimpleDeltaEtaHitMatcher )
 
-process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
+process.L1TMuonPath = cms.Path(process.L1TMuonSeq)
 
 outCommands = cms.untracked.vstring('drop *')
 outCommands.append('keep *_genParticles_*_*')
@@ -46,7 +46,7 @@ outCommands.append('keep *_simRpcTriggerDigis_*_*')
 outCommands.append('keep *_simMuonRPCDigis_*_*')
 outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
-outCommands.append('keep *_L1ITMuTriggerPrimitives_*_*')
+outCommands.append('keep *_L1TMuonTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
 outCommands.append('keep *_*Matcher_*_*')
 
@@ -55,7 +55,7 @@ process.FEVTDEBUGoutput = cms.OutputModule(
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = outCommands,
-    fileName = cms.untracked.string('L1ITMU.root'),
+    fileName = cms.untracked.string('L1TMuon.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('')
@@ -64,5 +64,5 @@ process.FEVTDEBUGoutput = cms.OutputModule(
 
 process.outPath = cms.EndPath(process.FEVTDEBUGoutput)
 
-process.schedule = cms.Schedule(process.L1ITMUPath,
+process.schedule = cms.Schedule(process.L1TMuonPath,
                                 process.outPath)

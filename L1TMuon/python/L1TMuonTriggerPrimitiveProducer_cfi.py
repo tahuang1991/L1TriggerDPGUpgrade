@@ -6,8 +6,8 @@ DTBunchCrossingCleanerCfg = cms.PSet(
     bxWindowSize = cms.int32(1), #look one BX ahead and behind     
     )
 
-L1ITMuTriggerPrimitives = cms.EDProducer(
-    'L1ITMuTriggerPrimitiveProducer',
+L1TMuonTriggerPrimitives = cms.EDProducer(
+    'L1TMuonTriggerPrimitiveProducer',
     DT   = cms.PSet( collectorType = cms.string('DTCollector'),
                      src = cms.InputTag('simDtTriggerPrimitiveDigis'),
                      BX_min = cms.int32(dttfDigis.BX_min.value()),

@@ -7,24 +7,24 @@ process.TFileService = cms.Service(
     fileName=cms.string('L1ITMu_deltas.root')
     )
 
-process.L1ITMuPlotter = cms.EDAnalyzer(
-    'L1ITMuInternalTrackPlotter',
+process.L1TMuonPlotter = cms.EDAnalyzer(
+    'L1TMuonInternalTrackPlotter',
     doGen = cms.untracked.bool(True),
     genSrc = cms.InputTag("genParticles"),
     trackSrcs = cms.VInputTag(
-    cms.InputTag('L1ITMuSimpleDeltaEtaHitMatcher')
+    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
     )
 )
 
-infile = 'file:L1ITMU.root'
+infile = 'file:L1TMuon.root'
 
 process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1ITMUSequence = cms.Sequence(process.L1ITMuPlotter)
+process.L1TMuonSequence = cms.Sequence(process.L1TMuonPlotter)
 
-process.L1ITMUPath = cms.Path(process.L1ITMUSequence)
+process.L1TMuonPath = cms.Path(process.L1TMuonSequence)
 
-process.schedule = cms.Schedule(process.L1ITMUPath)
+process.schedule = cms.Schedule(process.L1TMuonPath)
