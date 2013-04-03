@@ -190,9 +190,9 @@ makeCombinations(const InternalTrack& track, double pt) {
 	for( subsystem2 = 0; subsystem2 <=3; ++subsystem2 ) {
 	  if( subsystem1 == subsystem2 && station1 == station2 ) continue;
 	  const unsigned idx2 = 4*subsystem2+station2-1;
-	    if( !stubs.count(idx2) ) continue;
+	    if( !stubs.count(idx2) ) continue;	    
 	    TriggerPrimitiveList tps2 = stubs[idx2];
-	    	    
+
 	    TriggerPrimitiveRef one = 
 	      getBestTriggerPrimitive(tps1, subsystem1);
 	    TriggerPrimitiveRef two = 
