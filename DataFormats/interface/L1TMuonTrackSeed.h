@@ -25,6 +25,8 @@ namespace csc {
 }
 
 namespace L1TMuon{
+  class TrackSeed {   
+
   public:
     enum seed_type{ kDTOnly, kCSCOnly, kCSCRPC, kDTRPC, kRPCRPC, kNSeedTypes };
     enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
