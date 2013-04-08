@@ -52,9 +52,9 @@ void CorridorPtRefinement::get_corridors_from_file() {
   fcorridor->Close();
 }
 
-Float_t CorridorPtRefinement::solveCorridor(double ptHyp, 
-					    double val, 
-					    const pTGraph& g) const {
+double CorridorPtRefinement::solveCorridor(double ptHyp, 
+					   double val, 
+					   const pTGraph& g) const {
   // solveCor() takes the PT hypothesis (generally from BDT) 
   // and checks for the maximum PT consistent with the input 
   // value (such as dPhiAB) and input corridor given by the 

@@ -19,11 +19,12 @@ class TGraph;
 
 namespace L1TMuon {
   
-  class CorridorPtRefinement: public PtRefinementUnit {
+  class CorridorPtRefinement: public PtRefinementUnit {    
+  public:
     typedef std::unique_ptr<TGraph> pTGraph;
     typedef std::map<unsigned, std::map<unsigned, pTGraph > > 
       corridor_2stn_map;
-  public:
+
     CorridorPtRefinement(const edm::ParameterSet&);
     ~CorridorPtRefinement() {}
 
@@ -32,7 +33,7 @@ namespace L1TMuon {
   private:
     void get_corridors_from_file();
     double solveCorridor(double rawPtHypothesis, 
-			 double observable
+			 double observable,
 			 const pTGraph &corridor_belt) const;
     edm::FileInPath _fcorridors;
     unsigned _N_PT_BINS;
