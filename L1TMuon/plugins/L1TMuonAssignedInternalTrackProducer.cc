@@ -1,10 +1,10 @@
 // 
-// Class: L1TMuonTrackProcessor
+// Class: L1TMuonAssignedInternalTrackProducer
 //
-// Info: A configurable track processor where the trackfinding algorithms and 
-//       pt assignment/refinement algorithms are controlled by config files.
+// Info: A configurable track processor where the pt assignment/refinement 
+//       algorithms are controlled by config files.
 //       The closest representation of this in the old hardware is 
-//       the CSC sector processor.
+//       the pt lookup table
 //
 // Author: L. Gray (FNAL)
 //
@@ -16,7 +16,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
@@ -36,34 +36,48 @@ typedef edm::ParameterSet PSet;
 typedef std::unique_ptr<PtAssignmentUnit> pPAU;
 typedef std::unique_ptr<PtRefinementUnit> pPRU;
 
-class L1TMuonTrackProcessor : public edm::EDProducer {    
+class L1TMuonInternalTrackProducer : public edm::EDProducer {    
 public:
-  L1TMuonTrackProcessor(const PSet&);
-  ~L1TMuonTrackProcessor() {}
+  L1TMuonInternalTrackProducer(const PSet&);
+  ~L1TMuonInternalTrackProducer() {}
 
-  void analyze(edm::Event&, const edm::EventSetup&);  
+  void produce(edm::Event&, const edm::EventSetup&);  
 private:
   pPAU _ptassign;
   pPRU _ptrefine;
 };
 
-L1TMuonTrackProcessor::L1TMuonTrackProcessor(const PSet& p) {  
+L1TMuonInternalTrackProducer::L1TMuonInternalTrackProducer(const PSet& p) {  
+  // configure and build pt assignment unit
   std::unique_ptr<PtAssignmentUnitFactory> 
     fPAU(PtAssignmentUnitFactory::get());
   if( p.existsAs<PSet>("PtAssignmentUnit") ) {
+    PSet PAU_config = p.getParameterSet("PtAssignmentUnit");
+    std::string PAU_type = p.getParameter<std::string>("type");
+    _ptassign.reset( fPAU->create( PAU_type,
+				   PAU_config) );
   } else {
     _ptassign.reset(NULL);
   }
+  // configure and build pt refinement unit
   std::unique_ptr<PtRefinementUnitFactory> 
     fPRU(PtRefinementUnitFactory::get());
+  if( p.existsAs<PSet>("PtRefinementUnit") ) {
+    PSet PRU_config = p.getParameterSet("PtRefinementUnit");
+    std::string PRU_type = p.getParameter<std::string>("type");
+    _ptrefine.reset( fPRU->create( PRU_type,
+				   PRU_config) );
+  } else {
+    _ptrefine.reset(NULL);
+  }
   
   fPAU.release();
   fPRU.release();
 }
 
-void L1TMuonTrackProcessor::produce(edm::Event& ev, 
-				    const edm::EventSetup& es) {  
+void L1TMuonInternalTrackProducer::produce(edm::Event& ev, 
+					   const edm::EventSetup& es) {  
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1TMuonTrackProcessor);
+DEFINE_FWK_MODULE(L1TMuonInternalTrackProducer);
