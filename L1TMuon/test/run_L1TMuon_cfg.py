@@ -11,11 +11,11 @@ process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1TMuonTriggerPrimitiveProducer_cfi')
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1CSCTFTrackConverter_cfi')
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1DTTFTrackConverter_cfi')
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1RPCTFTrackConverter_cfi')
-process.load('L1Trigger.L1IntegratedMuonTrigger.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonTriggerPrimitiveProducer_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1CSCTFTrackConverter_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1DTTFTrackConverter_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1RPCTFTrackConverter_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
@@ -32,10 +32,10 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1TMuonSeq = cms.Sequence( process.L1ITMuTriggerPrimitives +
-                                   process.L1CSCTFTrackConverter   +
-                                   process.L1DTTFTrackConverter    +
-                                   process.L1RPCTFTrackConverters  +
+process.L1TMuonSeq = cms.Sequence( process.L1TMuonTriggerPrimitives +
+                                   process.L1CSCTFTrackConverter    +
+                                   process.L1DTTFTrackConverter     +
+                                   process.L1RPCTFTrackConverters   +
                                    process.L1TMuonSimpleDeltaEtaHitMatcher )
 
 process.L1TMuonPath = cms.Path(process.L1TMuonSeq)
