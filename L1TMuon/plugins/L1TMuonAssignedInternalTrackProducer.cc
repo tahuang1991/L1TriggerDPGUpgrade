@@ -36,10 +36,10 @@ typedef edm::ParameterSet PSet;
 typedef std::unique_ptr<PtAssignmentUnit> pPAU;
 typedef std::unique_ptr<PtRefinementUnit> pPRU;
 
-class L1TMuonInternalTrackProducer : public edm::EDProducer {    
+class L1TMuonAssignedInternalTrackProducer : public edm::EDProducer {    
 public:
-  L1TMuonInternalTrackProducer(const PSet&);
-  ~L1TMuonInternalTrackProducer() {}
+  L1TMuonAssignedInternalTrackProducer(const PSet&);
+  ~L1TMuonAssignedInternalTrackProducer() {}
 
   void produce(edm::Event&, const edm::EventSetup&);  
 private:
@@ -47,7 +47,7 @@ private:
   pPRU _ptrefine;
 };
 
-L1TMuonInternalTrackProducer::L1TMuonInternalTrackProducer(const PSet& p) {  
+L1TMuonAssignedInternalTrackProducer::L1TMuonAssignedInternalTrackProducer(const PSet& p) {  
   // configure and build pt assignment unit
   std::unique_ptr<PtAssignmentUnitFactory> 
     fPAU(PtAssignmentUnitFactory::get());
@@ -75,9 +75,9 @@ L1TMuonInternalTrackProducer::L1TMuonInternalTrackProducer(const PSet& p) {
   fPRU.release();
 }
 
-void L1TMuonInternalTrackProducer::produce(edm::Event& ev, 
+void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev, 
 					   const edm::EventSetup& es) {  
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1TMuonInternalTrackProducer);
+DEFINE_FWK_MODULE(L1TMuonAssignedInternalTrackProducer);
