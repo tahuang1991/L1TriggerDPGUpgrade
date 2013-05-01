@@ -15,14 +15,14 @@
 
 namespace L1TMuon {
   
-  class DTTwoStationBDTPPtAssignment: public PtAssignmentUnit {
+  class DTTwoStationBDTPtAssignment : public PtAssignmentUnit {
   public:
-    DTTwoStationBDTPPtAssignment(const edm::ParameterSet&);
-    ~DTTwoStationBDTPPtAssignment() {}
+    DTTwoStationBDTPtAssignment(const edm::ParameterSet&);
+    ~DTTwoStationBDTPtAssignment() {}
 
-    virtual void updateEventSetup(const edm::EventSetup&) {}
+    virtual void updateEventSetup(const edm::EventSetup&); 
     
-    virtual void assignPt(InternalTrack&) const {}
+    virtual void assignPt(InternalTrack&) const;
   private:    
   };
 }
