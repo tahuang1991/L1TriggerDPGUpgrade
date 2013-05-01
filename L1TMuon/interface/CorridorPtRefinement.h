@@ -10,19 +10,22 @@
 //
 #include <memory>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/PtRefinementUnit.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "TH1F.h"
 
 class TGraph;
+class TH1F;
 
 namespace L1TMuon {
   
   class CorridorPtRefinement: public PtRefinementUnit {    
   public:
+    typedef std::unique_ptr<TH1F>   ptBinning;
     typedef std::unique_ptr<TGraph> pTGraph;
-    typedef std::map<unsigned, std::map<unsigned, pTGraph > > 
+    typedef std::unordered_map<unsigned, std::unordered_map<unsigned, pTGraph > > 
       corridor_2stn_map;
 
     CorridorPtRefinement(const edm::ParameterSet&);
@@ -35,11 +38,17 @@ namespace L1TMuon {
     double solveCorridor(double rawPtHypothesis, 
 			 double observable,
 			 const pTGraph &corridor_belt) const;
+    double calculateMaxAllowedPt(double ptHypothesis, 
+				 int first_station, 
+				 int second_station, 
+				 double dphi, 
+				 double phib_first, 
+				 double phib_second, 
+				 int clip_fraction);
     edm::FileInPath _fcorridors;
-    unsigned _N_PT_BINS;
-    double _COR_PT_MAX;
+    ptBinning ptBins;
     corridor_2stn_map _dphi_corridors;
-    std::map<unsigned, std::unique_ptr<TGraph> > _phib_corridors;    
+    std::unordered_map<unsigned, std::unique_ptr<TGraph> > _phib_corridors;    
   };
 }
 

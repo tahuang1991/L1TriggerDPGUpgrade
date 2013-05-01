@@ -10,11 +10,15 @@
 
 using namespace L1TMuon;
 
+namespace {
+  typedef std::vector<double> vdouble;
+}
+
 CorridorPtRefinement::CorridorPtRefinement( const edm::ParameterSet& ps ):
   PtRefinementUnit(ps) {
-  _fcorridors = ps.getParameter<edm::FileInPath>("corridorFile");
-  _N_PT_BINS = ps.getParameter<unsigned>("N_PT_BINS");
-  _COR_PT_MAX = ps.getParameter<double>("COR_PT_MAX");
+  _fcorridors = ps.getParameter<edm::FileInPath>("corridorFile"); 
+  vdouble tmp = ps.getParameter<vdouble>("PT_BINS");
+  ptBins.reset(new TH1F("hPT__","",tmp.size(),tmp.data()));  
   get_corridors_from_file();
 }
 
@@ -62,12 +66,11 @@ double CorridorPtRefinement::solveCorridor(double ptHyp,
   // PT is returned such that the corridor condition is satisfied.   
   
   // for the pt hypothesis get the bin
-  unsigned theBIN = std::min((unsigned)(ptHyp*_N_PT_BINS/_COR_PT_MAX) + 1,
-			     _N_PT_BINS + 1);
-  Float_t thePT = theBIN;
+  int theBIN = ptBins->FindBin(ptHyp); 
+  double thePT = theBIN;
   
-  float maxPt = 1e6;		  
-  float cut = g->Eval( theBIN ) ; 
+  double maxPt = 1e6;		  
+  double cut = g->Eval( theBIN ) ; 
   
   // is a cut defined at this PT? Sometimes the training sample 
   // has too few events for a given PT bin. 
@@ -76,9 +79,9 @@ double CorridorPtRefinement::solveCorridor(double ptHyp,
     if (fabs(val) > cut ) {
       maxPt  = 1; 
       // The corridor TGraphs count PT bins by "0"...sorry. 
-      for (float p=thePT-1; p>0; p=p-1) {
+      for (double p=thePT-1; p>0; p=p-1) {
 	// Get the maximum acceptable input value at this test-PT 
-	float eval = g->Eval((float)p);
+	double eval = g->Eval((float)p);
 	// make sure there is corridor value defined here, or else 
 	// we ignore this test-PT and move on
 	if (eval>=0) {
@@ -93,12 +96,57 @@ double CorridorPtRefinement::solveCorridor(double ptHyp,
     }
   }
   
-  float output = ptHyp;
+  double output = ptHyp;
   // If the final test-PT is lower than the original hypothesis, 
   // we need to use the final test-PT. 
   if (maxPt <  output) output = maxPt;
 
   return output;
+}
+
+double CorridorPtRefinement::
+calculateMaxAllowedPt(double ptHyp, 
+		      int stA, int stB, double dPhi, 
+		      double PhibA, double PhibB, int perCUT=85) {  
+  // getCorMaxPT() solves for the maximum acceptable PT value given 
+  // an ensemble of corridors defined for the dPhi and PhiBend input 
+  // values. For a given station pair, this will call the solve function 
+  // above for dPhiAB and PhiBendA, and will choose the minimum of the 
+  // best PT solutions. The minimum of the PTs will satisfy all corridors 
+  // simultaniously, I promise. 
+
+  if ((stA == stB) || (stB<stA) || (stA<1) || (stA>3) || (stB<2) || (stB>4))
+    return -999;
+
+  stA = stA - 1; // StationA, counting by 0 here.
+  stB = stB - 1; // StationB, counting by 0 here.  
+
+  // Get the best PT using dPhiAB corridors. 
+  double maxPt_dPhi = solveCorridor(ptHyp, dPhi, _dphi_corridors[stA][stB]); 
+  double maxPt_PhibA = -999;
+  double maxPt_PhibB = -999;
+  // Get the best PT using PhiBendA corridor (except from MB3 of course).
+  if ((stA+1) != 3)     
+    maxPt_PhibA = solveCorridor(ptHyp, PhibA, _phib_corridors[stA]);
+  // Get the best PT using PhiBendB corridor (except from MB3 or course). 
+  if ((stB+1) != 3)
+    maxPt_PhibB = solveCorridor(ptHyp, PhibB, _phib_corridors[stB]); 
+    
+  // Now take the minimum of the four possible PT values. 
+  double ptOut = ptHyp;
+
+  if (maxPt_dPhi < ptOut)
+    ptOut = maxPt_dPhi;
+
+  if ((stA+1)!=3)
+    if (maxPt_PhibA < ptOut)
+      ptOut = maxPt_PhibA;
+
+  if ((stB+1)!=3)
+    if (maxPt_PhibB < ptOut)
+      ptOut = maxPt_PhibB;
+
+  return ptOut;
 }
 
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/PtRefinementUnitFactory.h"
