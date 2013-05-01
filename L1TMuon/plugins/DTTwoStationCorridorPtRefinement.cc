@@ -1,4 +1,4 @@
-#include "L1TriggerDPGUpgrade/L1TMuon/interface/CorridorPtRefinement.h"
+#include "L1TriggerDPGUpgrade/L1TMuon/interface/DTTwoStationCorridorPtRefinement.h"
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrack.h"
 
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -14,21 +14,44 @@ namespace {
   typedef std::vector<double> vdouble;
 }
 
-CorridorPtRefinement::CorridorPtRefinement( const edm::ParameterSet& ps ):
+DTTwoStationCorridorPtRefinement::
+DTTwoStationCorridorPtRefinement(const edm::ParameterSet& ps):
   PtRefinementUnit(ps) {
   _fcorridors = ps.getParameter<edm::FileInPath>("corridorFile"); 
-  vdouble tmp = ps.getParameter<vdouble>("PT_BINS");
+  vdouble tmp = ps.getParameter<vdouble>("pt_bins");  
   ptBins.reset(new TH1F("hPT__","",tmp.size(),tmp.data()));  
   get_corridors_from_file();
+  clip_frac = ps.getParameter<int>("clip_fraction");
+}
+
+void DTTwoStationCorridorPtRefinement::
+updateEventSetup(const edm::EventSetup& es) {
+  PtRefinementUnit::updateEventSetup(es);
 }
 
 // this modifies the track in place!!!
-void CorridorPtRefinement::refinePt(const edm::EventSetup& es, 
-				    InternalTrack&) const {
-  
+void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) const {
+  // sanitize the input pt value
+  const double lowest_edge = pt_scale->getPtScale()->getLowEdge(0);
+  double input_pt = trk.ptValue();
+  input_pt = std::max(input_pt,lowest_edge);
+  /*
+    phi_MB1, phi_MB2, sector_MB1, and sector_MB2 come from L1MuDTTrackSegPhi.
+    int sectordiff = ((int)sector_MB2 - (int)sector_MB1)%12;
+    if ( sectordiff >= 6 ) sectordiff -= 12;
+    if ( sectordiff < -6 ) sectordiff += 12;
+    int offset = (2144 >> 0) * sectordiff;
+    int the_dPhi = ((int)phi_MB2 - (int)phi_MB1 + offset) << 0;    
+  */
+  // replace with call to get max
+  double sane_pt = 0.0;
+  sane_pt = std::max(sane_pt, lowest_edge); 
+  unsigned sane_pt_packed = pt_scale->getPtScale()->getPacked(sane_pt);
+  trk.setPtValue(sane_pt);
+  trk.setPtPacked(sane_pt_packed);
 }
 
-void CorridorPtRefinement::get_corridors_from_file() {
+void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {
   std::unique_ptr<TFile> fcorridor(TFile::Open(_fcorridors.fullPath().c_str(),
 					       "READ"));
   
@@ -51,14 +74,14 @@ void CorridorPtRefinement::get_corridors_from_file() {
       std::cout << _phib_corridors[sta-1]->GetName() 
 		<< " loaded " <<  std::endl; 
     }
-  }
-  
+  }  
   fcorridor->Close();
 }
 
-double CorridorPtRefinement::solveCorridor(double ptHyp, 
-					   double val, 
-					   const pTGraph& g) const {
+double DTTwoStationCorridorPtRefinement::
+solveCorridor(double ptHyp, 
+	      double val, 
+	      const pTGraph& g) const {
   // solveCor() takes the PT hypothesis (generally from BDT) 
   // and checks for the maximum PT consistent with the input 
   // value (such as dPhiAB) and input corridor given by the 
@@ -87,7 +110,7 @@ double CorridorPtRefinement::solveCorridor(double ptHyp,
 	if (eval>=0) {
 	  // Finally, is the input value below the corridor at the 
 	  //test-PT? If so, we can stop. 
-	  if (fabs(val) < eval) {
+	  if (std::abs(val) < eval) {
 	    maxPt = p;
 	    break;
 	  }
@@ -104,10 +127,10 @@ double CorridorPtRefinement::solveCorridor(double ptHyp,
   return output;
 }
 
-double CorridorPtRefinement::
+double DTTwoStationCorridorPtRefinement::
 calculateMaxAllowedPt(double ptHyp, 
 		      int stA, int stB, double dPhi, 
-		      double PhibA, double PhibB, int perCUT=85) {  
+		      double PhibA, double PhibB, int perCUT) {  
   // getCorMaxPT() solves for the maximum acceptable PT value given 
   // an ensemble of corridors defined for the dPhi and PhiBend input 
   // values. For a given station pair, this will call the solve function 
@@ -151,5 +174,5 @@ calculateMaxAllowedPt(double ptHyp,
 
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/PtRefinementUnitFactory.h"
 DEFINE_EDM_PLUGIN( PtRefinementUnitFactory, 
-		   CorridorPtRefinement, 
-		   "CorridorPtRefinement");
+		   DTTwoStationCorridorPtRefinement, 
+		   "DTTwoStationCorridorPtRefinement");

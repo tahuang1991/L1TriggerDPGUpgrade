@@ -57,7 +57,8 @@ L1TMuonAssignedInternalTrackProducer(const PSet& p) {
     fPtAU(PtAssignmentUnitFactory::get());
   if( p.existsAs<PSet>("PtAssignmentUnit") ) {
     PSet PtAU_config = p.getParameterSet("PtAssignmentUnit");
-    std::string PtAU_type = p.getParameter<std::string>("type");
+    std::string PtAU_type = 
+      PtAU_config.getParameter<std::string>("AssignmentType");
     _ptassign.reset( fPtAU->create( PtAU_type,
 				    PtAU_config) );
   } else {
@@ -68,7 +69,8 @@ L1TMuonAssignedInternalTrackProducer(const PSet& p) {
     fPtRU(PtRefinementUnitFactory::get());
   if( p.existsAs<PSet>("PtRefinementUnit") ) {
     PSet PtRU_config = p.getParameterSet("PtRefinementUnit");
-    std::string PtRU_type = p.getParameter<std::string>("type");
+    std::string PtRU_type =
+      PtRU_config.getParameter<std::string>("RefinementType");
     _ptrefine.reset( fPtRU->create( PtRU_type,
 				    PtRU_config) );
   } else {
@@ -91,22 +93,26 @@ void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev,
   std::auto_ptr<InternalTrackCollection> assignedOnly;
   std::auto_ptr<InternalTrackCollection> assignedAndRefined;
 
+  // setup pt assignment
+  if( _ptassign ) _ptassign->updateEventSetup(es);
   // run the pt assignment
   for( auto tk : trackRefToBases ) {
-    InternalTrack assigned(tk.castTo<InternalTrackRef>());
-    if( _ptassign ) _ptassign->assignPt(es,assigned);
-    assignedOnly->push_back(assigned);
+    InternalTrack toassign(tk.castTo<InternalTrackRef>());
+    if( _ptassign ) _ptassign->assignPt(toassign);
+    assignedOnly->push_back(toassign);
   }
   auto assignedTkHandle = ev.put(assignedOnly,"AssignmentOnly");
 
+  // setup pt refinement
+  if( _ptrefine) _ptrefine->updateEventSetup(es);
   // run the pt refinement
   auto atk = assignedTkHandle->begin();
   auto atkbeg = atk;
-  auto atkend = assignedTkHandle->end();
+  auto atkend = assignedTkHandle->end();  
   for( ; atk != atkend; ++atk ) {
     InternalTrackRef atkref = InternalTrackRef(assignedTkHandle,atk-atkbeg);
     InternalTrack refined(atkref);
-    if( _ptrefine ) _ptrefine->refinePt(es,refined);
+    if( _ptrefine ) _ptrefine->refinePt(refined);
     assignedAndRefined->push_back(refined);
   }
   ev.put(assignedAndRefined);

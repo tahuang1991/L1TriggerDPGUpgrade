@@ -1,10 +1,12 @@
-#ifndef __L1TMUON_CORRIDORPTREFINEMENT_H__
-#define __L1TMUON_CORRIDORPTREFINEMENT_H__
+#ifndef __L1TMUON_DTTWOSTATIONCORRIDORPTREFINEMENT_H__
+#define __L1TMUON_DTTWOSTATIONCORRIDORPTREFINEMENT_H__
 // 
-// Class: L1TMuon::CorridorPtRefinement
+// Class: L1TMuon::DTTwoStationCorridorPtRefinement
 //
 // Info: Implements the 'corridor' (confidence interval)
 //       based tail-clipping from B. Scurlock.
+//       This is the initial version that works only for 
+//       two station tracks in the DTs.
 //
 // Author: L. Gray (FNAL), B. Scurlock (UF)
 //
@@ -21,18 +23,19 @@ class TH1F;
 
 namespace L1TMuon {
   
-  class CorridorPtRefinement: public PtRefinementUnit {    
+  class DTTwoStationCorridorPtRefinement: public PtRefinementUnit {    
   public:
     typedef std::unique_ptr<TH1F>   ptBinning;
     typedef std::unique_ptr<TGraph> pTGraph;
     typedef std::unordered_map<unsigned, std::unordered_map<unsigned, pTGraph > > 
       corridor_2stn_map;
+    
+    DTTwoStationCorridorPtRefinement(const edm::ParameterSet&);
+    ~DTTwoStationCorridorPtRefinement() {}
 
-    CorridorPtRefinement(const edm::ParameterSet&);
-    ~CorridorPtRefinement() {}
+    virtual void updateEventSetup(const edm::EventSetup&);
 
-    virtual void refinePt(const edm::EventSetup&, 
-			  InternalTrack&) const;
+    virtual void refinePt(InternalTrack&) const;
   private:
     void get_corridors_from_file();
     double solveCorridor(double rawPtHypothesis, 
@@ -44,8 +47,9 @@ namespace L1TMuon {
 				 double dphi, 
 				 double phib_first, 
 				 double phib_second, 
-				 int clip_fraction);
+				 int clip_fraction = 85);
     edm::FileInPath _fcorridors;
+    int clip_frac;
     ptBinning ptBins;
     corridor_2stn_map _dphi_corridors;
     std::unordered_map<unsigned, std::unique_ptr<TGraph> > _phib_corridors;    
