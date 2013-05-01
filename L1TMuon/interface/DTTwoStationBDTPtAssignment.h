@@ -10,12 +10,18 @@
 // Author: L. Gray (FNAL), B. Scurlock (UF)
 //
 #include <vector>
+#include <memory>
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/PtAssignmentUnit.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
 
 namespace L1TMuon {
   
   class DTTwoStationBDTPtAssignment : public PtAssignmentUnit {
+    typedef std::unique_ptr<TMVA::Reader> pTMVAReader;
   public:
     DTTwoStationBDTPtAssignment(const edm::ParameterSet&);
     ~DTTwoStationBDTPtAssignment() {}
@@ -23,7 +29,9 @@ namespace L1TMuon {
     virtual void updateEventSetup(const edm::EventSetup&); 
     
     virtual void assignPt(InternalTrack&) const;
-  private:    
+  private:
+    pTMVAReader _bdt_readers[3][4]; //[sta 1][sta 2]
+    Float_t _DTeta[3][4],_dPhi[3][4],_phiB_one[3], _phiB_two[4];
   };
 }
 

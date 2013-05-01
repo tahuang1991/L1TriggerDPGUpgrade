@@ -1,8 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
+
+
 DTTwoStationCorridor = cms.PSet(
     RefinementType = cms.string('DTTwoStationCorridorPtRefinement'),
-    corridorFile = cms.FileInPath('data/corridor_corrections/'\
+    corridorFile = cms.FileInPath('L1TriggerDPGUpgrade/L1TMuon/'\
+                                  'data/corridor_corrections/'\
                                   'DT_dPhi_Cuts_85per.root'),
     clip_fraction = cms.int(85), # value of 0-100 in percent
     #half-GeV bins up to 200 GeV
