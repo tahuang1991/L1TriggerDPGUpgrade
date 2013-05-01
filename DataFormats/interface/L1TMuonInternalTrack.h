@@ -22,6 +22,7 @@
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonRegionalTracksFwd.h"
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonInternalTrackFwd.h"
 #include "DataFormats/Common/interface/RefToBase.h"
 
 class L1MuDTTrackCand;
@@ -34,15 +35,20 @@ namespace L1TMuon{
   public:
     enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf };
     InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
-    ~InternalTrack() {}
+    ~InternalTrack() {}    
     
     InternalTrack(const L1MuDTTrackCand&);
     InternalTrack(const csc::L1Track&);
     InternalTrack(const L1MuRegionalCand&,
-		  const RPCL1LinkRef&); // for RPCs
-    
+		  const RPCL1LinkRef&); // for RPCs    
+    InternalTrack(const InternalTrackRef&);
+
     void setType(unsigned type) { _type = type; }
     unsigned type_idx() const;
+
+    int endcap() const { return _endcap; }
+    int wheel()  const { return _wheel; }
+    int sector() const { return _sector; }
 
     // return the persistent pointer to the parent of this internal track
     // may be null if this has no parent

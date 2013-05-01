@@ -45,38 +45,71 @@ public:
 private:
   pPAU _ptassign;
   pPRU _ptrefine;
+  edm::InputTag _trackInput;
 };
 
-L1TMuonAssignedInternalTrackProducer::L1TMuonAssignedInternalTrackProducer(const PSet& p) {  
+L1TMuonAssignedInternalTrackProducer::
+L1TMuonAssignedInternalTrackProducer(const PSet& p) {
+  // name of the track source
+  _trackInput = p.getParameter<edm::InputTag>("src");
   // configure and build pt assignment unit
   std::unique_ptr<PtAssignmentUnitFactory> 
-    fPAU(PtAssignmentUnitFactory::get());
+    fPtAU(PtAssignmentUnitFactory::get());
   if( p.existsAs<PSet>("PtAssignmentUnit") ) {
-    PSet PAU_config = p.getParameterSet("PtAssignmentUnit");
-    std::string PAU_type = p.getParameter<std::string>("type");
-    _ptassign.reset( fPAU->create( PAU_type,
-				   PAU_config) );
+    PSet PtAU_config = p.getParameterSet("PtAssignmentUnit");
+    std::string PtAU_type = p.getParameter<std::string>("type");
+    _ptassign.reset( fPtAU->create( PtAU_type,
+				    PtAU_config) );
   } else {
     _ptassign.reset(NULL);
   }
   // configure and build pt refinement unit
   std::unique_ptr<PtRefinementUnitFactory> 
-    fPRU(PtRefinementUnitFactory::get());
+    fPtRU(PtRefinementUnitFactory::get());
   if( p.existsAs<PSet>("PtRefinementUnit") ) {
-    PSet PRU_config = p.getParameterSet("PtRefinementUnit");
-    std::string PRU_type = p.getParameter<std::string>("type");
-    _ptrefine.reset( fPRU->create( PRU_type,
-				   PRU_config) );
+    PSet PtRU_config = p.getParameterSet("PtRefinementUnit");
+    std::string PtRU_type = p.getParameter<std::string>("type");
+    _ptrefine.reset( fPtRU->create( PtRU_type,
+				    PtRU_config) );
   } else {
     _ptrefine.reset(NULL);
   }
   
-  fPAU.release();
-  fPRU.release();
+  produces<InternalTrackCollection>("AssignmentOnly");
+  produces<InternalTrackCollection>();
+
+  fPtAU.release();
+  fPtRU.release();
 }
 
 void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev, 
-					   const edm::EventSetup& es) {  
+						   const edm::EventSetup& es) {
+  edm::Handle<edm::View<L1MuRegionalCand> > tracks;
+  ev.getByLabel(_trackInput,tracks);
+  auto trackRefToBases = tracks->refVector();
+  
+  std::auto_ptr<InternalTrackCollection> assignedOnly;
+  std::auto_ptr<InternalTrackCollection> assignedAndRefined;
+
+  // run the pt assignment
+  for( auto tk : trackRefToBases ) {
+    InternalTrack assigned(tk.castTo<InternalTrackRef>());
+    if( _ptassign ) _ptassign->assignPt(es,assigned);
+    assignedOnly->push_back(assigned);
+  }
+  auto assignedTkHandle = ev.put(assignedOnly,"AssignmentOnly");
+
+  // run the pt refinement
+  auto atk = assignedTkHandle->begin();
+  auto atkbeg = atk;
+  auto atkend = assignedTkHandle->end();
+  for( ; atk != atkend; ++atk ) {
+    InternalTrackRef atkref = InternalTrackRef(assignedTkHandle,atk-atkbeg);
+    InternalTrack refined(atkref);
+    if( _ptrefine ) _ptrefine->refinePt(es,refined);
+    assignedAndRefined->push_back(refined);
+  }
+  ev.put(assignedAndRefined);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

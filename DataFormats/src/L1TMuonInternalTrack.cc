@@ -35,8 +35,21 @@ InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack,
   _sector = -99;
 }
 
-unsigned InternalTrack::type_idx() const {
-  if( _parent.isNonnull() ) return L1MuRegionalCand::type_idx();
+InternalTrack::InternalTrack(const InternalTrackRef& parent):
+  L1MuRegionalCand(*parent) {  
+  _associatedStubs = parent->getStubs();
+  _endcap = parent->endcap();
+  _wheel  = parent->wheel();
+  _sector = parent->sector();
+  _type   = parent->type_idx();
+  _mode   = parent->mode();
+  _parent = RegionalCandBaseRef(parent);
+}
+
+unsigned InternalTrack::type_idx() const {  
+  if( _parent.isNonnull() && _parent->type_idx() < 5) {
+    return L1MuRegionalCand::type_idx();
+  }
   return _type;
 }
 
