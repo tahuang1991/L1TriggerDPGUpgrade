@@ -54,11 +54,11 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) const {
 void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {
   std::unique_ptr<TFile> fcorridor(TFile::Open(_fcorridors.fullPath().c_str(),
 					       "READ"));
-  
+
   for (int sta=1; sta<=3; sta++) {
     for (int stb=sta+1; stb<=4; stb++) {
-      TString gName = Form("gCut_dPhi%i%i",sta,stb);
-      pTGraph temp((TGraph *)fcorridor->Get(gName)->Clone());
+      TString gName = Form("gCut_dPhi%i%i",sta,stb);      
+      pTGraph temp((TGraph *)fcorridor->Get(gName)->Clone(gName+"_New"));
       _dphi_corridors[sta-1][stb-1] = pTGraph();
       _dphi_corridors[sta-1][stb-1].swap(temp);
       std::cout << _dphi_corridors[sta-1][stb-1]->GetName() 
@@ -68,7 +68,7 @@ void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {
   for (int sta=1; sta<=4; sta++) {
     if (sta!=3) {
       TString gName = Form("gCut_Phib%i",sta);
-      pTGraph temp((TGraph *)fcorridor->Get(gName)->Clone());
+      pTGraph temp((TGraph *)fcorridor->Get(gName)->Clone(gName+"_New"));
       _phib_corridors[sta-1] = pTGraph();
       _phib_corridors[sta-1].swap(temp);	
       std::cout << _phib_corridors[sta-1]->GetName() 
