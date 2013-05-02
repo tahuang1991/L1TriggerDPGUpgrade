@@ -12,9 +12,9 @@ from L1TriggerDPGUpgrade.L1TMuon.pt_refinement.Null_cfi \
 from L1TriggerDPGUpgrade.L1TMuon.pt_refinement.DTTwoStationCorridor_cfi \
      import DTTwoStationCorridor 
 
-L1TMuonAssignedTrackProducer = cms.EDProduct(
+L1TMuonAssignedTrackProducer = cms.EDProducer(
     "L1TMuonAssignedTrackProducer",
-    src = cms.InputTag('L1DTTFTrackConverter'),
-    PtAssignmentUnit = DTTwoStationBDT,
-    PtRefinementUnit = DTTwoStationCorridor
+    src = cms.InputTag('fixme'),
+    PtAssignmentUnit = NullAssign,
+    PtRefinementUnit = NullAssign
     )

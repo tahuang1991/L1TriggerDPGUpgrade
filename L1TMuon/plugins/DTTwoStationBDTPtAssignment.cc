@@ -142,9 +142,9 @@ getBDTPt(Int_t stA, Int_t stB, Float_t dPhi,
   _phiB_two[stB]   = PhibB;
   
   const std::string& mvaname = _mvanames[stA][stB];
-  Float_t val = 0;
+  Float_t val;
   val = _bdt_readers[stA][stB]->EvaluateRegression(mvaname.c_str())[0];
-  if (fabs(val)>0) val = 1.0/fabs(val);  
+  if (std::abs(val)>0.0) val = 1.0/std::abs(val);  
   return val;
 }
 

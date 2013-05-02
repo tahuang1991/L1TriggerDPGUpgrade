@@ -10,15 +10,10 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-
-process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonTriggerPrimitiveProducer_cfi')
-process.load('L1TriggerDPGUpgrade.L1TMuon.L1CSCTFTrackConverter_cfi')
-process.load('L1TriggerDPGUpgrade.L1TMuon.L1DTTFTrackConverter_cfi')
-process.load('L1TriggerDPGUpgrade.L1TMuon.L1RPCTFTrackConverter_cfi')
-process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
+process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuon_cff')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
 infile = ['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
 #['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
@@ -32,13 +27,7 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
-process.L1TMuonSeq = cms.Sequence( process.L1TMuonTriggerPrimitives +
-                                   process.L1CSCTFTrackConverter    +
-                                   process.L1DTTFTrackConverter     +
-                                   process.L1RPCTFTrackConverters   +
-                                   process.L1TMuonSimpleDeltaEtaHitMatcher )
-
-process.L1TMuonPath = cms.Path(process.L1TMuonSeq)
+process.L1TMuonPath = cms.Path(process.L1TMuonSequence)
 
 outCommands = cms.untracked.vstring('drop *')
 outCommands.append('keep *_genParticles_*_*')
@@ -50,6 +39,7 @@ outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_L1TMuonTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
+outCommands.append('keep *_*AssignedTrackProducer_*_*')
 outCommands.append('keep *_*Matcher_*_*')
 
 process.FEVTDEBUGoutput = cms.OutputModule(
