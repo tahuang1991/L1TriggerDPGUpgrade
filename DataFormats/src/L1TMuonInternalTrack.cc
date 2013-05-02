@@ -103,7 +103,10 @@ void InternalTrack::print(std::ostream& out) const {
 	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
 	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
 	    << std::dec << std::endl;
-  std::cout << "\tQuality: " << quality() << std::endl;
+  std::cout << "\t BX             : " << bx() << std::endl;
+  std::cout << "\tQuality         : " << quality() << std::endl;
+  std::cout << "\tPt Packed/Value : " << pt_packed() 
+	    << " / " << ptValue() << std::endl;
   DTTrackRef dtparent;
   CSCTrackRef cscparent;
   RegionalCandRef rpcparent;
