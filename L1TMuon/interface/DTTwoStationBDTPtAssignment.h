@@ -38,6 +38,7 @@ namespace L1TMuon {
     pTMVAReader _bdt_readers[3][4]; //[sta 1][sta 2]
     std::string _mvanames[3][4];
     Float_t _DTeta[3][4],_dPhi[3][4],_phiB_one[3], _phiB_two[4];
+    int bx_window;
   };
 }
 

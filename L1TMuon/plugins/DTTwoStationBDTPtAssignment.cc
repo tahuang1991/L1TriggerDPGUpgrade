@@ -47,6 +47,7 @@ DTTwoStationBDTPtAssignment( const edm::ParameterSet& ps ):
 		      weightsfile.fullPath().c_str());
     }
   }
+  bx_window = ps.getParameter<unsigned>("bx_match_window");  
 }
 
 void DTTwoStationBDTPtAssignment::
@@ -74,13 +75,17 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
      if( dt_mode & (1 << (station1-1)) ) {
        const TriggerPrimitiveList& first_station = the_tps[station1-1];
        for( auto& tpr : first_station ) {
-	 if( trk_bx == tpr->getDTData().bx ) tp_one = tpr;
+	 if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
+	   tp_one = tpr;
+	 }
        }
        for( unsigned station2 = station1+1; station2 <= 4; ++station2 ) {
 	 if( dt_mode & (1 << (station2-1)) ) {
 	   const TriggerPrimitiveList& second_station = the_tps[station2-1];
 	   for( auto& tpr : second_station ) {
-	     if( trk_bx == tpr->getDTData().bx ) tp_two = tpr;
+	     if( std::abs(trk_bx == tpr->getDTData().bx) < bx_window ) {
+	       tp_two = tpr;
+	     }
 	   }
 	   break; // no need to continue after first active station is found
 	 }
