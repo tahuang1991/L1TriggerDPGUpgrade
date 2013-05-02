@@ -12,7 +12,8 @@ from L1TriggerDPGUpgrade.L1TMuon.L1TMuonSimpleDeltaEtaHitMatcher_cfi import *
 #pt assignment and refinement
 from L1TriggerDPGUpgrade.L1TMuon.L1TMuonAssignedTrackProducer_cfi import *
 # Bobby's DT pt BDT for two stations
-DTTwoStationAssignedTrackProducer = L1TMuonAssignedTrackProducer.clone()
+DTTwoStationAssignedTrackProducer = \
+                                  L1TMuonAssignedInternalTrackProducer.clone()
 DTTwoStationAssignedTrackProducer.src = cms.InputTag('L1DTTFTrackConverter')
 DTTwoStationAssignedTrackProducer.PtAssignmentUnit = DTTwoStationBDT
 DTTwoStationAssignedTrackProducer.PtRefinementUnit = DTTwoStationCorridor
