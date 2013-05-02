@@ -19,7 +19,7 @@ DTTwoStationCorridorPtRefinement(const edm::ParameterSet& ps):
   PtRefinementUnit(ps) {
   _fcorridors = ps.getParameter<edm::FileInPath>("corridorFile"); 
   vdouble tmp = ps.getParameter<vdouble>("pt_bins");  
-  ptBins.reset(new TH1F("hPT__","",tmp.size(),tmp.data()));  
+  ptBins.reset(new TH1F("hPT__","",tmp.size()-1,tmp.data()));  
   get_corridors_from_file();
   clip_frac = ps.getParameter<int>("clip_fraction");
 }
@@ -51,10 +51,9 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) const {
   trk.setPtPacked(sane_pt_packed);
 }
 
-void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {
+void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {  
   std::unique_ptr<TFile> fcorridor(TFile::Open(_fcorridors.fullPath().c_str(),
 					       "READ"));
-
   for (int sta=1; sta<=3; sta++) {
     for (int stb=sta+1; stb<=4; stb++) {
       TString gName = Form("gCut_dPhi%i%i",sta,stb);      
