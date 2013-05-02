@@ -20,7 +20,7 @@ namespace L1TMuon {
 
     virtual void updateEventSetup(const edm::EventSetup&) {}
     
-    virtual void assignPt(InternalTrack&) const {}
+    virtual void assignPt(InternalTrack&) {}
   private:    
   };
 }

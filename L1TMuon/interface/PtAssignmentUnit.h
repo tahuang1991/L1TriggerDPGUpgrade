@@ -31,7 +31,7 @@ namespace L1TMuon {
 
     virtual void updateEventSetup(const edm::EventSetup&);
 
-    virtual void assignPt(InternalTrack&) const = 0;
+    virtual void assignPt(InternalTrack&) = 0;
   protected:
     std::string _name;
     edm::ESHandle<L1MuTriggerScales> position_scales;

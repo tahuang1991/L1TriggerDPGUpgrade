@@ -28,9 +28,15 @@ namespace L1TMuon {
 
     virtual void updateEventSetup(const edm::EventSetup&); 
     
-    virtual void assignPt(InternalTrack&) const;
+    virtual void assignPt(InternalTrack&);
   private:
+    Float_t getBDTPt(Int_t station_one,Int_t station_two, 
+		    Float_t delta_phi, 
+		    Float_t phibend_one, Float_t phibend_two, 
+		    Float_t DTeta);
+
     pTMVAReader _bdt_readers[3][4]; //[sta 1][sta 2]
+    std::string _mvanames[3][4];
     Float_t _DTeta[3][4],_dPhi[3][4],_phiB_one[3], _phiB_two[4];
   };
 }
