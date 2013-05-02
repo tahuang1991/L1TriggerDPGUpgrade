@@ -90,8 +90,10 @@ void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev,
   ev.getByLabel(_trackInput,tracks);
   auto trackRefToBases = tracks->refVector();
   
-  std::auto_ptr<InternalTrackCollection> assignedOnly;
-  std::auto_ptr<InternalTrackCollection> assignedAndRefined;
+  std::auto_ptr<InternalTrackCollection> 
+    assignedOnly(new InternalTrackCollection);
+  std::auto_ptr<InternalTrackCollection> 
+    assignedAndRefined(new InternalTrackCollection);
 
   // setup pt assignment
   if( _ptassign ) _ptassign->updateEventSetup(es);
