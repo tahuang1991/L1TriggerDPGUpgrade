@@ -47,7 +47,7 @@ InternalTrack::InternalTrack(const InternalTrackRef& parent):
 }
 
 unsigned InternalTrack::type_idx() const {  
-  if( _parent.isNonnull() && _parent->type_idx() < 5) {
+  if( _parent.isNonnull() && _type < 4) {
     return L1MuRegionalCand::type_idx();
   }
   return _type;

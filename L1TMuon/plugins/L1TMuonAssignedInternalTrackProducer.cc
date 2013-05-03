@@ -109,8 +109,8 @@ void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev,
   // setup pt refinement
   if( _ptrefine) _ptrefine->updateEventSetup(es);
   // run the pt refinement
-  auto atk = assignedTkHandle->begin();
-  auto atkbeg = atk;
+  auto atkbeg = assignedTkHandle->begin();
+  auto atk = atkbeg;
   auto atkend = assignedTkHandle->end();  
   for( ; atk != atkend; ++atk ) {
     InternalTrackRef atkref = InternalTrackRef(assignedTkHandle,atk-atkbeg);
