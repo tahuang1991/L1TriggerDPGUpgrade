@@ -12,7 +12,7 @@ mva_weights = ['Regression_0x3_0x3001_BDTG_test.weights.xml.gz', # 1-2
 
 DTTwoStationBDT= cms.PSet(
     AssignmentType = cms.string('DTTwoStationBDTPtAssignment'),
-    bx_match_window = cms.uint32(1),
+    bx_match_window = cms.uint32(2),
     # tracks from station one
     weights_MB1_MB2 = cms.FileInPath(prefix+mva_weights[0]),
     mvaname_MB1_MB2 = cms.string('BDTG_0x3_0x3001'),
