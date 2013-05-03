@@ -109,8 +109,9 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
   
   if( tp_one.isNull() || tp_two.isNull() ) {
     throw cms::Exception("StubsNotPresent")
-      << "The reported stubs for mode " 
+      << "The reported stubs for dt mode " 
       << std::hex << dt_mode << std::dec 
+      << " and csc mode " << std::hex << csc_mode << std::dec 
       << " were not present on bx = " << trk_bx << std::endl;
   }
   
