@@ -62,37 +62,49 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
   // get necessary information from the track
   const int trk_bx = trk.bx();
   const unsigned long dt_mode = trk.dtMode();
-  if( !dt_mode || dt_mode == 0x1 || dt_mode == 0x2 || 
-      dt_mode == 0x4 || dt_mode == 0x8) {
+  const unsigned long csc_mode = trk.cscMode();
+  if( !dt_mode || 
+      (!csc_mode && (dt_mode == 0x1 || dt_mode == 0x2 || 
+		     dt_mode == 0x4 || dt_mode == 0x8) )) {
     throw cms::Exception("TrackTypeException") 
       << "The track given to DTTwoStationBDTPtAssignment"
       << " contains fewer than two DT stubs!" << std::endl;
   }
 
   TriggerPrimitiveStationMap the_tps = trk.getStubs();
+  const unsigned max_station2 = ( csc_mode ? 5 : 4 );
 
-   for( unsigned station1 = 1; station1 <= 3; ++station1 ) {
-     if( dt_mode & (1 << (station1-1)) ) {
-       const TriggerPrimitiveList& first_station = the_tps[station1-1];
-       for( auto& tpr : first_station ) {
-	 if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
-	   tp_one = tpr;
-	 }
-       }
-       for( unsigned station2 = station1+1; station2 <= 4; ++station2 ) {
-	 if( dt_mode & (1 << (station2-1)) ) {
-	   const TriggerPrimitiveList& second_station = the_tps[station2-1];
-	   for( auto& tpr : second_station ) {
-	     if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
-	       tp_two = tpr;
-	     }
-	   }
-	   break; // no need to continue after first active station is found
-	 }
-       }
-       break; // no need to continue after first active station is found
-     }
-   }
+  for( unsigned station1 = 1; station1 <= 3; ++station1 ) {
+    if( dt_mode & (1 << (station1-1)) ) {
+      const TriggerPrimitiveList& first_station = the_tps[station1-1];
+      for( auto& tpr : first_station ) {
+	if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
+	  tp_one = tpr;
+	}
+      }
+      for( unsigned station2 = station1+1; 
+	   station2 <= max_station2; ++station2 ) {
+	if( dt_mode & (1 << (station2-1)) && station2 != 5 ) {
+	  const TriggerPrimitiveList& second_station = the_tps[station2-1];
+	  for( auto& tpr : second_station ) {
+	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
+	      tp_two = tpr;
+	    }
+	  }
+	} else if( station2 == 5 ) {
+	  const unsigned idx = 4*InternalTrack::kCSC; // CSC station one
+	  const TriggerPrimitiveList& second_station = the_tps[idx];
+	  for( auto& tpr : second_station ) {
+	    if( std::abs(trk_bx - tpr->getCSCData().bx - 6) < bx_window ) {
+	      tp_two = tpr;
+	    }
+	  }
+	}
+	break; // no need to continue after first active station is found
+      }
+    }
+    break; // no need to continue after first active station is found
+  }
 
    if( tp_one.isNull() || tp_two.isNull() ) {
      throw cms::Exception("StubsNotPresent")
