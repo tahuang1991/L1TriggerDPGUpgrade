@@ -100,7 +100,6 @@ void L1TMuonAssignedInternalTrackProducer::produce(edm::Event& ev,
   // run the pt assignment
   for( auto tk : trackRefToBases ) {
     InternalTrack toassign(tk.castTo<InternalTrackRef>());
-    toassign.setType(4); // mark it as a pure internal track now
     if( _ptassign ) _ptassign->assignPt(toassign);
     assignedOnly->push_back(toassign);
   }

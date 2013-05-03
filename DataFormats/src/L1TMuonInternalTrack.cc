@@ -12,6 +12,7 @@ using namespace L1TMuon;
 InternalTrack::InternalTrack(const L1MuDTTrackCand& dttrack):
   L1MuRegionalCand(dttrack) {
   _mode = 0;
+  _type = dttrack.type_idx();
   _wheel = dttrack.whNum();
   _endcap = (_wheel < 0) ? -1 : 1;
   _sector = dttrack.scNum()/2 + 1; // 0-11 -> 1 - 6  
@@ -20,6 +21,7 @@ InternalTrack::InternalTrack(const L1MuDTTrackCand& dttrack):
 InternalTrack::InternalTrack(const csc::L1Track& csctrack):
   L1MuRegionalCand(csctrack) {
   _mode = 0;
+  _type = csctrack.type_idx();
   _endcap = (csctrack.endcap() == 2) ? -1 : 1;
   _wheel = (_endcap < 0) ? -4 : 4;
   _sector = csctrack.sector();
@@ -30,6 +32,7 @@ InternalTrack::InternalTrack(const L1MuRegionalCand& rpctrack,
   L1MuRegionalCand(rpctrack) {
   _parentlink = rpclink;
   _mode = 0;
+  _type = rpctrack.type_idx();
   _endcap = -99;
   _wheel  = -99;
   _sector = -99;
@@ -41,7 +44,7 @@ InternalTrack::InternalTrack(const InternalTrackRef& parent):
   _endcap = parent->endcap();
   _wheel  = parent->wheel();
   _sector = parent->sector();
-  _type   = parent->type_idx();
+  _type   = 4;
   _mode   = parent->mode();
   _parent = RegionalCandBaseRef(parent);
 }
@@ -203,7 +206,7 @@ void InternalTrack::print(std::ostream& out) const {
     std::cout << "\t Parent phi: " << rpcparent->phi_packed() << std::endl;
     std::cout << "\t Parent eta: " << rpcparent->eta_packed() << std::endl;
     break;
-  case 4: // L1ITMu ?
+  case 4: // L1ITMu
     break;
   default:
     throw cms::Exception("Unknown Track Type") 
