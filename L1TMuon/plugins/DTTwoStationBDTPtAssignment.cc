@@ -134,6 +134,7 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
   // finally set the pt value in the internal track
   // it will be put into the L1 pt binning in further processing
   trk.setPtValue(ptValue);  
+  trk.setPtPacked(pt_scale->getPtScale()->getPacked(ptValue));
 }
 
 Float_t  DTTwoStationBDTPtAssignment::
