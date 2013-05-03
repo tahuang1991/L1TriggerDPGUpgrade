@@ -4,7 +4,11 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/MuonDetId/interface/DTChamberId.h"
+
 #include <TFile.h>
+#include <TMath.h>
+#include <TVector2.h>
 #include <TGraph.h>
 #include <TString.h>
 
@@ -22,6 +26,7 @@ DTTwoStationCorridorPtRefinement(const edm::ParameterSet& ps):
   ptBins.reset(new TH1F("hPT__","",tmp.size()-1,tmp.data()));  
   get_corridors_from_file();
   clip_frac = ps.getParameter<int>("clip_fraction");
+  bx_window = ps.getParameter<unsigned>("bx_match_window");  
 }
 
 void DTTwoStationCorridorPtRefinement::
@@ -30,7 +35,7 @@ updateEventSetup(const edm::EventSetup& es) {
 }
 
 // this modifies the track in place!!!
-void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) const {
+void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) {
   // sanitize the input pt value
   const double lowest_edge = pt_scale->getPtScale()->getLowEdge(0);
   double input_pt = trk.ptValue();
@@ -44,7 +49,79 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) const {
     int the_dPhi = ((int)phi_MB2 - (int)phi_MB1 + offset) << 0;    
   */
   // replace with call to get max
-  double sane_pt = 0.0;
+    TriggerPrimitiveRef tp_one, tp_two;
+  // get necessary information from the track
+  const int trk_bx = trk.bx();
+  const unsigned long dt_mode = trk.dtMode();
+  const unsigned long csc_mode = trk.cscMode();
+  if( !dt_mode || 
+      (!csc_mode && (dt_mode == 0x1 || dt_mode == 0x2 || 
+		     dt_mode == 0x4 || dt_mode == 0x8) )) {
+    throw cms::Exception("TrackTypeException") 
+      << "The track given to DTTwoStationBDTPtAssignment"
+      << " contains fewer than two DT stubs!" << std::endl;
+  }
+
+  TriggerPrimitiveStationMap the_tps = trk.getStubs();
+  const unsigned max_station2 = ( csc_mode ? 5 : 4 );
+
+  for( unsigned station1 = 1; station1 <= 3; ++station1 ) {
+    if( dt_mode & (1 << (station1-1)) ) {
+      const TriggerPrimitiveList& first_station = the_tps[station1-1];
+      for( auto& tpr : first_station ) {
+	if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
+	  tp_one = tpr;
+	}
+      }
+      for( unsigned station2 = station1+1; 
+	   station2 <= max_station2; ++station2 ) {
+	if( (dt_mode & (1 << (station2-1))) && station2 != 5 ) {
+	  const TriggerPrimitiveList& second_station = the_tps[station2-1];
+	  for( auto& tpr : second_station ) {
+	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
+	      tp_two = tpr;
+	    }
+	  }
+	  break; // no need to continue after first active station is found
+	} else if( station2 == 5 ) {
+	  const unsigned idx = 4*InternalTrack::kCSC; // CSC station one
+	  const TriggerPrimitiveList& second_station = the_tps[idx];
+	  for( auto& tpr : second_station ) {
+	    if( std::abs(trk_bx - (tpr->getCSCData().bx - 6) ) < bx_window ) {
+	      tp_two = tpr;
+	    }
+	  }
+	  break; // no need to continue after first active station is found
+	}	
+      }
+      break; // no need to continue after first active station is found
+    }
+  }
+  
+  if( tp_one.isNull() || tp_two.isNull() ) {
+    throw cms::Exception("StubsNotPresent")
+      << "The reported stubs for dt mode " 
+      << std::hex << dt_mode << std::dec 
+      << " and csc mode " << std::hex << csc_mode << std::dec 
+      << " were not present on bx = " << trk_bx << std::endl;
+  }
+  
+  // now that we have the two trigger primitives we can calculating the pT
+  double phi1 = tp_one->getCMSGlobalPhi();
+  double phi2 = tp_two->getCMSGlobalPhi();
+
+  Float_t delta_phi = TMath::RadToDeg()*TVector2::Phi_mpi_pi(phi2 - phi1);
+  Int_t   dphi_int = delta_phi*(4096.0/62.0);
+  Int_t phibend_one = tp_one->getDTData().bendingAngle;
+  Int_t phibend_two = tp_two->getDTData().bendingAngle;  
+  
+  int dt_station1 = tp_one->detId<DTChamberId>().station();
+  int dt_station2 = ( csc_mode ? 3 : tp_two->detId<DTChamberId>().station() );
+
+  double sane_pt = calculateMaxAllowedPt(input_pt, 
+					 dt_station1, dt_station2, 
+					 dphi_int, phibend_one, phibend_two, 
+					 clip_frac);
   sane_pt = std::max(sane_pt, lowest_edge); 
   unsigned sane_pt_packed = pt_scale->getPtScale()->getPacked(sane_pt);
   trk.setPtValue(sane_pt);
@@ -80,7 +157,7 @@ void DTTwoStationCorridorPtRefinement::get_corridors_from_file() {
 double DTTwoStationCorridorPtRefinement::
 solveCorridor(double ptHyp, 
 	      double val, 
-	      const pTGraph& g) const {
+	      const pTGraph& g) {
   // solveCor() takes the PT hypothesis (generally from BDT) 
   // and checks for the maximum PT consistent with the input 
   // value (such as dPhiAB) and input corridor given by the 
@@ -98,7 +175,7 @@ solveCorridor(double ptHyp,
   // has too few events for a given PT bin. 
   if (cut>-1) {
     // check if the value is greater than the corridor cut
-    if (fabs(val) > cut ) {
+    if (std::abs(val) > cut ) {
       maxPt  = 1; 
       // The corridor TGraphs count PT bins by "0"...sorry. 
       for (double p=thePT-1; p>0; p=p-1) {

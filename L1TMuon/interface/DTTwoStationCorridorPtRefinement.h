@@ -35,12 +35,12 @@ namespace L1TMuon {
 
     virtual void updateEventSetup(const edm::EventSetup&);
 
-    virtual void refinePt(InternalTrack&) const;
+    virtual void refinePt(InternalTrack&);
   private:
     void get_corridors_from_file();
     double solveCorridor(double rawPtHypothesis, 
 			 double observable,
-			 const pTGraph &corridor_belt) const;
+			 const pTGraph &corridor_belt);
     double calculateMaxAllowedPt(double ptHypothesis, 
 				 int first_station, 
 				 int second_station, 
@@ -52,7 +52,8 @@ namespace L1TMuon {
     int clip_frac;
     ptBinning ptBins;
     corridor_2stn_map _dphi_corridors;
-    std::unordered_map<unsigned, std::unique_ptr<TGraph> > _phib_corridors;    
+    std::unordered_map<unsigned, std::unique_ptr<TGraph> > _phib_corridors; 
+    int bx_window;
   };
 }
 

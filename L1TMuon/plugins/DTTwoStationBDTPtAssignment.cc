@@ -128,9 +128,8 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
   int dt_station1 = tp_one->detId<DTChamberId>().station();
   int dt_station2 = ( csc_mode ? 3 : tp_two->detId<DTChamberId>().station() );
 
-  Float_t ptValue = getBDTPt(dt_station1,
-			     dt_station2,
-			     dphi_int,phibend_one,phibend_two,eta_int);
+  Float_t ptValue = getBDTPt(dt_station1,dt_station2,dphi_int,
+			     phibend_one,phibend_two,eta_int);
   // finally set the pt value in the internal track
   // it will be put into the L1 pt binning in further processing
   trk.setPtValue(ptValue);  

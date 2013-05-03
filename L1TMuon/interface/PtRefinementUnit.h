@@ -31,7 +31,7 @@ namespace L1TMuon {
 
     virtual void updateEventSetup(const edm::EventSetup&);
 
-    virtual void refinePt(InternalTrack&) const = 0;
+    virtual void refinePt(InternalTrack&) = 0;
   protected:
     std::string _name;    
     edm::ESHandle<L1MuTriggerScales> position_scales;
