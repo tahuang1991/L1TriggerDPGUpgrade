@@ -84,13 +84,14 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
       }
       for( unsigned station2 = station1+1; 
 	   station2 <= max_station2; ++station2 ) {
-	if( dt_mode & (1 << (station2-1)) && station2 != 5 ) {
+	if( (dt_mode & (1 << (station2-1))) && station2 != 5 ) {
 	  const TriggerPrimitiveList& second_station = the_tps[station2-1];
 	  for( auto& tpr : second_station ) {
 	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
 	      tp_two = tpr;
 	    }
 	  }
+	  break; // no need to continue after first active station is found
 	} else if( station2 == 5 ) {
 	  const unsigned idx = 4*InternalTrack::kCSC; // CSC station one
 	  const TriggerPrimitiveList& second_station = the_tps[idx];
@@ -99,20 +100,20 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
 	      tp_two = tpr;
 	    }
 	  }
-	}
-	break; // no need to continue after first active station is found
+	  break; // no need to continue after first active station is found
+	}	
       }
+      break; // no need to continue after first active station is found
     }
-    break; // no need to continue after first active station is found
   }
-
-   if( tp_one.isNull() || tp_two.isNull() ) {
-     throw cms::Exception("StubsNotPresent")
-       << "The reported stubs for mode " 
-       << std::hex << dt_mode << std::dec 
-       << " were not present on bx = " << trk_bx << std::endl;
-   }
-   
+  
+  if( tp_one.isNull() || tp_two.isNull() ) {
+    throw cms::Exception("StubsNotPresent")
+      << "The reported stubs for mode " 
+      << std::hex << dt_mode << std::dec 
+      << " were not present on bx = " << trk_bx << std::endl;
+  }
+  
   // now that we have the two trigger primitives we can calculating the pT
   double phi1 = tp_one->getCMSGlobalPhi();
   double phi2 = tp_two->getCMSGlobalPhi();
