@@ -83,7 +83,7 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
 	 if( dt_mode & (1 << (station2-1)) ) {
 	   const TriggerPrimitiveList& second_station = the_tps[station2-1];
 	   for( auto& tpr : second_station ) {
-	     if( std::abs(trk_bx == tpr->getDTData().bx) < bx_window ) {
+	     if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
 	       tp_two = tpr;
 	     }
 	   }
