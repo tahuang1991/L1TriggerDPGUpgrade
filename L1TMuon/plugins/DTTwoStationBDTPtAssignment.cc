@@ -96,7 +96,7 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
 	  const unsigned idx = 4*InternalTrack::kCSC; // CSC station one
 	  const TriggerPrimitiveList& second_station = the_tps[idx];
 	  for( auto& tpr : second_station ) {
-	    if( std::abs(trk_bx - tpr->getCSCData().bx - 6) < bx_window ) {
+	    if( std::abs(trk_bx - (tpr->getCSCData().bx - 6) ) < bx_window ) {
 	      tp_two = tpr;
 	    }
 	  }
