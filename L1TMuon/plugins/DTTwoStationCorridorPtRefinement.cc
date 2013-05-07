@@ -69,7 +69,8 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) {
     if( dt_mode & (1 << (station1-1)) ) {
       const TriggerPrimitiveList& first_station = the_tps[station1-1];
       for( auto& tpr : first_station ) {
-	if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
+	if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window &&
+	    tpr->getDTData().qualityCode != -1 ) {
 	  tp_one = tpr;
 	}
       }
@@ -78,7 +79,8 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) {
 	if( (dt_mode & (1 << (station2-1))) && station2 != 5 ) {
 	  const TriggerPrimitiveList& second_station = the_tps[station2-1];
 	  for( auto& tpr : second_station ) {
-	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
+	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window &&
+		tpr->getDTData().qualityCode != -1 ) {
 	      tp_two = tpr;
 	    }
 	  }
@@ -87,7 +89,8 @@ void DTTwoStationCorridorPtRefinement::refinePt(InternalTrack& trk) {
 	  const unsigned idx = 4*InternalTrack::kCSC; // CSC station one
 	  const TriggerPrimitiveList& second_station = the_tps[idx];
 	  for( auto& tpr : second_station ) {
-	    if( std::abs(trk_bx - (tpr->getCSCData().bx - 6) ) < bx_window ) {
+	    if( std::abs(trk_bx - (tpr->getCSCData().bx - 6) ) < bx_window &&
+		tpr->getDTData().qualityCode != -1 ) {
 	      tp_two = tpr;
 	    }
 	  }
@@ -163,7 +166,7 @@ solveCorridor(double ptHyp,
   // value (such as dPhiAB) and input corridor given by the 
   // TGraph pointer. For the given input value, the maximum acceptable 
   // PT is returned such that the corridor condition is satisfied.   
-  
+
   // for the pt hypothesis get the bin
   int theBIN = ptBins->FindBin(ptHyp); 
   double thePT = theBIN;

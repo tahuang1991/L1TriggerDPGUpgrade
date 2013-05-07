@@ -15,17 +15,32 @@ process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuon_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
-infile = ['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
+infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
 #['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
 #['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
-infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
-infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
-infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
+#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
+#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
+#infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
 
 process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring(infile)
     )
+
+process.L1TMuonText = cms.EDAnalyzer(
+    'L1TMuonTextDumper',
+    doGen = cms.untracked.bool(True),
+    genSrc = cms.untracked.InputTag("genParticles"),
+    primitiveSrcs = cms.VInputTag(
+    cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
+    cms.InputTag('L1TMuonTriggerPrimitives','DT')
+    ),
+    converterSrcs = cms.VInputTag(    
+    cms.InputTag('L1DTTFTrackConverter')
+    )
+)
+
+process.L1TMuonConverterSequence += process.L1TMuonText
 
 process.L1TMuonPath = cms.Path(process.L1TMuonSequence)
 

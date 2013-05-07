@@ -71,6 +71,12 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
       << " contains fewer than two DT stubs!" << std::endl;
   }
 
+  if(csc_mode) { 
+    double pt_packed = trk.pt_packed();
+    trk.setPtValue(pt_scale->getPtScale()->getCenter(pt_packed));  
+    return;
+  }
+
   TriggerPrimitiveStationMap the_tps = trk.getStubs();
   const unsigned max_station2 = ( csc_mode ? 5 : 4 );
 
@@ -78,7 +84,8 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
     if( dt_mode & (1 << (station1-1)) ) {
       const TriggerPrimitiveList& first_station = the_tps[station1-1];
       for( auto& tpr : first_station ) {
-	if( std::abs(trk_bx - tpr->getDTData().bx)  < bx_window ) {
+	if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window &&
+	    tpr->getDTData().qualityCode != -1) {
 	  tp_one = tpr;
 	}
       }
@@ -87,7 +94,8 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
 	if( (dt_mode & (1 << (station2-1))) && station2 != 5 ) {
 	  const TriggerPrimitiveList& second_station = the_tps[station2-1];
 	  for( auto& tpr : second_station ) {
-	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window ) {
+	    if( std::abs(trk_bx - tpr->getDTData().bx) < bx_window &&
+		tpr->getDTData().qualityCode != -1 ) {
 	      tp_two = tpr;
 	    }
 	  }
@@ -116,11 +124,19 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
   }
   
   // now that we have the two trigger primitives we can calculating the pT
-  double phi1 = tp_one->getCMSGlobalPhi();
-  double phi2 = tp_two->getCMSGlobalPhi();
+  //double phi1 = tp_one->getCMSGlobalPhi();
+  //double phi2 = tp_two->getCMSGlobalPhi();
+  Int_t sector1 = tp_one->detId<DTChamberId>().sector();  
+  Int_t sector2 = tp_two->detId<DTChamberId>().sector();
+  Int_t sector_diff = (sector2 - sector1)%12;
+  if( sector_diff >= 6 ) sector_diff -= 12;
+  if( sector_diff < -6 ) sector_diff += 12;
+  int offset = (2144 >> 0) * sector_diff;
 
-  Float_t delta_phi = TMath::RadToDeg()*TVector2::Phi_mpi_pi(phi2 - phi1);
-  Int_t   dphi_int = delta_phi*(4096.0/62.0);
+  //Float_t delta_phi = TMath::RadToDeg()*TVector2::Phi_mpi_pi(phi2 - phi1);
+  Int_t   dphi_int = (tp_two->getDTData().radialAngle - 
+		      tp_one->getDTData().radialAngle + 
+		      offset) ;//delta_phi*(4096.0/62.0);
   Int_t phibend_one = tp_one->getDTData().bendingAngle;
   Int_t phibend_two = tp_two->getDTData().bendingAngle;
   Int_t eta_int = trk.eta_packed();
@@ -130,6 +146,29 @@ void DTTwoStationBDTPtAssignment::assignPt(InternalTrack& trk) {
 
   Float_t ptValue = getBDTPt(dt_station1,dt_station2,dphi_int,
 			     phibend_one,phibend_two,eta_int);
+  // rescale the pt by what 2-station track type it is
+  switch( trk.quality() ) {
+  case 7: // 4-station
+  case 6: // 1-2 + 3 or 4
+  case 5: // 1-3-4
+  case 3: // 1-2, 1-3, 1-4
+    ptValue *= 1.15;
+    break;
+  case 4: // 2-3-4
+  case 2: // 2-3 , 2-4
+    ptValue *= 1.3;
+    break;
+  case 1: // 3-4
+    ptValue *= 1.7;
+    break;
+  case 0: // badness
+    ptValue = -1;
+  default:
+    throw cms::Exception("Invalid DT quality") 
+      << "Given quality: " << trk.quality() 
+      << " matches no known DT code." << std::endl;
+  }
+  
   // finally set the pt value in the internal track
   // it will be put into the L1 pt binning in further processing
   trk.setPtValue(ptValue);  
