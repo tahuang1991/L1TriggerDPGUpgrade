@@ -21,10 +21,12 @@ namespace {
     TriggerPrimitive::RPCData rpcD;
     TriggerPrimitive::CSCData cscD;
     TriggerPrimitive::DTData  dtD;
+    TriggerPrimitive::HCALData  hcalD;
     
     edm::Wrapper<TriggerPrimitive::RPCData> wrpcD;
     edm::Wrapper<TriggerPrimitive::CSCData> wcscD;
     edm::Wrapper<TriggerPrimitive::DTData>  wdtD;
+    edm::Wrapper<TriggerPrimitive::HCALData>  whcalD;
 
     TriggerPrimitive trigPrim;
     edm::Wrapper<TriggerPrimitive> wtrigPrim;

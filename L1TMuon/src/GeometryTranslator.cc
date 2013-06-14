@@ -4,6 +4,8 @@
 // event setup stuff / geometries
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/Records/interface/HcalGeometryRecord.h"
 
 #include "Geometry/CSCGeometry/interface/CSCGeometry.h"
 #include "L1Trigger/CSCCommonTrigger/interface/CSCConstants.h"
@@ -12,6 +14,11 @@
 #include "Geometry/DTGeometry/interface/DTGeometry.h"
 #include "L1Trigger/DTUtilities/interface/DTTrigGeom.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
+
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/HcalTowerAlgo/interface/HcalTrigTowerGeometry.h"
+#include "DataFormats/HcalDetId/interface/HcalTrigTowerDetId.h"
 
 #include <cmath> // for pi
 
@@ -36,6 +43,9 @@ GeometryTranslator::calculateGlobalEta(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificEta(tp);
     break;
+  case TriggerPrimitive::kHCAL:
+    return calcHCALSpecificEta(tp);
+    break;
   default:
     return std::nan("Invalid TP type!"); 
     break;
@@ -53,6 +63,9 @@ GeometryTranslator::calculateGlobalPhi(const TriggerPrimitive& tp) const {
     break;
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificPhi(tp);
+    break;
+  case TriggerPrimitive::kHCAL:
+    return calcHCALSpecificPhi(tp);
     break;
   default:
     return std::nan("Invalid TP type!");
@@ -72,6 +85,9 @@ GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificBend(tp);
     break;
+  case TriggerPrimitive::kHCAL:
+    return calcHCALSpecificBend(tp);
+    break;
   default:
     return std::nan("Invalid TP type!");
     break;
@@ -79,14 +95,26 @@ GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
 }
 
 void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
+  // let's remove caching...
   const MuonGeometryRecord& geom = es.get<MuonGeometryRecord>();
   unsigned long long geomid = geom.cacheIdentifier();
-  if( _geom_cache_id != geomid ) {
+  std::cout << "MUO ID and cached: " << geomid << " " << _geom_cache_id << std::endl;
+  //if( _geom_cache_id != geomid ) {
     geom.get(_georpc);  
     geom.get(_geocsc);    
     geom.get(_geodt);
     _geom_cache_id = geomid;
-  }  
+    //}  
+
+  const CaloGeometryRecord& geomC = es.get<CaloGeometryRecord>();
+  geomid = geomC.cacheIdentifier(); 
+  std::cout << "CALO ID and cached: " << geomid << " " << _geom_cache_id << std::endl;
+  //if( _geom_cache_id != geomid ) {
+    geomC.get(_geohcal);
+    geomC.get(_geohcaltrig);
+    _geom_cache_id = geomid;
+    //}
+
 }
 
 GlobalPoint 
@@ -265,4 +293,65 @@ isCSCCounterClockwise(const std::unique_ptr<const CSCLayer>& layer) const {
   const double phiN = layer->centerOfStrip(nStrips).phi();
   return ( (std::abs(phi1 - phiN) < M_PI  && phi1 >= phiN) || 
 	   (std::abs(phi1 - phiN) >= M_PI && phi1 < phiN)     );  
+}
+
+
+GlobalPoint 
+GeometryTranslator::getHCALSpecificPoint(const TriggerPrimitive& tp) const {
+  const HcalTrigTowerDetId id(tp.detId<HcalTrigTowerDetId>());
+
+  //std::cout << "Current TriggerPrimitive HcalTrigTowerDetId: " << id 
+  //	    << " " << tp.getHCALData().size << std::endl;
+  std::vector<HcalDetId> dets = _geohcaltrig->detIds(id);
+
+  double x = 0., y = 0., z = 0.;
+  for (unsigned int i=0; i< dets.size(); i++) {
+    //std::cout << " HcalDetId #" << i << ": " 
+    //	      << dets.at(i) << " subdetector: " << dets.at(i).subdet() << std::endl;
+
+    //const CaloCellGeometry * cellGeometry = 
+    //  _geohcal->getSubdetectorGeometry(dets.at(i))->getGeometry(dets.at(i));
+    //std::cout << " Eta/Phi/X/Y/Z: " << cellGeometry->getPosition().eta() 
+    //	      << " " << cellGeometry->getPosition().phi()
+    //	      << " " << _geohcal->getPosition(dets.at(i)).eta()
+    //	      << " " << _geohcal->getPosition(dets.at(i)).phi()
+    //	      << " " << _geohcal->getPosition(dets.at(i)).x()
+    //	      << " " << _geohcal->getPosition(dets.at(i)).y()
+    //	      << " " << _geohcal->getPosition(dets.at(i)).z()
+    //	      << std::endl; 
+
+    x+= _geohcal->getPosition(dets.at(i)).x();
+    y+= _geohcal->getPosition(dets.at(i)).y();
+    z+= _geohcal->getPosition(dets.at(i)).z();
+  }
+
+  if(dets.empty()) {
+    std::cout << " HcalDetId: no HcalDetId corresponding to HcalTrigTowerDetId!" 
+	      << std::endl;
+    return GlobalPoint(0.1,0.,9999.); // phi=0 and very high eta...
+  }
+
+  return GlobalPoint(x/dets.size(),y/dets.size(),z/dets.size());
+
+}
+
+double 
+GeometryTranslator::calcHCALSpecificEta(const TriggerPrimitive& tp) const {  
+  //std::cout << "ETA: " << getHCALSpecificPoint(tp).eta() 
+  //	    << " " << tp.detId<HcalTrigTowerDetId>() << std::endl;
+  return getHCALSpecificPoint(tp).eta();
+}
+
+double 
+GeometryTranslator::calcHCALSpecificPhi(const TriggerPrimitive& tp) const {  
+  //std::cout << "PHI: " << getHCALSpecificPoint(tp).phi() 
+  //	    << " " << tp.detId<HcalTrigTowerDetId>() << std::endl;
+  return getHCALSpecificPoint(tp).phi();
+}
+
+// this function actually does nothing since HCAL
+// hits are point-like objects
+double 
+GeometryTranslator::calcHCALSpecificBend(const TriggerPrimitive& tp) const {
+  return 0.0;
 }

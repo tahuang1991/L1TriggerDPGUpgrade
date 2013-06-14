@@ -27,13 +27,18 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring(infile)
     )
 
+#process.maxEvents = cms.untracked.PSet(
+#    input = cms.untracked.int32(100)
+#)
+
 process.L1TMuonText = cms.EDAnalyzer(
     'L1TMuonTextDumper',
     doGen = cms.untracked.bool(True),
     genSrc = cms.untracked.InputTag("genParticles"),
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
-    cms.InputTag('L1TMuonTriggerPrimitives','DT')
+    cms.InputTag('L1TMuonTriggerPrimitives','DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives','HCAL')
     ),
     converterSrcs = cms.VInputTag(    
     cms.InputTag('L1DTTFTrackConverter')
@@ -52,6 +57,7 @@ outCommands.append('keep *_simRpcTriggerDigis_*_*')
 outCommands.append('keep *_simMuonRPCDigis_*_*')
 outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_simHcalTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_L1TMuonTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
 outCommands.append('keep *_*AssignedTrackProducer_*_*')
@@ -73,3 +79,5 @@ process.outPath = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.L1TMuonPath,
                                 process.outPath)
+
+

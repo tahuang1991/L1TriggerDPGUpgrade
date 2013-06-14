@@ -58,6 +58,8 @@ L1TMuonTriggerPrimitiveProducer::L1TMuonTriggerPrimitiveProducer(const PSet& p) 
     PSet collector_cfg = p.getParameterSet(*name);
     std::string collector_type = 
       collector_cfg.getParameter<std::string>("collectorType");
+    std::cout << __FILE__ << " " << __LINE__ 
+	      << " Alberto: " << collector_type.c_str() << std::endl;
     collectors[*name] = collector_ptr( factory->create( collector_type,
 							collector_cfg  ) );
     produces<TriggerPrimitiveCollection>(*name);
@@ -75,15 +77,23 @@ void L1TMuonTriggerPrimitiveProducer::produce(edm::Event& ev,
 
   auto coll_itr = collectors.cbegin();
   auto cend = collectors.cend();
+
+  //std::cout << "Number of collectors: " << collectors.size() << std::endl; 
   
   double eta,phi,bend;
+
   for( ; coll_itr != cend; ++coll_itr ) {
     std::auto_ptr<TriggerPrimitiveCollection> 
       subs_out(new TriggerPrimitiveCollection);
     auto& collector = coll_itr->second;
     
     collector->extractPrimitives(ev,es,*subs_out);
-    
+
+    //if (subs_out->empty())
+    //  std::cout << " One empty subs_out" << std::endl; 
+    //else
+    //  std::cout << " One NON empty subs_out" << std::endl; 
+      
     auto the_tp = subs_out->begin();
     auto tp_end   = subs_out->end();    
     for ( ; the_tp != tp_end; ++the_tp ) {
@@ -93,7 +103,13 @@ void L1TMuonTriggerPrimitiveProducer::produce(edm::Event& ev,
       the_tp->setCMSGlobalEta(eta);
       the_tp->setCMSGlobalPhi(phi);
       the_tp->setThetaBend(bend);
+
+      //std::cout << " Ah, non empty subs_out: " << the_tp->subsystem() 
+      //	<< " eta, phi, bend:" << eta << " " << phi << " " << bend << std::endl;
+
     }
+
+    //std::cout << " End of loop on NON empty subs_out" << std::endl; 
 
     master_out->insert(master_out->end(),
 		       subs_out->begin(),
