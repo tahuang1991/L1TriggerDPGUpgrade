@@ -91,6 +91,9 @@ private:
   TH1F* _caloH;
   TH1F* _caloO;
 
+  TH1F* _detaRC; // RPC1-HCAL1 TP
+  TH1F* _dphiRC;
+
   TH2F* _rpcEtaPhi;
   TH2F* _hoEtaPhi;
 
@@ -156,6 +159,11 @@ L1TMuonCaloInspector::L1TMuonCaloInspector(const edm::ParameterSet& iConfig)
 				       260,-1.3,1.3,
 				       200,-M_PI,M_PI);
 
+  _detaRC = _fileService->make<TH1F>("rpchcaleta","RPC-HCAL TP Eta",200,
+				     -0.50,0.50);
+  _dphiRC = _fileService->make<TH1F>("rpchcalphi","RPC-HCAL TP Phi",200,
+				     -M_PI/10.,M_PI/10.);
+
   _caloXY = _fileService->make<TH2F>("caloxy","CaloTower XY",
 				     600,-300.,300.,
 				     600,-300.,300.);
@@ -211,6 +219,7 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
   auto ecalo = caloTowers->end();
  
    for( ; bgen != egen; ++bgen ) {
+     // here you have all generated muons
      if (bgen->pt()>15 && 
 	 std::abs(bgen->pdgId()) == 13 && 
 	 fabs(bgen->eta())<1.24) {
@@ -230,6 +239,9 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 	 // trigger primitives
 	 TriggerPrimitiveStationMap stubs = bworst->getStubs();
 
+	 // Let's save here the best RPCb stub in station=1, closer to HO
+	 TriggerPrimitiveRef rpcbStat1;
+
 	 // Loop on RPC stations, for each of which you can get a TP
 	 unsigned station;
 	 for( station = 1; station <= 4; ++station ) {
@@ -245,13 +257,12 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 		     << std::endl;
 	   _rpcEtaPhi->Fill(bestRpcB->getCMSGlobalEta(),
 			    bestRpcB->getCMSGlobalPhi());
+	   if (station == 1)
+	     rpcbStat1 = bestRpcB;
 	 }
 	 // Loop on HO stations, for each of which you can get a TP
 	 // will change the code because it makes so much more sense that
 	 // the HO station is always the same: I have one layer (or two)
-
-	 for (unsigned i=0;i<20;i++)
-	   std::cout << " i=" << i << ", " << stubs.count(i) << std::endl;
 
 	 for( station = 1; station <= 4; ++station ) {
 	   const unsigned idx = 4*4+station-1; // Hcal=4
@@ -266,6 +277,10 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 		     << std::endl;
 	   _hoEtaPhi->Fill(bestHo->getCMSGlobalEta(),
 			   bestHo->getCMSGlobalPhi());
+	   if (rpcbStat1.isNonnull()) {
+	     _detaRC->Fill(rpcbStat1->getCMSGlobalEta()-bestHo->getCMSGlobalEta());
+	     _dphiRC->Fill(rpcbStat1->getCMSGlobalPhi()-bestHo->getCMSGlobalPhi());
+	   }
 	 }
        }
 

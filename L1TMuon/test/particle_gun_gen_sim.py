@@ -22,6 +22,11 @@ process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
+
+process.load('Configuration.StandardSequences.DigiToRaw_cff')
+process.load('Configuration.StandardSequences.RawToDigi_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -49,7 +54,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.FEVTDEBUGEventContent.outputCommands,
-    fileName = cms.untracked.string('SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root'),
+    fileName = cms.untracked.string('SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1_RECO.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('')
@@ -88,6 +93,11 @@ process.generation_step = cms.Path(process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.pdigi)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
+
+process.digi2raw_step = cms.Path(process.DigiToRaw)
+process.raw2digi_step = cms.Path(process.RawToDigi)
+process.reconstruction_step = cms.Path(process.reconstruction)
+
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
@@ -98,6 +108,9 @@ process.schedule = cms.Schedule(process.generation_step,
 				process.simulation_step,
 				process.digitisation_step,
 				process.L1simulation_step,
+				process.digi2raw_step,
+				process.raw2digi_step,
+				process.reconstruction_step,
 				process.endjob_step,
 				process.FEVTDEBUGoutput_step)
 # filter all path with the production filter sequence
