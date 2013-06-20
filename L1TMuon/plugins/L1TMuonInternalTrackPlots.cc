@@ -152,7 +152,7 @@ convertStubsToName(const TriggerPrimitive& tp1,
     //std::cout << __FILE__ << " " << __LINE__ << " Do I ever get here? " << std::endl; 
     name1 = std::string("HCAL");
     hcalid = tp1.detId<HcalTrigTowerDetId>();
-    station1 = hcalid.ieta();
+    station1 = hcalid.depth()+1;
     break;
   default:
     break;
@@ -178,7 +178,7 @@ convertStubsToName(const TriggerPrimitive& tp1,
     //std::cout << __FILE__ << " " << __LINE__ << " Do I ever get here? " << std::endl; 
     name2 = std::string("HCAL");
     hcalid = tp2.detId<HcalTrigTowerDetId>();
-    station2 = hcalid.ieta();
+    station2 = hcalid.depth()+1;
     break;
   default:
     break;
@@ -200,7 +200,7 @@ makeCombinations(const InternalTrack& track, double pt) {
       const unsigned idx1 = 4*subsystem1+station1-1;
 
       //std::cout << "Track 1: Station, subsystem, idx: " 
-      //		<< station1 << " " << subsystem1 << " " << idx1 << std::endl;
+      //	<< station1 << " " << subsystem1 << " " << idx1 << std::endl;
 
       //std::cout << " stubs.count at idx1: " << stubs.count(idx1) << std::endl;
 
@@ -209,14 +209,15 @@ makeCombinations(const InternalTrack& track, double pt) {
 
       //std::cout << "Number of trigger primitives, track 1: " << stubs[idx1].size() << std::endl; 
 
-      for( station2 = 0; station2 <= 4; ++station2 ) {
+      for( station2 = 1; station2 <= 4; ++station2 ) {
 	for( subsystem2 = 0; subsystem2 < InternalTrack::kNSubsystems; ++subsystem2 ) {
 	  //std::cout << "Track 2: Station, subsystem: " 
 	  //	    << station2 << " " << subsystem2 << std::endl;
 	  if( subsystem1 == subsystem2 && station1 == station2 ) continue;
 	  const unsigned idx2 = 4*subsystem2+station2-1;
 	  
-	  //std::cout << " stubs.count at idx2 (="<<idx2<<"): " << stubs.count(idx2) << std::endl;
+	  //std::cout << " stubs.count at idx2 (="<<idx2
+	  //	    <<"): " << stubs.count(idx2) << std::endl;
 
 	    if( !stubs.count(idx2) ) continue;	    
 	    TriggerPrimitiveList tps2 = stubs[idx2];

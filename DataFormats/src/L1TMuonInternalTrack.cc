@@ -80,8 +80,9 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
     station = stub->detId<RPCDetId>().station(); 
     break;
   case TriggerPrimitive::kHCAL:    
+    std::cout << "Do I get here?\n";
     offset = kHCAL;
-    station = stub->detId<HcalTrigTowerDetId>().depth(); // will always be zero?
+    station = stub->detId<HcalTrigTowerDetId>().depth()+1;
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
@@ -90,9 +91,7 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   }  
 
   const unsigned shift = 4*offset + station - 1;
-
-  //std::cout << "What is shift? Should be 4*4+0-1 for HCAL, it is 4*"<<offset<<"+"<<station<<"-1: "
-  //	    << shift << std::endl;
+  std::cout << " SHIFT: " << shift << " " << offset << " " << station << std::endl;
 
   const unsigned bit = 1 << shift;
   // add this track to the mode
