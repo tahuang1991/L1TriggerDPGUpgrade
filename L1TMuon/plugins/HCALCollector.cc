@@ -23,6 +23,7 @@ extractPrimitives(const edm::Event& ev,
   auto chamber = hcalDigis->begin();
   auto chend  = hcalDigis->end();
   // simple flag: save digi if at least one sample is not empty
+  // check at some point that SampleOfInterest is the non-zero one!
   bool save;
   for( ; chamber != chend; ++chamber ) {
     save = false;

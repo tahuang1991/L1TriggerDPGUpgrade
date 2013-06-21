@@ -98,7 +98,6 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
   // let's remove caching...
   const MuonGeometryRecord& geom = es.get<MuonGeometryRecord>();
   unsigned long long geomid = geom.cacheIdentifier();
-  std::cout << "MUO ID and cached: " << geomid << " " << _geom_cache_id << std::endl;
   //if( _geom_cache_id != geomid ) {
     geom.get(_georpc);  
     geom.get(_geocsc);    
@@ -108,7 +107,6 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
 
   const CaloGeometryRecord& geomC = es.get<CaloGeometryRecord>();
   geomid = geomC.cacheIdentifier(); 
-  std::cout << "CALO ID and cached: " << geomid << " " << _geom_cache_id << std::endl;
   //if( _geom_cache_id != geomid ) {
     geomC.get(_geohcal);
     geomC.get(_geohcaltrig);
@@ -300,33 +298,17 @@ GlobalPoint
 GeometryTranslator::getHCALSpecificPoint(const TriggerPrimitive& tp) const {
   const HcalTrigTowerDetId id(tp.detId<HcalTrigTowerDetId>());
 
-  //std::cout << "Current TriggerPrimitive HcalTrigTowerDetId: " << id 
-  //	    << " " << tp.getHCALData().size << std::endl;
   std::vector<HcalDetId> dets = _geohcaltrig->detIds(id);
 
   double x = 0., y = 0., z = 0.;
   for (unsigned int i=0; i< dets.size(); i++) {
-    //std::cout << " HcalDetId #" << i << ": " 
-    //	      << dets.at(i) << " subdetector: " << dets.at(i).subdet() << std::endl;
-
-    //const CaloCellGeometry * cellGeometry = 
-    //  _geohcal->getSubdetectorGeometry(dets.at(i))->getGeometry(dets.at(i));
-    //std::cout << " Eta/Phi/X/Y/Z: " << cellGeometry->getPosition().eta() 
-    //	      << " " << cellGeometry->getPosition().phi()
-    //	      << " " << _geohcal->getPosition(dets.at(i)).eta()
-    //	      << " " << _geohcal->getPosition(dets.at(i)).phi()
-    //	      << " " << _geohcal->getPosition(dets.at(i)).x()
-    //	      << " " << _geohcal->getPosition(dets.at(i)).y()
-    //	      << " " << _geohcal->getPosition(dets.at(i)).z()
-    //	      << std::endl; 
-
     x+= _geohcal->getPosition(dets.at(i)).x();
     y+= _geohcal->getPosition(dets.at(i)).y();
     z+= _geohcal->getPosition(dets.at(i)).z();
   }
 
   if(dets.empty()) {
-    std::cout << " HcalDetId: no HcalDetId corresponding to HcalTrigTowerDetId!" 
+    std::cout << "no HcalDetId corresponding to HcalTrigTowerDetId!" 
 	      << std::endl;
     return GlobalPoint(0.1,0.,9999.); // phi=0 and very high eta...
   }
@@ -337,15 +319,11 @@ GeometryTranslator::getHCALSpecificPoint(const TriggerPrimitive& tp) const {
 
 double 
 GeometryTranslator::calcHCALSpecificEta(const TriggerPrimitive& tp) const {  
-  //std::cout << "ETA: " << getHCALSpecificPoint(tp).eta() 
-  //	    << " " << tp.detId<HcalTrigTowerDetId>() << std::endl;
   return getHCALSpecificPoint(tp).eta();
 }
 
 double 
 GeometryTranslator::calcHCALSpecificPhi(const TriggerPrimitive& tp) const {  
-  //std::cout << "PHI: " << getHCALSpecificPoint(tp).phi() 
-  //	    << " " << tp.detId<HcalTrigTowerDetId>() << std::endl;
   return getHCALSpecificPoint(tp).phi();
 }
 

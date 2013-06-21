@@ -80,7 +80,6 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
     station = stub->detId<RPCDetId>().station(); 
     break;
   case TriggerPrimitive::kHCAL:    
-    std::cout << "Do I get here?\n";
     offset = kHCAL;
     station = stub->detId<HcalTrigTowerDetId>().depth()+1;
     break;
@@ -91,7 +90,6 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   }  
 
   const unsigned shift = 4*offset + station - 1;
-  std::cout << " SHIFT: " << shift << " " << offset << " " << station << std::endl;
 
   const unsigned bit = 1 << shift;
   // add this track to the mode

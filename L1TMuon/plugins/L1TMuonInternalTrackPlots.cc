@@ -149,7 +149,6 @@ convertStubsToName(const TriggerPrimitive& tp1,
     station1 = rpcid.station();
     break;
   case TriggerPrimitive::kHCAL:
-    //std::cout << __FILE__ << " " << __LINE__ << " Do I ever get here? " << std::endl; 
     name1 = std::string("HCAL");
     hcalid = tp1.detId<HcalTrigTowerDetId>();
     station1 = hcalid.depth()+1;
@@ -175,7 +174,6 @@ convertStubsToName(const TriggerPrimitive& tp1,
     station2 = rpcid.station();
     break;
   case TriggerPrimitive::kHCAL:
-    //std::cout << __FILE__ << " " << __LINE__ << " Do I ever get here? " << std::endl; 
     name2 = std::string("HCAL");
     hcalid = tp2.detId<HcalTrigTowerDetId>();
     station2 = hcalid.depth()+1;
@@ -199,30 +197,15 @@ makeCombinations(const InternalTrack& track, double pt) {
     for( subsystem1 = 0; subsystem1 < InternalTrack::kNSubsystems; ++subsystem1 ) {
       const unsigned idx1 = 4*subsystem1+station1-1;
 
-      //std::cout << "Track 1: Station, subsystem, idx: " 
-      //	<< station1 << " " << subsystem1 << " " << idx1 << std::endl;
-
-      //std::cout << " stubs.count at idx1: " << stubs.count(idx1) << std::endl;
-
       if( !stubs.count(idx1) ) continue;
       TriggerPrimitiveList tps1 = stubs[idx1];
 
-      //std::cout << "Number of trigger primitives, track 1: " << stubs[idx1].size() << std::endl; 
-
       for( station2 = 1; station2 <= 4; ++station2 ) {
 	for( subsystem2 = 0; subsystem2 < InternalTrack::kNSubsystems; ++subsystem2 ) {
-	  //std::cout << "Track 2: Station, subsystem: " 
-	  //	    << station2 << " " << subsystem2 << std::endl;
 	  if( subsystem1 == subsystem2 && station1 == station2 ) continue;
 	  const unsigned idx2 = 4*subsystem2+station2-1;
-	  
-	  //std::cout << " stubs.count at idx2 (="<<idx2
-	  //	    <<"): " << stubs.count(idx2) << std::endl;
-
 	    if( !stubs.count(idx2) ) continue;	    
 	    TriggerPrimitiveList tps2 = stubs[idx2];
-
-	    //std::cout << "Number of trigger primitives, track 2: " << stubs[idx2].size() << std::endl; 
 
 	    TriggerPrimitiveRef one = 
 	      getBestTriggerPrimitive(tps1, subsystem1);
@@ -240,7 +223,8 @@ makeCombinations(const InternalTrack& track, double pt) {
 	      if( !detahists.count(name) ) {
 		detahists[name] = 
 		  _fs->make<TH2F>(Form("h%s_deta",name.c_str()),
-				  Form("%s #Delta#eta vs. 1/p_{T}; 1/p_{T}^{True} GeV^{-1}; #Delta#eta",
+				  Form("%s #Delta#eta vs. 1/p_{T};"
+				       " 1/p_{T}^{True} GeV^{-1}; #Delta#eta",
 				       name.c_str()),
 				  1000,0,1,
 				  500,-0.5,0.5);
@@ -249,7 +233,9 @@ makeCombinations(const InternalTrack& track, double pt) {
 	      if( !dphihists.count(name) ) {
 		dphihists[name] = 
 		  _fs->make<TH2F>(Form("h%s_dphi",name.c_str()),
-				  Form("%s #Delta#phi vs. 1/p_{T}; 1/p_{T}^{True} GeV^{-1}; #Delta#phi (rad)",
+				  Form("%s #Delta#phi vs. 1/p_{T};"
+				       " 1/p_{T}^{True} GeV^{-1};"
+				       " #Delta#phi (rad)",
 				       name.c_str()),
 				  5000,0,1,
 				  500,-0.5,0.5);

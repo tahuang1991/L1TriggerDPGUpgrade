@@ -130,6 +130,8 @@ TriggerPrimitive::TriggerPrimitive(const HcalTrigTowerDetId& detid,
   _subsystem(TriggerPrimitive::kHCAL) {
   calculateHCALGlobalSector(detid,_globalsector,_subsector);
   _hcal.size = digi_hcal.size();
+  _hcal.SOI_fineGrain = digi_hcal.SOI_fineGrain();
+  _hcal.SOI_compressedEt = digi_hcal.SOI_compressedEt();
 }
 
 TriggerPrimitive::TriggerPrimitive(const TriggerPrimitive& tp):
@@ -190,6 +192,8 @@ bool TriggerPrimitive::operator==(const TriggerPrimitive& tp) const {
 	   this->_rpc.layer == tp._rpc.layer &&
 	   this->_rpc.bx == tp._rpc.bx &&
 	   this->_hcal.size == tp._hcal.size &&
+	   this->_hcal.SOI_fineGrain == tp._hcal.SOI_fineGrain &&
+	   this->_hcal.SOI_compressedEt == tp._hcal.SOI_compressedEt &&
 	   this->_id == tp._id &&
 	   this->_subsystem == tp._subsystem &&
 	   this->_globalsector == tp._globalsector &&
@@ -278,6 +282,8 @@ void TriggerPrimitive::print(std::ostream& out) const {
     out << detId<HcalTrigTowerDetId>() << std::endl;
     out << "Local BX      : " << -99 /*_rpc.bx*/ << std::endl;
     out << "Size          : " << _hcal.size << std::endl;
+    out << "SOI fine-grain: " << _hcal.SOI_fineGrain << std::endl;
+    out << "SOI comp. Et  : " << _hcal.SOI_compressedEt << std::endl;
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 

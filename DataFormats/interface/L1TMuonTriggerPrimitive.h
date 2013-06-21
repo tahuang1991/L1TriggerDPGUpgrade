@@ -105,9 +105,11 @@ namespace L1TMuon {
     };
     
     struct HCALData {
-      HCALData() : size(0) {}
-      // Some random pieces of info from HcalTriggerPrimitiveDigi
+      HCALData() : size(0), SOI_fineGrain(false), SOI_compressedEt(0) {}
+      // Some pieces of info from HcalTriggerPrimitiveDigi
       int size;
+      bool SOI_fineGrain;
+      int SOI_compressedEt;
     };
 
 
