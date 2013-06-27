@@ -115,6 +115,9 @@ private:
   std::map<std::string,TH2F*> _h2dEtaPhi;
 
   std::map<std::string,TH1F*> _h1dStations;
+
+  TH1F* _counters;
+  enum { ALL=0, TRUTH, RPC, DTTF, HCAL, STDMU, GLBMU };
   
   TriggerPrimitiveRef getBestTriggerPrimitive
   (const TriggerPrimitiveList& list, unsigned subsystem) const;
@@ -156,6 +159,8 @@ L1TMuonCaloInspector::L1TMuonCaloInspector(const edm::ParameterSet& iConfig)
   _dRhcalToStdMu=iConfig.getUntrackedParameter<double>("dRhcalToStdMu",1.);
   _dRdttfToStdMu=iConfig.getUntrackedParameter<double>("dRdttfToStdMu",1.);
 
+  _counters = _fileService->make<TH1F>("counter","counters",10,-0.5,9.5);
+
 }
 
 
@@ -177,6 +182,13 @@ void
 L1TMuonCaloInspector::analyze(const edm::Event& iEvent, 
 			      const edm::EventSetup& iSetup)
 {
+
+  // Raise flags to indicate matching
+  bool foundTruth = false;
+  bool foundRpc   = false;
+  bool foundDttf  = false;
+  bool foundHcal  = false;
+  bool foundStdMu = false;
 
   // Here we open all collections!
   edm::Handle<reco::GenParticleCollection> truthParticles;
@@ -228,6 +240,7 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
       if (btruth->pt()<16.)
 	continue;
     }
+    foundTruth = true;
     // end of quality cuts, let's start with RPC
     auto brpc = rpcTriggerPrimitives->cbegin();
     auto erpc = rpcTriggerPrimitives->cend();
@@ -264,6 +277,7 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
       if (sqrt(reco::deltaR2(btruth->eta(),btruth->phi(),
 			     rpcEta,rpcPhi))>_dRtruthToRpc)
 	continue;
+      foundRpc = true;
 
       // Now loop on DTTF tracks...
       auto bdttf = dttfTriggerPrimitives->cbegin();
@@ -320,6 +334,7 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 	if (sqrt(reco::deltaR2(rpcEta,rpcPhi,
 			       dttfEta,dttfPhi))>_dRrpcToDttf)
 	  continue;
+	foundDttf = true;
 
 	// One other layer of complication: loop on HCAL TP
 	auto bhcal = hcalTriggerPrimitives->cbegin();
@@ -361,6 +376,7 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 				 bhcal->getCMSGlobalEta(),
 				 bhcal->getCMSGlobalPhi()))>_dRdttfToHcal)
 	    continue;
+	  foundHcal = true;
 	  
 	  // Let's loop on muons
 	  // I will be sneaky and write this code only once
@@ -383,7 +399,8 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 				   bstdmu->eta(),
 				   bstdmu->phi()))>_dRhcalToStdMu)
 	      continue;
-
+	    foundStdMu = true;
+  
 	    // Technically, here I have a truth muon matched to
 	    // an RPC TP, matched to a DTTF TP, matched to an HCAL TP,
 	    // matched to a standalone (or global, if I change the
@@ -449,6 +466,17 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
       } // end loop on DTTF
     } // end loop on RPC
   } // end loop on truth or global
+
+  // Here we fill counters - notice that I have to avoid leaving
+  // the function analyze before I get here, otherwise the counts
+  // will not be correct
+  if (true)       _counters->Fill(ALL);
+  if (foundTruth) _counters->Fill(TRUTH);
+  if (foundRpc)   _counters->Fill(RPC);
+  if (foundDttf)  _counters->Fill(DTTF);
+  if (foundHcal)  _counters->Fill(HCAL);
+  if (foundStdMu) _counters->Fill(STDMU);
+
 }
 
 
