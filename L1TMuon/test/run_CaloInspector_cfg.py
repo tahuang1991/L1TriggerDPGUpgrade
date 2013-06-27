@@ -15,7 +15,12 @@ process.L1TMuonCaloInsp = cms.EDAnalyzer(
     dttfSrc = cms.InputTag("L1DTTFTrackConverter"),
     hcalSrc = cms.InputTag("L1TMuonTriggerPrimitives"),
     stdmuSrc = cms.InputTag("standAloneMuons"),
-    glbmuSrc = cms.InputTag("globalMuons")
+    glbmuSrc = cms.InputTag("globalMuons"),
+    dRtruthToRpc  = cms.untracked.double(0.2),
+    dRrpcToDttf   = cms.untracked.double(0.2),
+    dRdttfToHcal  = cms.untracked.double(0.2),
+    dRhcalToStdMu = cms.untracked.double(0.2),
+    dRdttfToStdMu = cms.untracked.double(0.2)
 )
 
 infile = 'file:L1TMuon.root'

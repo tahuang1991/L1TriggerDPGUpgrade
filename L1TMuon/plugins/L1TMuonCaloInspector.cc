@@ -30,6 +30,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
@@ -89,6 +91,15 @@ private:
   edm::InputTag _stdmuInput;
   edm::InputTag _glbmuInput;
 
+  // Delta R values to be used for matching
+  double _dRtruthToRpc, _dRrpcToDttf, _dRdttfToHcal, 
+    _dRhcalToStdMu, _dRdttfToStdMu;
+  edm::InputTag _truthToRpc;
+  edm::InputTag _rpcToDttf;
+  edm::InputTag _dttfToHcal;
+  edm::InputTag _hcalToStdMu;
+  edm::InputTag _dttfToStdMu; // or global: can't be too different
+
   // map with histograms: all deltaEta and deltaPhi plots will
   // have same boundaries (very generous), then work out useful
   // ranges with plotting macro
@@ -138,6 +149,13 @@ L1TMuonCaloInspector::L1TMuonCaloInspector(const edm::ParameterSet& iConfig)
   _hcalInput =  iConfig.getParameter<edm::InputTag>("hcalSrc");
   _stdmuInput = iConfig.getParameter<edm::InputTag>("stdmuSrc");
   _glbmuInput = iConfig.getParameter<edm::InputTag>("glbmuSrc");
+
+  _dRtruthToRpc =iConfig.getUntrackedParameter<double>("dRtruthToRpc" ,1.);
+  _dRrpcToDttf  =iConfig.getUntrackedParameter<double>("dRrpcToDttf"  ,1.);
+  _dRdttfToHcal =iConfig.getUntrackedParameter<double>("dRdttfToHcal" ,1.);
+  _dRhcalToStdMu=iConfig.getUntrackedParameter<double>("dRhcalToStdMu",1.);
+  _dRdttfToStdMu=iConfig.getUntrackedParameter<double>("dRdttfToStdMu",1.);
+
 }
 
 
@@ -241,6 +259,11 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 				rpcEta,rpcPhi,
 				"truth-rpc");
       ///////////////////////////////////////
+      
+      // Continue with matching only if we did found a match
+      if (sqrt(reco::deltaR2(btruth->eta(),btruth->phi(),
+			     rpcEta,rpcPhi))>_dRtruthToRpc)
+	continue;
 
       // Now loop on DTTF tracks...
       auto bdttf = dttfTriggerPrimitives->cbegin();
@@ -284,15 +307,20 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 	}
 	// Check: what is the eta of the internal track vs. the
 	// one of the trigger primitive?
-	if (btruth == truthParticles->cbegin() &&
-	    brpc == rpcTriggerPrimitives->cbegin()) {
-	  fillDeltaEtaPhiHistograms(bdttf->parent()->etaValue(),
-				    bdttf->parent()->phiValue(),
-				    dttfEta,dttfPhi,
-				    "dttfTK-dttfTP");
-	}
+	//if (btruth == truthParticles->cbegin() &&
+	//    brpc == rpcTriggerPrimitives->cbegin()) {
+	//  fillDeltaEtaPhiHistograms(bdttf->parent()->etaValue(),
+	//			    bdttf->parent()->phiValue(),
+	//			    dttfEta,dttfPhi,
+	//			    "dttfTK-dttfTP");
+	//}
 	///////////////////////////////////////
-	
+
+	// Continue with matching only if we did found a match
+	if (sqrt(reco::deltaR2(rpcEta,rpcPhi,
+			       dttfEta,dttfPhi))>_dRrpcToDttf)
+	  continue;
+
 	// One other layer of complication: loop on HCAL TP
 	auto bhcal = hcalTriggerPrimitives->cbegin();
 	auto ehcal = hcalTriggerPrimitives->cend();
@@ -327,6 +355,12 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 
 	  // Notice that here I have a truth muon, an RPC TP,
 	  // a DTTF track and an HCAL TP, not necessarily matching
+
+	  // Continue with matching only if we did found a match
+	  if (sqrt(reco::deltaR2(dttfEta,dttfPhi,
+				 bhcal->getCMSGlobalEta(),
+				 bhcal->getCMSGlobalPhi()))>_dRdttfToHcal)
+	    continue;
 	  
 	  // Let's loop on muons
 	  // I will be sneaky and write this code only once
@@ -342,6 +376,74 @@ L1TMuonCaloInspector::analyze(const edm::Event& iEvent,
 					bstdmu->eta(),bstdmu->phi(),
 					"truth-standalone");
 	    }
+
+	    // Continue with matching only if we did found a match
+	    if (sqrt(reco::deltaR2(bhcal->getCMSGlobalEta(),
+				   bhcal->getCMSGlobalPhi(),
+				   bstdmu->eta(),
+				   bstdmu->phi()))>_dRhcalToStdMu)
+	      continue;
+
+	    // Technically, here I have a truth muon matched to
+	    // an RPC TP, matched to a DTTF TP, matched to an HCAL TP,
+	    // matched to a standalone (or global, if I change the
+	    // collection name) muon
+
+	    // Let's loop on Calo Towers
+	    // I want to check if there is an HORecHit in front of the
+	    // global muon, and check its energy. How does that
+	    // hit match with HcalTrigPrimitives? And RPC and DTTF?
+	    // Notice that there will be tons of noisy towers
+	    auto bcalo = caloTowers->begin();
+	    auto ecalo = caloTowers->end();
+	    for( ; bcalo != ecalo; ++bcalo ) {
+	      if (btruth == truthParticles->cbegin() &&
+		  brpc == rpcTriggerPrimitives->cbegin() &&
+		  bdttf == dttfTriggerPrimitives->cbegin() &&
+		  bhcal == hcalTriggerPrimitives->cbegin() ) {
+		fillDeltaEtaPhiHistograms(bstdmu->eta(),bstdmu->phi(),
+					  bcalo->hadPosition().eta(),
+					  bcalo->hadPosition().phi(),
+					  "standalone-calotower");
+	      }
+	      if (brpc == rpcTriggerPrimitives->cbegin() &&
+		  bdttf == dttfTriggerPrimitives->cbegin() &&
+		  bhcal == hcalTriggerPrimitives->cbegin() &&
+		  bstdmu == standaloneMuons->cbegin() ) {
+		fillDeltaEtaPhiHistograms(btruth->eta(),btruth->phi(),
+					  bcalo->hadPosition().eta(),
+					  bcalo->hadPosition().phi(),
+					  "truth-calotower");
+	      }
+	      if (btruth == truthParticles->cbegin() &&
+		  bdttf == dttfTriggerPrimitives->cbegin() &&
+		  bhcal == hcalTriggerPrimitives->cbegin() &&
+		  bstdmu == standaloneMuons->cbegin() ) {
+		fillDeltaEtaPhiHistograms(rpcEta,rpcPhi,
+					  bcalo->hadPosition().eta(),
+					  bcalo->hadPosition().phi(),
+					  "rpc-calotower");
+	      }
+	      if (btruth == truthParticles->cbegin() &&
+		  brpc == rpcTriggerPrimitives->cbegin() &&
+		  bhcal == hcalTriggerPrimitives->cbegin() &&
+		  bstdmu == standaloneMuons->cbegin() ) {
+		fillDeltaEtaPhiHistograms(dttfEta,dttfPhi,
+					  bcalo->hadPosition().eta(),
+					  bcalo->hadPosition().phi(),
+					  "dttf-calotower");
+	      }
+	      if (btruth == truthParticles->cbegin() &&
+		  brpc == rpcTriggerPrimitives->cbegin() &&
+		  bdttf == dttfTriggerPrimitives->cbegin() &&
+		  bstdmu == standaloneMuons->cbegin() ) {
+		fillDeltaEtaPhiHistograms(bhcal->getCMSGlobalEta(),
+					  bhcal->getCMSGlobalPhi(),
+					  bcalo->hadPosition().eta(),
+					  bcalo->hadPosition().phi(),
+					  "hcal-calotower");
+	      }
+	    } // end loop on calo towers
 	  } // end loop on standalone muons
 	} // end loop on HCAL TP
       } // end loop on DTTF
@@ -493,7 +595,7 @@ void L1TMuonCaloInspector::fillDeltaEtaPhiHistograms(float eta1, float phi1,
       _fileService->make<TH1F>(Form("dR_%s",key.c_str()),
 			       Form("#Delta R %s",key.c_str()),
 			       500,0,1.0);
-  _h1dDeltaR[key]->Fill(sqrt(pow(eta1-eta2,2)+pow(phi1-phi2,2)));
+  _h1dDeltaR[key]->Fill(sqrt(reco::deltaR2(eta1,phi1,eta2,phi2)));
 
   if(!_h2dDeltaEtaPhi.count(key))
     _h2dDeltaEtaPhi[key] = 
