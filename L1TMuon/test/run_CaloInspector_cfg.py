@@ -4,15 +4,18 @@ process = cms.Process('TEXTDUMP')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName=cms.string('L1ITMu_caloInspector.root')
+    fileName=cms.string('L1ITMu_caloInspector_New.root')
     )
 
 process.L1TMuonCaloInsp = cms.EDAnalyzer(
     'L1TMuonCaloInspector',
     doGen = cms.untracked.bool(True),
     genSrc = cms.InputTag("genParticles"),
-    bestSrc = cms.InputTag("standAloneMuons"),
-    worstSrc = cms.InputTag("L1TMuonSimpleDeltaEtaHitMatcher")
+    rpcSrc = cms.InputTag("L1RPCbTFTrackConverter"),
+    dttfSrc = cms.InputTag("L1DTTFTrackConverter"),
+    hcalSrc = cms.InputTag("L1TMuonTriggerPrimitives"),
+    stdmuSrc = cms.InputTag("standAloneMuons"),
+    glbmuSrc = cms.InputTag("globalMuons")
 )
 
 infile = 'file:L1TMuon.root'

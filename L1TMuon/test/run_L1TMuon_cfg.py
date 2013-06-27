@@ -16,13 +16,6 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
 infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1_RECO.root']
-#infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1_RECO_100ev.root']
-#infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
-#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
-#infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
 
 process.source = cms.Source(
     'PoolSource',
@@ -66,6 +59,7 @@ outCommands.append('keep *_*AssignedTrackProducer_*_*')
 outCommands.append('keep *_*Matcher_*_*')
 
 outCommands.append('keep *_standAloneMuons_*_*')
+outCommands.append('keep *_globalMuons_*_*')
 outCommands.append('keep *_towerMaker_*_*')
 outCommands.append('keep *_simHcalDigis_*_*')
 outCommands.append('keep *_horeco_*_*')

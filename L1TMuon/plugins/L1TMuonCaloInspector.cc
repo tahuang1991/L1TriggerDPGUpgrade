@@ -39,6 +39,14 @@
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
 
+#include "DataFormats/HcalRecHit/interface/HORecHit.h"
+#include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
+#include "DataFormats/HcalRecHit/interface/HFRecHit.h"
+#include "DataFormats/HcalRecHit/interface/ZDCRecHit.h"
+#include "DataFormats/HcalRecHit/interface/CastorRecHit.h"
+#include "DataFormats/HcalRecHit/interface/HcalCalibRecHit.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitFwd.h"
+
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitive.h"
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
@@ -74,34 +82,34 @@ private:
   
   bool _doGen;
   edm::InputTag _genInput;
-  edm::InputTag _bestInput;
-  edm::InputTag _worstInput;
-  //std::vector<edm::InputTag> _trackInput;
+
+  edm::InputTag _rpcInput;
+  edm::InputTag _dttfInput;
+  edm::InputTag _hcalInput;
+  edm::InputTag _stdmuInput;
+  edm::InputTag _glbmuInput;
+
+  // map with histograms: all deltaEta and deltaPhi plots will
+  // have same boundaries (very generous), then work out useful
+  // ranges with plotting macro
+  std::map<std::string,TH1F*> _h1dDeltaEta;
+  std::map<std::string,TH1F*> _h1dDeltaPhi;
+  std::map<std::string,TH2F*> _h1dDeltaEtaPhi;
+
+  std::map<std::string,TH1F*> _h1dEta;
+  std::map<std::string,TH1F*> _h1dPhi;
+  std::map<std::string,TH1F*> _h1dPt;
+
+  std::map<std::string,TH2F*> _h2dEtaPhi;
+
+  std::map<std::string,TH1F*> _h1dStations;
   
-  TH1F* _detaGB; // generated-standalone
-  TH1F* _dphiGB;
+  TriggerPrimitiveRef getBestTriggerPrimitive
+  (const TriggerPrimitiveList& list, unsigned subsystem) const;
 
-  TH1F* _detaCG; // calo tower-generated
-  TH1F* _dphiCG;
-
-  TH1F* _caloM; // tower energy: muon-matched
-  TH1F* _caloN; //               noise
-
-  TH1F* _caloE;
-  TH1F* _caloH;
-  TH1F* _caloO;
-
-  TH1F* _detaRC; // RPC1-HCAL1 TP
-  TH1F* _dphiRC;
-
-  TH2F* _rpcEtaPhi;
-  TH2F* _hoEtaPhi;
-
-  TH2F* _caloXY; // sanity check: location of HO deposits
-  TH2F* _caloZY;
-
-  TriggerPrimitiveRef getBestTriggerPrimitive(const TriggerPrimitiveList& list, 
-					      unsigned subsystem) const;
+  void fillDeltaEtaPhiHistograms(float eta1, float phi1,
+				 float eta2, float phi2,
+				 std::string key);
 
   // ----------member data ---------------------------
 };
@@ -124,53 +132,11 @@ L1TMuonCaloInspector::L1TMuonCaloInspector(const edm::ParameterSet& iConfig)
   if( (_doGen = iConfig.getUntrackedParameter<bool>("doGen",false)) ) {
     _genInput = iConfig.getParameter<edm::InputTag>("genSrc");
   }
-  //_trackInput = iConfig.getParameter<std::vector<edm::InputTag> >("trackSrcs");
-
-  _bestInput  = iConfig.getParameter<edm::InputTag>("bestSrc"); //standalone muons?
-  _worstInput = iConfig.getParameter<edm::InputTag>("worstSrc"); //RPC trig prims?
-
-
-  _detaGB = _fileService->make<TH1F>("genbesteta","Generated-Best Eta",200,
-				     -0.10,0.10);
-  _dphiGB = _fileService->make<TH1F>("genbestphi","Generated-Best Phi",200,
-				     -M_PI/100.,M_PI/100.);
-
-  _detaCG = _fileService->make<TH1F>("calogeneta","CaloTower-Generated Eta",200,
-				     -0.50,0.50);
-  _dphiCG = _fileService->make<TH1F>("calogenphi","CaloTower-Generated Phi",200,
-				     -M_PI/10.,M_PI/10.);
-
-  _caloM = _fileService->make<TH1F>("calobest","CaloTower w muon Energy",500,
-				     -0.200,0.800);
-  _caloN = _fileService->make<TH1F>("calonoise","CaloTower wo muon Energy",500,
-				     -0.200,0.800);
-
-  _caloE = _fileService->make<TH1F>("emcalo","EM energy",500,
-				     -3,7.);
-  _caloH = _fileService->make<TH1F>("hadcalo","HAD energy",500,
-				     -3,7.);
-  _caloO = _fileService->make<TH1F>("hocalo","HO energy",500,
-				     -3,7.);
-
-  _rpcEtaPhi = _fileService->make<TH2F>("rpcetaphi","RpcB TP eta vs phi",
-					260,-1.3,1.3,
-					200,-M_PI,M_PI);
-  _hoEtaPhi = _fileService->make<TH2F>("hoetaphi","HO TP eta vs phi",
-				       260,-1.3,1.3,
-				       200,-M_PI,M_PI);
-
-  _detaRC = _fileService->make<TH1F>("rpchcaleta","RPC-HCAL TP Eta",200,
-				     -0.50,0.50);
-  _dphiRC = _fileService->make<TH1F>("rpchcalphi","RPC-HCAL TP Phi",200,
-				     -M_PI/10.,M_PI/10.);
-
-  _caloXY = _fileService->make<TH2F>("caloxy","CaloTower XY",
-				     600,-300.,300.,
-				     600,-300.,300.);
-  _caloZY = _fileService->make<TH2F>("calozy","CaloTower ZY",
-				     600,-1500.,1500.,
-				     600,-300.,300.);
-  
+  _rpcInput =   iConfig.getParameter<edm::InputTag>("rpcSrc");
+  _dttfInput =  iConfig.getParameter<edm::InputTag>("dttfSrc");
+  _hcalInput =  iConfig.getParameter<edm::InputTag>("hcalSrc");
+  _stdmuInput = iConfig.getParameter<edm::InputTag>("stdmuSrc");
+  _glbmuInput = iConfig.getParameter<edm::InputTag>("glbmuSrc");
 }
 
 
@@ -192,126 +158,194 @@ void
 L1TMuonCaloInspector::analyze(const edm::Event& iEvent, 
 			      const edm::EventSetup& iSetup)
 {
-  //using namespace edm;
-  
-  edm::Handle<reco::GenParticleCollection> genParticles;
-  iEvent.getByLabel(_genInput,genParticles);
 
-  edm::Handle<reco::TrackCollection> bestOnes;  // standalone muons
-  iEvent.getByLabel(_bestInput,bestOnes);
-  edm::Handle<InternalTrackCollection> worstOnes; // L1RPCbTFTrackConverter
-  iEvent.getByLabel(_worstInput,worstOnes);
+  // Here we open all collections!
+  edm::Handle<reco::GenParticleCollection> truthParticles;
+   // I will get it only if needed, later on!
+  //iEvent.getByLabel(_genInput,truthParticles);
 
+  edm::Handle<InternalTrackCollection> rpcTriggerPrimitives;
+  iEvent.getByLabel(_rpcInput,rpcTriggerPrimitives);
+
+  edm::Handle<InternalTrackCollection> dttfTriggerPrimitives;
+  iEvent.getByLabel(_dttfInput,dttfTriggerPrimitives);
+
+  edm::Handle<TriggerPrimitiveCollection> hcalTriggerPrimitives;
+  iEvent.getByLabel(_hcalInput,hcalTriggerPrimitives);
+
+  edm::Handle<reco::TrackCollection> standaloneMuons;
+  iEvent.getByLabel(_stdmuInput,standaloneMuons);
+
+  edm::Handle<reco::TrackCollection> globalMuons;
+  iEvent.getByLabel(_glbmuInput,globalMuons);
+
+  // Some extra collection, always interesting
   edm::Handle<CaloTowerCollection> caloTowers;
   iEvent.getByLabel("towerMaker",caloTowers);
 
+  edm::Handle<HORecHitCollection> hoRecoHits;
+  iEvent.getByLabel("horeco",hoRecoHits);
 
-  auto bgen = genParticles->cbegin();
-  auto egen = genParticles->cend();
+  // Weird idea: if running on data, let us use the global muons
+  // instead of truth muons in the outer loop
+  // May have to use good old unsigned int loop on collections
+  // instead of nice loop with iterators
+  //auto btruth = _doGen ? truthParticles->cbegin() : globalMuons->cbegin();
+  //auto etruth = _doGen ? truthParticles->cend() : globalMuons->cend();
+  //if (_doGen) {
+  iEvent.getByLabel(_genInput,truthParticles);
+  auto btruth = truthParticles->cbegin();
+  auto etruth = truthParticles->cend();
+  //}
 
-  auto bbest = bestOnes->cbegin();
-  auto ebest = bestOnes->cend();
-
-  auto bworst = worstOnes->cbegin();
-  auto eworst = worstOnes->cend();
-
-  auto bcalo = caloTowers->begin();
-  auto ecalo = caloTowers->end();
+  for( ; btruth != etruth; ++btruth ) {
+    // Initial quality cuts
+    if (_doGen) {
+      if (std::abs(btruth->pdgId()) != 13 ||
+	  btruth->pt()<16.)
+	continue;
+    }
+    else {
+      if (btruth->pt()<16.)
+	continue;
+    }
+    // end of quality cuts, let's start with RPC
+    auto brpc = rpcTriggerPrimitives->cbegin();
+    auto erpc = rpcTriggerPrimitives->cend();
+    for( ; brpc != erpc; ++brpc ) {
+      double rpcEta=0.,rpcPhi=0.;
+      int rpcStat=0; // number of RPC stations with a trigger primitive
+      TriggerPrimitiveStationMap stubs = brpc->getStubs();
+      // Chris' function will return configuration of RPC trigger
+      // primitives: how many and which stations
+      //int rpctype = getType(stubs);
  
-   for( ; bgen != egen; ++bgen ) {
-     // here you have all generated muons
-     if (bgen->pt()>15 && 
-	 std::abs(bgen->pdgId()) == 13 && 
-	 fabs(bgen->eta())<1.24) {
-       bool matched = false;
-       for( ; bbest != ebest; ++bbest ) {
-	 _detaGB->Fill(bgen->eta()-bbest->eta());
-	 _dphiGB->Fill(bgen->phi()-bbest->phi());
-	 if(sqrt(pow(bgen->eta()-bbest->eta(),2)+
-		 pow(bgen->phi()-bbest->phi(),2))<0.01) {
-	   // decide I have match
-	   std::cout << iEvent.id().event() << " Match with best" << std::endl;
-	   matched = true;
-	 }
-       }
-       for( ; bworst != eworst; ++bworst ) {
-	 // loop on trigger primitives and check if we get RPC and HO
-	 // trigger primitives
-	 TriggerPrimitiveStationMap stubs = bworst->getStubs();
+      // Loop on RPC stations, for each of which you can get a TP
+      unsigned station;
+      for( station = 1; station <= 4; ++station ) {
+	const unsigned idx = 4*1+station-1; // RPCb=1
+	if( !stubs.count(idx) ) continue;
+	TriggerPrimitiveList tpRpcB = stubs[idx];
+	TriggerPrimitiveRef bestRpcB = getBestTriggerPrimitive(tpRpcB,1);
+	rpcEta+=bestRpcB->getCMSGlobalEta();
+	rpcPhi+=bestRpcB->getCMSGlobalPhi();
+	++rpcStat;
+      }
+      if (rpcStat>0) {
+	rpcEta/=rpcStat;
+	rpcPhi/=rpcStat;
+      }
+      // Let us fill some histograms!
+      fillDeltaEtaPhiHistograms(btruth->eta(),btruth->phi(),
+				rpcEta,rpcPhi,
+				"truth-rpc");
+      ///////////////////////////////////////
 
-	 // Let's save here the best RPCb stub in station=1, closer to HO
-	 TriggerPrimitiveRef rpcbStat1;
+      // Now loop on DTTF tracks...
+      auto bdttf = dttfTriggerPrimitives->cbegin();
+      auto edttf = dttfTriggerPrimitives->cend();
+      for( ; bdttf != edttf; ++bdttf ) {
+	double dttfEta=0.,dttfPhi=0.;
+	int dttfStat=0; // number of DTTF stations with a trigger primitive
+	TriggerPrimitiveStationMap stubs = bdttf->getStubs();
+	// Chris' function will return configuration of DTTF trigger
+	// primitives: how many and which stations
+	//int dttftype = getType(stubs);
+	
+	// Loop on DTTF stations, for each of which you can get a TP
+	unsigned station;
+	for( station = 1; station <= 4; ++station ) {
+	  const unsigned idx = 4*0+station-1; // DTTF=0
+	  if( !stubs.count(idx) ) continue;
+	  TriggerPrimitiveList tpDttf = stubs[idx];
+	  TriggerPrimitiveRef bestDttf = getBestTriggerPrimitive(tpDttf,0);
+	  dttfEta+=bestDttf->getCMSGlobalEta();
+	  dttfPhi+=bestDttf->getCMSGlobalPhi();
+	  ++dttfStat;
+	}
+	if (dttfStat>0) {
+	  dttfEta/=dttfStat;
+	  dttfPhi/=dttfStat;
+	}
+	// Let us fill some histograms here too
+	// Carefull that we are inside a double-loop
+	// I want to fill the RPC-DTTF plot only once per truth muon
+	// and, similarly, fill the TRUTH-DTTF only once per RPC stub 
+	if (brpc == rpcTriggerPrimitives->cbegin()) {
+	  fillDeltaEtaPhiHistograms(btruth->eta(),btruth->phi(),
+				    dttfEta,dttfPhi,
+				    "truth-dttf");
+	}
+	if (btruth == truthParticles->cbegin()) {
+	  fillDeltaEtaPhiHistograms(rpcEta,rpcPhi,
+				    dttfEta,dttfPhi,
+				    "rpc-dttf");
+	}
+	// Check: what is the eta of the internal track vs. the
+	// one of the trigger primitive?
+	if (btruth == truthParticles->cbegin() &&
+	    brpc == rpcTriggerPrimitives->cbegin()) {
+	  fillDeltaEtaPhiHistograms(bdttf->parent()->etaValue(),
+				    bdttf->parent()->phiValue(),
+				    dttfEta,dttfPhi,
+				    "dttfTK-dttfTP");
+	}
+	///////////////////////////////////////
+	
+	// One other layer of complication: loop on HCAL TP
+	auto bhcal = hcalTriggerPrimitives->cbegin();
+	auto ehcal = hcalTriggerPrimitives->cend();
+	for( ; bhcal != ehcal; ++bhcal ) {
+	  //TriggerPrimitiveStationMap stubs = bhcal->getStubs();
+	  //const unsigned idx = 4*4+1-1; // HCAL=4, station=1
+	  //if( !stubs.count(idx) ) continue;
+	  //TriggerPrimitiveList tpHcal = stubs[idx];
+	  //TriggerPrimitiveRef bestHcal = 
+	  //  getBestTriggerPrimitive(tpHcal,4);
+	  if (brpc == rpcTriggerPrimitives->cbegin() &&
+	      bdttf == dttfTriggerPrimitives->cbegin() ) {
+	    fillDeltaEtaPhiHistograms(btruth->eta(),btruth->phi(),
+				      bhcal->getCMSGlobalEta(),
+				      bhcal->getCMSGlobalPhi(),
+				      "truth-hcal");
+	  }
+	  if (btruth == truthParticles->cbegin() &&
+	      bdttf == dttfTriggerPrimitives->cbegin() ) {
+	    fillDeltaEtaPhiHistograms(rpcEta,rpcPhi,
+				      bhcal->getCMSGlobalEta(),
+				      bhcal->getCMSGlobalPhi(),
+				      "rpc-hcal");
+	  }
+	  if (btruth == truthParticles->cbegin() &&
+	      brpc == rpcTriggerPrimitives->cbegin() ) {
+	    fillDeltaEtaPhiHistograms(dttfEta,dttfPhi,
+				      bhcal->getCMSGlobalEta(),
+				      bhcal->getCMSGlobalPhi(),
+				      "dttf-hcal");
+	  }
 
-	 // Loop on RPC stations, for each of which you can get a TP
-	 unsigned station;
-	 for( station = 1; station <= 4; ++station ) {
-	   const unsigned idx = 4*1+station-1; // RPCb=1
-	   if( !stubs.count(idx) ) continue;
-	   TriggerPrimitiveList tpRpcB = stubs[idx];
-	   TriggerPrimitiveRef bestRpcB = getBestTriggerPrimitive(tpRpcB,1);
-	   // plot eta and phi
-	   std::cout << iEvent.id().event() << " RpcB eta, phi, station:"
-		     << " " << bestRpcB->getCMSGlobalEta()
-		     << " " << bestRpcB->getCMSGlobalPhi()
-		     << " " << station
-		     << std::endl;
-	   _rpcEtaPhi->Fill(bestRpcB->getCMSGlobalEta(),
-			    bestRpcB->getCMSGlobalPhi());
-	   if (station == 1)
-	     rpcbStat1 = bestRpcB;
-	 }
-	 // Loop on HO stations, for each of which you can get a TP
-	 // will change the code because it makes so much more sense that
-	 // the HO station is always the same: I have one layer (or two)
-
-	 for( station = 1; station <= 4; ++station ) {
-	   const unsigned idx = 4*4+station-1; // Hcal=4
-	   if( !stubs.count(idx) ) continue;
-	   TriggerPrimitiveList tpHo = stubs[idx];
-	   TriggerPrimitiveRef bestHo = getBestTriggerPrimitive(tpHo,4);
-	   // plot eta and phi
-	   std::cout << iEvent.id().event() << " Ho eta, phi, station:"
-		     << " " << bestHo->getCMSGlobalEta()
-		     << " " << bestHo->getCMSGlobalPhi()
-		     << " " << station
-		     << std::endl;
-	   _hoEtaPhi->Fill(bestHo->getCMSGlobalEta(),
-			   bestHo->getCMSGlobalPhi());
-	   if (rpcbStat1.isNonnull()) {
-	     _detaRC->Fill(rpcbStat1->getCMSGlobalEta()-bestHo->getCMSGlobalEta());
-	     _dphiRC->Fill(rpcbStat1->getCMSGlobalPhi()-bestHo->getCMSGlobalPhi());
-	   }
-	 }
-       }
-
-       for( ; bcalo != ecalo; ++bcalo ) {
-
-	 if (fabs(bcalo->hadPosition().eta())<0.9)
-	   _caloXY->Fill(bcalo->hadPosition().x(),bcalo->hadPosition().y());
-	 _caloZY->Fill(bcalo->hadPosition().z(),bcalo->hadPosition().y());
-
-	 _detaCG->Fill(bcalo->hadPosition().eta()-bgen->eta());
-	 _dphiCG->Fill(bcalo->hadPosition().phi()-bgen->phi());
-
-	 std::cout << iEvent.id().event()
-		   << " Calo outer, had, em: " << bcalo->outerEnergy()
-		   << " " << bcalo->hadEnergy()
-		   << " " << bcalo->emEnergy()
-		   << std::endl;
-	 _caloE->Fill(bcalo->emEnergy());
-	 _caloH->Fill(bcalo->hadEnergy());
-	 _caloO->Fill(bcalo->outerEnergy());
-	 if (sqrt(pow(bcalo->hadPosition().eta()-bgen->eta(),2)+
-		  pow(bcalo->hadPosition().phi()-bgen->phi(),2))<0.2)
-	   _caloM->Fill(bcalo->outerEnergy());
-	 else
-	   _caloN->Fill(bcalo->outerEnergy());
-       }
-
-       if (!matched)
-	   std::cout << iEvent.id().event() << " Not matched" << std::endl;
-     }
-   }
+	  // Notice that here I have a truth muon, an RPC TP,
+	  // a DTTF track and an HCAL TP, not necessarily matching
+	  
+	  // Let's loop on muons
+	  // I will be sneaky and write this code only once
+	  // then use it for standalone and global muons by just
+	  // modifying the python file...
+	  auto bstdmu = standaloneMuons->cbegin();
+	  auto estdmu = standaloneMuons->cend();
+	  for( ; bstdmu != estdmu; ++bstdmu ) {
+	    if (brpc == rpcTriggerPrimitives->cbegin() &&
+		bdttf == dttfTriggerPrimitives->cbegin() &&
+		bhcal == hcalTriggerPrimitives->cbegin() ) {
+	      fillDeltaEtaPhiHistograms(btruth->eta(),btruth->phi(),
+					bstdmu->eta(),bstdmu->phi(),
+					"truth-standalone");
+	    }
+	  } // end loop on standalone muons
+	} // end loop on HCAL TP
+      } // end loop on DTTF
+    } // end loop on RPC
+  } // end loop on truth or global
 }
 
 
@@ -433,6 +467,37 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
     break;
   }
   return result;
+}
+
+void L1TMuonCaloInspector::fillDeltaEtaPhiHistograms(float eta1, float phi1,
+						     float eta2, float phi2,
+						     std::string key) {
+  
+  if(!_h1dDeltaEta.count(key))
+    _h1dDeltaEta[key] = 
+      _fileService->make<TH1F>(Form("deta_%s",key.c_str()),
+			       Form("#Delta#eta %s",key.c_str()),
+			       500,-0.5,0.5);
+  _h1dDeltaEta[key]->Fill(eta1-eta2);
+
+  if(!_h1dDeltaPhi.count(key))
+    _h1dDeltaPhi[key] = 
+      _fileService->make<TH1F>(Form("dphi_%s",key.c_str()),
+			       Form("#Delta#phi %s",key.c_str()),
+			       500,-M_PI/10.,M_PI/10.);
+  _h1dDeltaPhi[key]->Fill(phi1-phi2);
+  
+  if(!_h1dDeltaEtaPhi.count(key))
+    _h1dDeltaEtaPhi[key] = 
+      _fileService->make<TH2F>(Form("detaphi_%s",key.c_str()),
+			       Form("#Delta#phi vs. #Delta#eta %s",
+				    key.c_str()),
+			       500,-0.5,0.5,
+			       500,-M_PI/10.,M_PI/10.);
+  _h1dDeltaEtaPhi[key]->Fill(eta1-eta2,
+			     phi1-phi2);
+  
+  return;
 }
 
 
