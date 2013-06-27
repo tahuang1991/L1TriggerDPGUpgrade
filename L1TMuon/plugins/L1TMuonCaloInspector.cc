@@ -94,7 +94,8 @@ private:
   // ranges with plotting macro
   std::map<std::string,TH1F*> _h1dDeltaEta;
   std::map<std::string,TH1F*> _h1dDeltaPhi;
-  std::map<std::string,TH2F*> _h1dDeltaEtaPhi;
+  std::map<std::string,TH1F*> _h1dDeltaR;
+  std::map<std::string,TH2F*> _h2dDeltaEtaPhi;
 
   std::map<std::string,TH1F*> _h1dEta;
   std::map<std::string,TH1F*> _h1dPhi;
@@ -487,14 +488,21 @@ void L1TMuonCaloInspector::fillDeltaEtaPhiHistograms(float eta1, float phi1,
 			       500,-M_PI/10.,M_PI/10.);
   _h1dDeltaPhi[key]->Fill(phi1-phi2);
   
-  if(!_h1dDeltaEtaPhi.count(key))
-    _h1dDeltaEtaPhi[key] = 
+  if(!_h1dDeltaR.count(key))
+    _h1dDeltaR[key] = 
+      _fileService->make<TH1F>(Form("dR_%s",key.c_str()),
+			       Form("#Delta R %s",key.c_str()),
+			       500,0,1.0);
+  _h1dDeltaR[key]->Fill(sqrt(pow(eta1-eta2,2)+pow(phi1-phi2,2)));
+
+  if(!_h2dDeltaEtaPhi.count(key))
+    _h2dDeltaEtaPhi[key] = 
       _fileService->make<TH2F>(Form("detaphi_%s",key.c_str()),
 			       Form("#Delta#phi vs. #Delta#eta %s",
 				    key.c_str()),
 			       500,-0.5,0.5,
 			       500,-M_PI/10.,M_PI/10.);
-  _h1dDeltaEtaPhi[key]->Fill(eta1-eta2,
+  _h2dDeltaEtaPhi[key]->Fill(eta1-eta2,
 			     phi1-phi2);
   
   return;
