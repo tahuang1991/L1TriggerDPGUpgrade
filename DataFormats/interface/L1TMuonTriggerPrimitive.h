@@ -71,6 +71,8 @@ namespace L1TMuon {
       uint16_t bx0; 
       uint16_t syncErr;
       uint16_t cscID;
+      //uint16_t gemBX;
+      float gemDPhi;
     };
 
     struct DTData {

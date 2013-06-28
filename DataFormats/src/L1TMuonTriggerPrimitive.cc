@@ -106,6 +106,9 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
   _csc.bx0     = digi.getBX0();
   _csc.syncErr = digi.getSyncErr();
   _csc.cscID   = digi.getCSCID();
+  //_csc.gemBX   = digi.getGEMBX();
+  _csc.gemDPhi = digi.getGEMDPhi();
+
 }
 
 // constructor from RPC data
