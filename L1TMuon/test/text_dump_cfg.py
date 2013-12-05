@@ -9,7 +9,8 @@ process.L1TMuonText = cms.EDAnalyzer(
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
     cms.InputTag('L1TMuonTriggerPrimitives','DT'),
-    cms.InputTag('L1TMuonTriggerPrimitives','RPC')
+    cms.InputTag('L1TMuonTriggerPrimitives','RPC'),
+    cms.InputTag('L1TMuonTriggerPrimitives','HCAL')
     ),
     converterSrcs = cms.VInputTag(
     cms.InputTag('L1CSCTFTrackConverter'),

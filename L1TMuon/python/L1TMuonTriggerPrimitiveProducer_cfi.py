@@ -20,5 +20,8 @@ L1TMuonTriggerPrimitives = cms.EDProducer(
     
     CSC  = cms.PSet( collectorType = cms.string('CSCCollector'),
                      src = cms.InputTag('simCscTriggerPrimitiveDigis',
-                                        'MPCSORTED') )
+                                        'MPCSORTED') ),
+
+    HCAL = cms.PSet( collectorType = cms.string('HCALCollector'),
+                     src = cms.InputTag('simHcalTriggerPrimitiveDigis') )
     )

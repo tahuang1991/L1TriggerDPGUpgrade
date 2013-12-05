@@ -15,17 +15,16 @@ process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuon_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
-infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
-#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
-#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
-#infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
+infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1_RECO.root']
 
 process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring(infile)
     )
+
+#process.maxEvents = cms.untracked.PSet(
+#    input = cms.untracked.int32(100)
+#)
 
 process.L1TMuonText = cms.EDAnalyzer(
     'L1TMuonTextDumper',
@@ -33,7 +32,8 @@ process.L1TMuonText = cms.EDAnalyzer(
     genSrc = cms.untracked.InputTag("genParticles"),
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
-    cms.InputTag('L1TMuonTriggerPrimitives','DT')
+    cms.InputTag('L1TMuonTriggerPrimitives','DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives','HCAL')
     ),
     converterSrcs = cms.VInputTag(    
     cms.InputTag('L1DTTFTrackConverter')
@@ -52,10 +52,18 @@ outCommands.append('keep *_simRpcTriggerDigis_*_*')
 outCommands.append('keep *_simMuonRPCDigis_*_*')
 outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_simHcalTriggerPrimitiveDigis_*_*')
 outCommands.append('keep *_L1TMuonTriggerPrimitives_*_*')
 outCommands.append('keep *_*Converter_*_*')
 outCommands.append('keep *_*AssignedTrackProducer_*_*')
 outCommands.append('keep *_*Matcher_*_*')
+
+outCommands.append('keep *_standAloneMuons_*_*')
+outCommands.append('keep *_globalMuons_*_*')
+outCommands.append('keep *_towerMaker_*_*')
+outCommands.append('keep *_simHcalDigis_*_*')
+outCommands.append('keep *_horeco_*_*')
+outCommands.append('keep *_hbhereco_*_*')
 
 process.FEVTDEBUGoutput = cms.OutputModule(
     "PoolOutputModule",
@@ -73,3 +81,5 @@ process.outPath = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.L1TMuonPath,
                                 process.outPath)
+
+

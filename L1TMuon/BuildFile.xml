@@ -15,3 +15,6 @@
 
 <use name="Geometry/RPCGeometry"/>  
 <use name="FWCore/PluginManager"/>
+
+<use name="Geometry/CaloGeometry"/>
+<use name="Geometry/HcalTowerAlgo"/>

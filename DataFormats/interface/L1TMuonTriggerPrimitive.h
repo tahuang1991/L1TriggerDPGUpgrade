@@ -37,12 +37,16 @@ class CSCDetId;
 class RPCDigiL1Link;
 class RPCDetId;
 
+// HO digi types
+class HcalTrigTowerDetId;
+class HcalTriggerPrimitiveDigi;
+
 namespace L1TMuon {
 
   class TriggerPrimitive {
   public:
     // define the subsystems that we have available
-    enum subsystem_type{kDT,kCSC,kRPC,kNSubsystems};
+    enum subsystem_type{kDT,kCSC,kRPC,kHCAL,kNSubsystems};
     
     // define the data we save locally from each subsystem type
     // variables in these structs keep their colloquial meaning
@@ -102,6 +106,15 @@ namespace L1TMuon {
       int theta_quality;
     };
     
+    struct HCALData {
+      HCALData() : size(0), SOI_fineGrain(false), SOI_compressedEt(0) {}
+      // Some pieces of info from HcalTriggerPrimitiveDigi
+      int size;
+      bool SOI_fineGrain;
+      int SOI_compressedEt;
+    };
+
+
     //Persistency
     TriggerPrimitive(): _subsystem(kNSubsystems) {}
       
@@ -124,6 +137,10 @@ namespace L1TMuon {
 		     const unsigned strip,
 		     const unsigned layer,
 		     const uint16_t bx);
+
+    //HCAL
+    TriggerPrimitive(const HcalTrigTowerDetId& detid,
+		     const HcalTriggerPrimitiveDigi&); 
     
     //copy
     TriggerPrimitive(const TriggerPrimitive&);
@@ -145,14 +162,18 @@ namespace L1TMuon {
     void setThetaBend(const double theta) { _theta = theta; }
     double getThetaBend() const { return _theta; }
 
+    //template<typename IDType>
+    //  IDType detId() const { return IDType(_id); }
+
     template<typename IDType>
-      IDType detId() const { return IDType(_id); }
+      IDType detId() const { return IDType(_id.rawId()); }
 
     // accessors to raw subsystem data
     const DTData  getDTData()  const { return _dt;  }
     const CSCData getCSCData() const { return _csc; }
     const RPCData getRPCData() const { return _rpc; }      
-    
+    const HCALData getHCALData() const { return _hcal; }
+
     // consistent accessors to common information    
     const int getBX() const;
     
@@ -173,10 +194,14 @@ namespace L1TMuon {
     void calculateRPCGlobalSector(const RPCDetId& chid, 
 				  unsigned& global_sector, 
 				  unsigned& subsector );
+    void calculateHCALGlobalSector(const HcalTrigTowerDetId& chid, 
+				   unsigned& global_sector, 
+				   unsigned& subsector );
       
     DTData  _dt;
     CSCData _csc;
     RPCData _rpc;
+    HCALData _hcal;
     
     DetId _id;
     

@@ -6,6 +6,7 @@
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
+#include "DataFormats/HcalDetId/interface/HcalTrigTowerDetId.h"
 
 using namespace L1TMuon;
 
@@ -44,7 +45,7 @@ InternalTrack::InternalTrack(const InternalTrackRef& parent):
   _endcap = parent->endcap();
   _wheel  = parent->wheel();
   _sector = parent->sector();
-  _type   = 4;
+  _type   = 5; // type 4 is HCAL now
   _mode   = parent->mode();
   _parent = RegionalCandBaseRef(parent);
 }
@@ -60,6 +61,9 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   unsigned station;
   subsystem_offset offset;
   TriggerPrimitive::subsystem_type type = stub->subsystem();
+
+  //std::cout << "What is type? In L1TMuonInternalTrack.cc: " << type << std::endl;
+
   switch(type){
   case TriggerPrimitive::kCSC:    
     offset = kCSC;
@@ -75,6 +79,10 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
       offset = kRPCf;
     station = stub->detId<RPCDetId>().station(); 
     break;
+  case TriggerPrimitive::kHCAL:    
+    offset = kHCAL;
+    station = stub->detId<HcalTrigTowerDetId>().depth()+1;
+    break;
   default:
     throw cms::Exception("Invalid Subsytem") 
       << "The specified subsystem for this track stub is out of range"
@@ -82,8 +90,9 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   }  
 
   const unsigned shift = 4*offset + station - 1;
+
   const unsigned bit = 1 << shift;
-   // add this track to the mode
+  // add this track to the mode
   _mode = _mode | bit;
   if( _associatedStubs.count(shift) == 0 ) {
     _associatedStubs[shift] = TriggerPrimitiveList();
@@ -105,6 +114,7 @@ void InternalTrack::print(std::ostream& out) const {
   std::cout << "\tMode Breakdown: " << std::hex
 	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
 	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
+	    << " HCAL: " << hcalMode()
 	    << std::dec << std::endl;
   std::cout << "\t BX             : " << bx() << std::endl;
   std::cout << "\tQuality         : " << quality() << std::endl;
@@ -206,7 +216,10 @@ void InternalTrack::print(std::ostream& out) const {
     std::cout << "\t Parent phi: " << rpcparent->phi_packed() << std::endl;
     std::cout << "\t Parent eta: " << rpcparent->eta_packed() << std::endl;
     break;
-  case 4: // L1ITMu
+  case 4: // HCAL
+    std::cout << "\tSomehow got in HCAL \"track\"!" << std::endl;
+    break;
+  case 5: // L1ITMu: it was case 4
     break;
   default:
     throw cms::Exception("Unknown Track Type") 
