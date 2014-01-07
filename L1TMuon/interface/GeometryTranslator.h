@@ -28,6 +28,7 @@ class RPCGeometry;
 class CSCGeometry;
 class CSCLayer;
 class DTGeometry;
+class GEMGeometry;
 
 namespace L1TMuon{
   class TriggerPrimitive;
@@ -49,6 +50,7 @@ namespace L1TMuon{
     edm::ESHandle<RPCGeometry> _georpc;    
     edm::ESHandle<CSCGeometry> _geocsc;    
     edm::ESHandle<DTGeometry>  _geodt;    
+    edm::ESHandle<GEMGeometry> _geogem;    
     
     GlobalPoint getRPCSpecificPoint(const TriggerPrimitive&) const;
     double calcRPCSpecificEta(const TriggerPrimitive&) const;
@@ -65,6 +67,12 @@ namespace L1TMuon{
     double calcDTSpecificEta(const TriggerPrimitive&) const;
     double calcDTSpecificPhi(const TriggerPrimitive&) const;
     double calcDTSpecificBend(const TriggerPrimitive&) const;
+
+    GlobalPoint getGEMSpecificPoint(const TriggerPrimitive&) const;
+    double calcGEMSpecificEta(const TriggerPrimitive&) const;
+    double calcGEMSpecificPhi(const TriggerPrimitive&) const;
+    double calcGEMSpecificBend(const TriggerPrimitive&) const;
+
   };
 }
 

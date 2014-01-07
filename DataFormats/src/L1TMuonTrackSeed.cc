@@ -6,6 +6,7 @@
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
+#include "DataFormats/MuonDetId/interface/GEMDetId.h"
 
 using namespace L1TMuon;
 
@@ -16,6 +17,9 @@ TrackSeed::TrackSeed( const TriggerPrimitiveRef& tp) {
     break;
   case TriggerPrimitive::kDT:
     _type = kDTOnly;
+    break;
+  case TriggerPrimitive::kGEM:
+    _type = kGEMOnly;
     break;
   case TriggerPrimitive::kRPC: // one hit seeds from RPCs not allowed    
   default:

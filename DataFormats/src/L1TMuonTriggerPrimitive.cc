@@ -10,11 +10,12 @@
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
+#include "DataFormats/MuonDetId/interface/GEMDetId.h"
 
 using namespace L1TMuon;
 
 namespace {
-  const char subsystem_names[][4] = {"DT","CSC","RPC"};
+  const char subsystem_names[][5] = {"DT","CSC","RPC","GEM"};
 }
 
 //constructors from DT data

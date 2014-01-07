@@ -37,12 +37,16 @@ class CSCDetId;
 class RPCDigiL1Link;
 class RPCDetId;
 
+// GEM digi types
+class GEMDigi;
+class GEMDetId;
+
 namespace L1TMuon {
 
   class TriggerPrimitive {
   public:
     // define the subsystems that we have available
-    enum subsystem_type{kDT,kCSC,kRPC,kNSubsystems};
+    enum subsystem_type{kDT,kCSC,kRPC,kGEM,kNSubsystems};
     
     // define the data we save locally from each subsystem type
     // variables in these structs keep their colloquial meaning
@@ -152,7 +156,8 @@ namespace L1TMuon {
     const DTData  getDTData()  const { return _dt;  }
     const CSCData getCSCData() const { return _csc; }
     const RPCData getRPCData() const { return _rpc; }      
-    
+    const GEMData getGEMData() const { return _gem; }
+
     // consistent accessors to common information    
     const int getBX() const;
     
