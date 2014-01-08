@@ -13,7 +13,5 @@
 <use name="Geometry/CSCGeometry"/>
 <use name="L1Trigger/CSCCommonTrigger"/>
 
-<use name="Geometry/GEMGeometry"/>
-
 <use name="Geometry/RPCGeometry"/>  
 <use name="FWCore/PluginManager"/>

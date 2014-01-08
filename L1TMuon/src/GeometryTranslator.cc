@@ -13,8 +13,6 @@
 #include "L1Trigger/DTUtilities/interface/DTTrigGeom.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
 
-#include "Geometry/GEMGeometry/interface/GEMGeometry.h"
-
 #include <cmath> // for pi
 
 using namespace L1TMuon;
@@ -38,9 +36,6 @@ GeometryTranslator::calculateGlobalEta(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificEta(tp);
     break;
-  case TriggerPrimitive::kGEM:
-    return calcGEMSpecificEta(tp);
-    break;
   default:
     return std::nan("Invalid TP type!"); 
     break;
@@ -58,9 +53,6 @@ GeometryTranslator::calculateGlobalPhi(const TriggerPrimitive& tp) const {
     break;
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificPhi(tp);
-    break;
-  case TriggerPrimitive::kGEM:
-    return calcGEMSpecificPhi(tp);
     break;
   default:
     return std::nan("Invalid TP type!");
@@ -80,9 +72,6 @@ GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificBend(tp);
     break;
-  case TriggerPrimitive::kGEM:
-    return calcGEMSpecificBend(tp);
-    break;
   default:
     return std::nan("Invalid TP type!");
     break;
@@ -96,7 +85,6 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
     geom.get(_georpc);  
     geom.get(_geocsc);    
     geom.get(_geodt);
-    geom.get(_geogem);    
     _geom_cache_id = geomid;
   }  
 }

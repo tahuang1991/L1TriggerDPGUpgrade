@@ -36,7 +36,6 @@ namespace L1TMuon{
     unsigned long cscMode()  const { return _parent->cscMode(); }
     unsigned long rpcbMode() const { return _parent->rpcbMode(); }
     unsigned long rpcfMode() const { return _parent->rpcfMode(); }
-    unsigned long gemMode()  const { return _parent->gemMode(); }
 
   private:    
     InternalTrackRef _parent;

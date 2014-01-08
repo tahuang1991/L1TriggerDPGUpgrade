@@ -35,7 +35,6 @@
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
-#include "DataFormats/MuonDetId/interface/GEMDetId.h"
 
 using namespace L1TMuon;
 
@@ -127,7 +126,6 @@ convertStubsToName(const TriggerPrimitive& tp1,
   CSCDetId cscid;
   RPCDetId rpcid;
   DTChamberId dtid;
-  GEMDetId gemid;
 
   type1 = tp1.subsystem();
   type2 = tp2.subsystem();
@@ -148,11 +146,6 @@ convertStubsToName(const TriggerPrimitive& tp1,
     name1 = (rpcid.region() == 0 ? std::string("RPCb") : std::string("RPCf"));
     station1 = rpcid.station();
     break;
-  case TriggerPrimitive::kGEM:
-    name1 = std::string("GEM");
-    gemid = tp1.detId<GEMDetId>();
-    station1 = gemid.station();
-    break;
   default:
     break;
   }
@@ -172,11 +165,6 @@ convertStubsToName(const TriggerPrimitive& tp1,
     rpcid = tp2.detId<RPCDetId>();
     name2 = (rpcid.region() == 0 ? std::string("RPCb") : std::string("RPCf"));
     station2 = rpcid.station();
-    break;
-  case TriggerPrimitive::kGEM:
-    name2 = std::string("GEM");
-    gemid = tp2.detId<GEMDetId>();
-    station2 = gemid.station();
     break;
   default:
     break;
