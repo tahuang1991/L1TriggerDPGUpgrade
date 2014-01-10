@@ -18,7 +18,7 @@
 using namespace L1TMuon;
 
 namespace {
-  const char subsystem_names[][5] = {"DT","CSC","RPC","HCAL"};
+  const char subsystem_names[][5] = {"DT","CSC","RPC","GEM","HCAL"};
 }
 
 //constructors from DT data
