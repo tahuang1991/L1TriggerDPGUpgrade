@@ -350,11 +350,11 @@ GeometryTranslator::calcHCALSpecificBend(const TriggerPrimitive& tp) const {
 GlobalPoint 
 GeometryTranslator::getGEMSpecificPoint(const TriggerPrimitive& tp) const {
   const GEMDetId id(tp.detId<GEMDetId>());
-  const GEMEtaPartition* roll(_geogem->etaPartition(id));
+  std::unique_ptr<const GEMEtaPartition>  roll(_geogem->etaPartition(id));
   const uint16_t strip = tp.getGEMData().strip;
   const LocalPoint lp = roll->centreOfStrip(strip);
   const GlobalPoint gp = roll->toGlobal(lp);
-   
+  roll.release();  
   return gp;
 }
 
