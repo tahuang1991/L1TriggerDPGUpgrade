@@ -233,7 +233,7 @@ const int TriggerPrimitive::getBX() const {
     return -99; //_hcal.bx;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "The specified subsystem for this track stub is out of range"
+      << "L1TMuonTriggerPrimitive: The specified subsystem for this track stub is out of range"
       << std::endl;
   }
   return -1;
@@ -318,7 +318,7 @@ void TriggerPrimitive::print(std::ostream& out) const {
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "The specified subsystem for this track stub is out of range"
+      << "L1TMuonTriggerPrimitive The specified subsystem for this track stub is out of range"
       << std::endl;
   }     
 }

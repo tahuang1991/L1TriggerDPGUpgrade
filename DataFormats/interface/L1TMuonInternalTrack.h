@@ -33,7 +33,7 @@ namespace csc {
 namespace L1TMuon{
   class InternalTrack : public L1MuRegionalCand {   
   public:
-    enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf, kHCAL, kNSubsystems };
+    enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf, kGEM, kHCAL, kNSubsystems };
     InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
     ~InternalTrack() {}    
     
@@ -68,6 +68,7 @@ namespace L1TMuon{
     unsigned long cscMode()  const { return (_mode & 0xf<<4*kCSC)>>4*kCSC; }
     unsigned long rpcbMode() const { return (_mode & 0xf<<4*kRPCb)>>4*kRPCb; }
     unsigned long rpcfMode() const { return (_mode & 0xf<<4*kRPCf)>>4*kRPCf; }
+    unsigned long gemMode()  const { return (_mode & 0xf<<4*kGEM)>>4*kGEM; }
     unsigned long hcalMode() const { return (_mode & 0xf<<4*kHCAL)>>4*kHCAL; }
 
     void print(std::ostream&) const;

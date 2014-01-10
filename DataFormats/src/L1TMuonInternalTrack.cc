@@ -6,6 +6,7 @@
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
+#include "DataFormats/MuonDetId/interface/GEMDetId.h"
 #include "DataFormats/HcalDetId/interface/HcalTrigTowerDetId.h"
 
 using namespace L1TMuon;
@@ -79,13 +80,17 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
       offset = kRPCf;
     station = stub->detId<RPCDetId>().station(); 
     break;
+  case TriggerPrimitive::kGEM:    
+    offset = kGEM;
+    station = stub->detId<GEMDetId>().station();
+    break;
   case TriggerPrimitive::kHCAL:    
     offset = kHCAL;
     station = stub->detId<HcalTrigTowerDetId>().depth()+1;
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "The specified subsystem for this track stub is out of range"
+      << "L1TMuonInternalTrack The specified subsystem for this track stub is out of range"
       << std::endl;
   }  
 
@@ -114,6 +119,7 @@ void InternalTrack::print(std::ostream& out) const {
   std::cout << "\tMode Breakdown: " << std::hex
 	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
 	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
+	    << " GEM: " << gemMode()
 	    << " HCAL: " << hcalMode()
 	    << std::dec << std::endl;
   std::cout << "\t BX             : " << bx() << std::endl;
