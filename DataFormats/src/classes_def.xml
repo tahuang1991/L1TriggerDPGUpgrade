@@ -9,11 +9,14 @@
   <class name="L1TMuon::TriggerPrimitive::DTData" ClassVersion="10">
    <version ClassVersion="10" checksum="2509427716"/>
   </class>
+  <class name="L1TMuon::TriggerPrimitive::GEMData" ClassVersion="10">
+   <version ClassVersion="10" checksum="1173811648"/>
+  </class>
   <class name="L1TMuon::TriggerPrimitive::HCALData" ClassVersion="10">
    <version ClassVersion="10" checksum="1908837509"/>
   </class>
   <class name="L1TMuon::TriggerPrimitive" ClassVersion="10">
-   <version ClassVersion="10" checksum="4128184796"/>
+   <version ClassVersion="10" checksum="2508698288"/>
   </class>
   <class name="edm::Wrapper<L1TMuon::TriggerPrimitive>"/>
   <class name="L1TMuon::TriggerPrimitiveCollection"/>

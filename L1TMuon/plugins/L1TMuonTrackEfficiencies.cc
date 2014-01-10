@@ -1,3 +1,4 @@
+
 // 
 // Class: L1TMuonTrackEfficiencies
 //
@@ -97,7 +98,7 @@ L1TMuonTrackEfficiencies::L1TMuonTrackEfficiencies(const PSet& p) {
     numerators.push_back(hist);    
   }
   denominator = _fs->make<TH1F>("denominator",";Gen p_{T} (GeV)",
-			       binning.size()-1,binning.data());  
+				binning.size()-1,binning.data());  
 
   sim_pt_bins = p.getParameter<vdouble>("sim_pt_bins");
   sim_pt_bins.push_back(1000);
@@ -138,7 +139,10 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
       gen_pt->Fill(bgen->pt());
       
       
-     
+      std::cout  << "bgen->pt() " << bgen->pt()
+		 << ", bgen->eta() "<< bgen->eta()
+		 << std::endl;
+
       edm::Handle<InternalTrackCollection> trks;
       ev.getByLabel(_trkInput,trks);
       
@@ -147,24 +151,43 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
       auto tbeg = trks->cbegin();
       auto trk  = tbeg;
       auto tend = trks->cend();
+
+      std::cout  << "  trks->csize() "<< trks->size()
+		 << std::endl;
+
       for( ; trk != tend; ++trk ){	
 	if( (int)trk->pt_packed() > best_pt ) {
 	  best_track = InternalTrackRef(trks,trk-tbeg);
 	  best_pt = best_track->pt_packed();
+	  double ptValue = pt_scale->getPtScale()->getCenter(best_pt);
+	  std::cout  << ' ' << best_pt
+		     << " best_track.isNonnull() "<< best_track.isNonnull()
+		     << " std::abs(best_track->wheel()) "<< std::abs(best_track->wheel())
+		     << " ptValue "<< ptValue
+		     << " best_track->quality() "<< best_track->quality()
+		     << std::endl;
 	}
       }
-      
-      if( best_track.isNonnull() && std::abs(best_track->wheel()) <= 2) {
+
+      if( best_track.isNonnull() && std::abs(best_track->wheel()) <= 4) {
 	denominator->Fill(bgen->pt());
 	std::vector<unsigned>::const_iterator has_mode = 
-	std::find(allowed_modes.begin(),
-		  allowed_modes.end(),
-		  best_track->dtMode());
-	if( (!allowed_modes.size() || has_mode != allowed_modes.end()) &&
+	  std::find(allowed_modes.begin(),
+		    allowed_modes.end(),
+		    best_track->dtMode());
+	std::vector<unsigned>::const_iterator has_cscmode = std::find(allowed_modes.begin(),
+								      allowed_modes.end(),
+								      best_track->cscMode());
+	
+	std::cout  << "allowed_modes.size() " << allowed_modes.size()
+		   << " !allowed_modes.size() "<< !allowed_modes.size()
+		   << " (has_mode != allowed_modes.end()) " << (has_mode != allowed_modes.end())
+		   << std::endl;
+
+	if( (allowed_modes.size() || has_mode != allowed_modes.end() || has_cscmode != allowed_modes.end()) &&
 	    best_track->quality() <= 3 && best_track->quality() > 0    ) {
 	  int pt_packed = best_track->pt_packed();
 	  double ptValue = pt_scale->getPtScale()->getCenter(pt_packed);
-	  //std::cout << pt_packed << ' ' << ptValue << std::endl;
 	  for( unsigned i = 0; i < thresholds.size(); ++i ) {
 	    if( thresholds[i] < ptValue ) {
 	      numerators[i]->Fill(bgen->pt());	    
