@@ -51,6 +51,7 @@ process.L1TMuonText = cms.EDAnalyzer(
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
     cms.InputTag('L1TMuonTriggerPrimitives','DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives','GEM')
     cms.InputTag('L1TMuonTriggerPrimitives','HCAL')
     ),
     converterSrcs = cms.VInputTag(    
@@ -118,7 +119,7 @@ process.generator = cms.EDProducer("FlatRandomPtGunProducer",
         PartID = cms.vint32(-13),
         MaxEta = cms.double(2.5),
         MaxPhi = cms.double(3.14159265359),
-        MinEta = cms.double(1.7),
+        MinEta = cms.double(1.45),
         MinPhi = cms.double(-3.14159265359)
     ),
     Verbosity = cms.untracked.int32(0),
