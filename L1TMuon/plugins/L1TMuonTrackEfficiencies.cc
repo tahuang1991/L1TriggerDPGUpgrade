@@ -138,11 +138,6 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
       gen_phi->Fill(bgen->phi());
       gen_pt->Fill(bgen->pt());
       
-      
-      std::cout  << "bgen->pt() " << bgen->pt()
-		 << ", bgen->eta() "<< bgen->eta()
-		 << std::endl;
-
       edm::Handle<InternalTrackCollection> trks;
       ev.getByLabel(_trkInput,trks);
       
@@ -152,20 +147,11 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
       auto trk  = tbeg;
       auto tend = trks->cend();
 
-      std::cout  << "  trks->csize() "<< trks->size()
-		 << std::endl;
-
       for( ; trk != tend; ++trk ){	
 	if( (int)trk->pt_packed() > best_pt ) {
 	  best_track = InternalTrackRef(trks,trk-tbeg);
 	  best_pt = best_track->pt_packed();
 	  double ptValue = pt_scale->getPtScale()->getCenter(best_pt);
-	  std::cout  << ' ' << best_pt
-		     << " best_track.isNonnull() "<< best_track.isNonnull()
-		     << " std::abs(best_track->wheel()) "<< std::abs(best_track->wheel())
-		     << " ptValue "<< ptValue
-		     << " best_track->quality() "<< best_track->quality()
-		     << std::endl;
 	}
       }
 
@@ -179,11 +165,6 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
 								      allowed_modes.end(),
 								      best_track->cscMode());
 	
-	std::cout  << "allowed_modes.size() " << allowed_modes.size()
-		   << " !allowed_modes.size() "<< !allowed_modes.size()
-		   << " (has_mode != allowed_modes.end()) " << (has_mode != allowed_modes.end())
-		   << std::endl;
-
 	if( (allowed_modes.size() || has_mode != allowed_modes.end() || has_cscmode != allowed_modes.end()) &&
 	    best_track->quality() <= 3 && best_track->quality() > 0    ) {
 	  int pt_packed = best_track->pt_packed();

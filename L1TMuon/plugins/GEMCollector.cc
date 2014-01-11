@@ -15,7 +15,6 @@ GEMCollector::GEMCollector( const edm::ParameterSet& ps ):
 void GEMCollector::extractPrimitives(const edm::Event& ev, 
 				     const edm::EventSetup& es, 
 				     std::vector<TriggerPrimitive>& out) const {
-  std::cout << "GEMCollector::extractPrimitives " << std::endl;
   edm::Handle<GEMDigiCollection> gemDigis;  
   ev.getByLabel(_src,gemDigis);    
 
