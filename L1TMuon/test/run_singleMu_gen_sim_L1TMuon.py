@@ -58,9 +58,9 @@ process.L1TMuonText = cms.EDAnalyzer(
     converterSrcs = cms.VInputTag(
     cms.InputTag('L1CSCTFTrackConverter'),
     cms.InputTag('L1DTTFTrackConverter'),
-    cms.InputTag('L1RPCbTFTrackConverter'),
-    cms.InputTag('L1RPCfTFTrackConverter'),
-    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
+#    cms.InputTag('L1RPCbTFTrackConverter'),
+#    cms.InputTag('L1RPCfTFTrackConverter'),
+#    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
     )
 )
 
