@@ -51,12 +51,16 @@ process.L1TMuonText = cms.EDAnalyzer(
     primitiveSrcs = cms.VInputTag(
     cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
     cms.InputTag('L1TMuonTriggerPrimitives','DT'),
-    cms.InputTag('L1TMuonTriggerPrimitives','GEM')
+    cms.InputTag('L1TMuonTriggerPrimitives','RPC'),
+    cms.InputTag('L1TMuonTriggerPrimitives','GEM'),
     cms.InputTag('L1TMuonTriggerPrimitives','HCAL')
     ),
-    converterSrcs = cms.VInputTag(    
+    converterSrcs = cms.VInputTag(
+    cms.InputTag('L1CSCTFTrackConverter'),
     cms.InputTag('L1DTTFTrackConverter'),
-    cms.InputTag('L1CSCTFTrackConverter')
+    cms.InputTag('L1RPCbTFTrackConverter'),
+    cms.InputTag('L1RPCfTFTrackConverter'),
+    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
     )
 )
 
