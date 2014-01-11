@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 #trigger primitives, etc.
 from L1TriggerDPGUpgrade.L1TMuon.L1TMuonTriggerPrimitiveProducer_cfi import *
 
+HcalTrigTowerGeometryESProducer = cms.ESProducer("HcalTrigTowerGeometryESProducer")
+
 # old L1 track converters
 from L1TriggerDPGUpgrade.L1TMuon.L1CSCTFTrackConverter_cfi import *
 from L1TriggerDPGUpgrade.L1TMuon.L1DTTFTrackConverter_cfi import *
