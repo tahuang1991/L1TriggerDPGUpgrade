@@ -15,6 +15,8 @@
 #include "L1Trigger/DTUtilities/interface/DTTrigGeom.h"
 #include "Geometry/RPCGeometry/interface/RPCGeometry.h"
 
+#include "Geometry/GEMGeometry/interface/GEMGeometry.h"
+
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/HcalTowerAlgo/interface/HcalTrigTowerGeometry.h"
@@ -43,6 +45,9 @@ GeometryTranslator::calculateGlobalEta(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificEta(tp);
     break;
+  case TriggerPrimitive::kGEM:
+    return calcGEMSpecificEta(tp);
+    break;
   case TriggerPrimitive::kHCAL:
     return calcHCALSpecificEta(tp);
     break;
@@ -63,6 +68,9 @@ GeometryTranslator::calculateGlobalPhi(const TriggerPrimitive& tp) const {
     break;
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificPhi(tp);
+    break;
+  case TriggerPrimitive::kGEM:
+    return calcGEMSpecificPhi(tp);
     break;
   case TriggerPrimitive::kHCAL:
     return calcHCALSpecificPhi(tp);
@@ -85,6 +93,9 @@ GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
   case TriggerPrimitive::kRPC:
     return calcRPCSpecificBend(tp);
     break;
+  case TriggerPrimitive::kGEM:
+    return calcGEMSpecificBend(tp);
+    break;
   case TriggerPrimitive::kHCAL:
     return calcHCALSpecificBend(tp);
     break;
@@ -102,6 +113,7 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
     geom.get(_georpc);  
     geom.get(_geocsc);    
     geom.get(_geodt);
+    geom.get(_geogem);
     _geom_cache_id = geomid;
     //}  
 
@@ -331,5 +343,32 @@ GeometryTranslator::calcHCALSpecificPhi(const TriggerPrimitive& tp) const {
 // hits are point-like objects
 double 
 GeometryTranslator::calcHCALSpecificBend(const TriggerPrimitive& tp) const {
+  return 0.0;
+}
+
+
+GlobalPoint 
+GeometryTranslator::getGEMSpecificPoint(const TriggerPrimitive& tp) const {
+  const GEMDetId id(tp.detId<GEMDetId>());
+  std::unique_ptr<const GEMEtaPartition>  roll(_geogem->etaPartition(id));
+  const uint16_t strip = tp.getGEMData().strip;
+  const LocalPoint lp = roll->centreOfStrip(strip);
+  const GlobalPoint gp = roll->toGlobal(lp);
+  roll.release();  
+  return gp;
+}
+
+double 
+GeometryTranslator::calcGEMSpecificEta(const TriggerPrimitive& tp) const {  
+  return getGEMSpecificPoint(tp).eta();
+}
+
+double 
+GeometryTranslator::calcGEMSpecificPhi(const TriggerPrimitive& tp) const {  
+  return getGEMSpecificPoint(tp).phi();
+}
+
+double 
+GeometryTranslator::calcGEMSpecificBend(const TriggerPrimitive& tp) const {
   return 0.0;
 }
