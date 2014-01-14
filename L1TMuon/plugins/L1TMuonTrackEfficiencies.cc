@@ -151,7 +151,6 @@ void L1TMuonTrackEfficiencies::analyze(const edm::Event& ev,
 	if( (int)trk->pt_packed() > best_pt ) {
 	  best_track = InternalTrackRef(trks,trk-tbeg);
 	  best_pt = best_track->pt_packed();
-	  double ptValue = pt_scale->getPtScale()->getCenter(best_pt);
 	}
       }
 
