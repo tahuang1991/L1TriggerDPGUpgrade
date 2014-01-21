@@ -12,7 +12,7 @@ L1TMuonTriggerPrimitives = cms.EDProducer(
                      src = cms.InputTag('simDtTriggerPrimitiveDigis'),
                      BX_min = cms.int32(dttfDigis.BX_min.value()),
                      BX_max = cms.int32(dttfDigis.BX_max.value()),
-                     runBunchCrossingCleaner = cms.bool(False),
+                     runBunchCrossingCleaner = cms.bool(True),
                      bxCleanerCfg = DTBunchCrossingCleanerCfg ),
     
     RPC = cms.PSet( collectorType = cms.string('RPCCollector'),
@@ -21,7 +21,7 @@ L1TMuonTriggerPrimitives = cms.EDProducer(
     CSC  = cms.PSet( collectorType = cms.string('CSCCollector'),
                      src = cms.InputTag('simCscTriggerPrimitiveDigis',
                                         'MPCSORTED') ),
-
+                                        
     GEM  = cms.PSet( collectorType = cms.string('GEMCollector'),
                      src = cms.InputTag('simMuonGEMDigis') ),
 
