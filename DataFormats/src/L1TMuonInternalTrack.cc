@@ -52,9 +52,7 @@ InternalTrack::InternalTrack(const InternalTrackRef& parent):
 }
 
 unsigned InternalTrack::type_idx() const {  
-  if( _parent.isNonnull() && _type < 4) {
-    return L1MuRegionalCand::type_idx();
-  }
+  if( _parent.isNonnull() ) return L1MuRegionalCand::type_idx();
   return _type;
 }
 
@@ -62,9 +60,6 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   unsigned station;
   subsystem_offset offset;
   TriggerPrimitive::subsystem_type type = stub->subsystem();
-
-  //std::cout << "What is type? In L1TMuonInternalTrack.cc: " << type << std::endl;
-
   switch(type){
   case TriggerPrimitive::kCSC:    
     offset = kCSC;
@@ -90,14 +85,13 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "L1TMuonInternalTrack The specified subsystem for this track stub is out of range"
+      << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }  
 
   const unsigned shift = 4*offset + station - 1;
-
   const unsigned bit = 1 << shift;
-  // add this track to the mode
+   // add this track to the mode
   _mode = _mode | bit;
   if( _associatedStubs.count(shift) == 0 ) {
     _associatedStubs[shift] = TriggerPrimitiveList();
@@ -118,7 +112,7 @@ void InternalTrack::print(std::ostream& out) const {
 	    << mode() << std::dec << std::endl;
   std::cout << "\tMode Breakdown: " << std::hex
 	    << " DT: " << dtMode() << " RPCb: " << rpcbMode()
-	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode() 
+	    << " CSC: " << cscMode() << " RPCf: " << rpcfMode()
 	    << " GEM: " << gemMode()
 	    << " HCAL: " << hcalMode()
 	    << std::dec << std::endl;

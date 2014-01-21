@@ -1,6 +1,5 @@
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/PtRefinementUnit.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 #include "CondFormats/DataRecord/interface/L1MuTriggerScalesRcd.h"
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
 

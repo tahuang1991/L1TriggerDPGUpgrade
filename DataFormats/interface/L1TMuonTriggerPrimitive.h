@@ -109,7 +109,7 @@ namespace L1TMuon {
       int theta_code;
       int theta_quality;
     };
-    
+ 
     struct GEMData {// GEMDigi only has strip and bx
     GEMData() : strip(0), bx(0) {}
       uint16_t strip;
@@ -123,8 +123,7 @@ namespace L1TMuon {
       bool SOI_fineGrain;
       int SOI_compressedEt;
     };
-
-
+   
     //Persistency
     TriggerPrimitive(): _subsystem(kNSubsystems) {}
       
@@ -147,7 +146,7 @@ namespace L1TMuon {
 		     const unsigned strip,
 		     const unsigned layer,
 		     const uint16_t bx);
-
+    
     //GEM
     TriggerPrimitive(const GEMDetId&,
 		     const GEMDigi&);
@@ -155,8 +154,8 @@ namespace L1TMuon {
     //HCAL
     TriggerPrimitive(const HcalTrigTowerDetId& detid,
 		     const HcalTriggerPrimitiveDigi&); 
-    
-    //copy
+
+   //copy
     TriggerPrimitive(const TriggerPrimitive&);
 
     TriggerPrimitive& operator=(const TriggerPrimitive& tp);
@@ -176,11 +175,9 @@ namespace L1TMuon {
     void setThetaBend(const double theta) { _theta = theta; }
     double getThetaBend() const { return _theta; }
 
-    //template<typename IDType>
-    //  IDType detId() const { return IDType(_id); }
-
     template<typename IDType>
-      IDType detId() const { return IDType(_id.rawId()); }
+      IDType detId() const { return IDType(_id); }
+    //IDType detId() const { return IDType(_id.rawId()); }
 
     // accessors to raw subsystem data
     const DTData  getDTData()  const { return _dt;  }
@@ -191,6 +188,10 @@ namespace L1TMuon {
 
     // consistent accessors to common information    
     const int getBX() const;
+    const int getStrip() const;
+    const int getWire() const;
+    const int getPattern() const;
+    const int Id() const;
     
     const unsigned getGlobalSector() const { return _globalsector; } 
     const unsigned getSubSector() const { return _subsector; } 
@@ -221,7 +222,7 @@ namespace L1TMuon {
     RPCData _rpc;
     GEMData _gem;
     HCALData _hcal;
-    
+
     DetId _id;
     
     subsystem_type _subsystem;

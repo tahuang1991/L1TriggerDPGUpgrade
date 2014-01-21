@@ -50,11 +50,11 @@ namespace L1TMuon{
     // pointers to the current geometry records
     unsigned long long _geom_cache_id;
     edm::ESHandle<RPCGeometry> _georpc;    
-    edm::ESHandle<CSCGeometry> _geocsc;    
+    edm::ESHandle<CSCGeometry> _geocsc; 
     edm::ESHandle<DTGeometry>  _geodt;
     edm::ESHandle<GEMGeometry> _geogem;
     edm::ESHandle<CaloGeometry>  _geohcal;    
-    edm::ESHandle<HcalTrigTowerGeometry>  _geohcaltrig;    
+    edm::ESHandle<HcalTrigTowerGeometry>  _geohcaltrig;       
     
     GlobalPoint getRPCSpecificPoint(const TriggerPrimitive&) const;
     double calcRPCSpecificEta(const TriggerPrimitive&) const;
