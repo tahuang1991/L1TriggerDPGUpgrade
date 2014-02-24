@@ -8,7 +8,7 @@
 debug=
 opt=-O0
 gpp=g++
-sim_lib=../sim_lib_src
+sim_lib=../.
 ROOTFLAGS = $(shell root-config --cflags)
 ROOTLIBS = $(shell root-config --libs)
 
