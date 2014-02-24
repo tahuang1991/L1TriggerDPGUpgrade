@@ -8,7 +8,7 @@
 debug=
 opt=-O0
 gpp=g++
-sim_lib=../.
+sim_lib=../
 ROOTFLAGS = $(shell root-config --cflags)
 ROOTLIBS = $(shell root-config --libs)
 
@@ -71,7 +71,7 @@ zone_best3.o : zone_best3.cpp zone_best3.h zone_best.h vppc_sim_lib.h
 sp.o : sp.cpp sp.h prim_conv_sector.h zones.h extend_sector.h ph_pattern_sector.h sort_sector.h coord_delay.h match_ph_segments.h deltas_sector.h best_tracks.h vppc_sim_lib.h 
 	$(gpp) -Wall $(debug) $(opt) -I$(sim_lib) -o $@ -c $<
 
-sp_tf.o : sp_tf.cpp sp_tf.h sp.h vppc_sim_lib.h 
+sp_tf.o : $(sim_lib)/sp_tf.cpp sp_tf.h sp.h vppc_sim_lib.h 
 	$(gpp) -Wall $(debug) $(opt) -I$(sim_lib) -o $@ -c $< $(ROOTFLAGS)
 
 zones.o : zones.cpp zones.h vppc_sim_lib.h 
