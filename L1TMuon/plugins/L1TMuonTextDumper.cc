@@ -397,7 +397,6 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   //// Below here is working additions to make //
   //// efficiency plots and can be neglected ////
   ///////////////////////////////////////////////
-  /*
   
   if(gpir)
   	eff->Fill(FoundTracks->size());
@@ -616,9 +615,8 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   
   if(gpir && !detectorinefficiency)
   	gpire[etaindex]++;
-*/	
   
-  /*
+
   if(gpir && (FoundTracks->size() == 1)){
   
   	std::cout<<"\nFOUND ONE MUON-------------Sector "<<windex[0]/3<<"\n";
@@ -640,7 +638,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
 	else if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
 		ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
 		std::cout<<"\n3\n";}
-	else{/*if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap())//need ender here
+	else{if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap())//need ender here
 		ecap = FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap();
 		std::cout<<"\n4\n";}
 		
@@ -688,8 +686,6 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   
   }
   
- */ 
- /*
   if(gpir && (FoundTracks->size() == 2)){
   
   	
@@ -712,7 +708,6 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   	std::cout<<"\nFOUND THREE MUONS---------- Sectors: "<<windex[0]/3<<", "<<windex[1]/3<<" and "<<windex[2]/3<<"\n";
   }
 
-  */
   
  //  std::cout<<"Begin Put function\n\n";
 ev.put( FoundTracks, "DataITC");
