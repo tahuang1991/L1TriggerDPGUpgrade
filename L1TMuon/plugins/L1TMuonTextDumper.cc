@@ -621,7 +621,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     std::vector<ConvertedHit> ahits = FourBest[0].AHits;
 	
     std::cout<<"ahits.size() = "<<ahits.size()<<std::endl;
-    std::cout<<"ahits[0].TP() "<< ahits[0] << std::endl;
+    std::cout<<"ahits[0].Phi() "<< ahits[0].Phi() << std::endl;
 	
     std::cout<<"endcap = "<<ahits[0].TP()->detId<CSCDetId>().endcap()<<std::endl;
     
