@@ -126,41 +126,37 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     auto tpend = tps->cend();
 
     for( ; tp != tpend; ++tp ) {
-      if(tp->subsystem() == 1)
-	{
-	  TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
+      if(tp->subsystem() == 1){
+	TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
-	  tester.push_back(tpref);
+	tester.push_back(tpref);
 		
-	  std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
+	std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
 		
-	  if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
+	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
 		
-	    if(tp->detId<CSCDetId>().endcap() == 1)
-	      ME42test1->Fill(GeneratorMuon.phi());
+	  if(tp->detId<CSCDetId>().endcap() == 1)
+	    ME42test1->Fill(GeneratorMuon.phi());
 			
-	    if(tp->detId<CSCDetId>().endcap() == 2)
-	      ME42test2->Fill(GeneratorMuon.phi());
+	  if(tp->detId<CSCDetId>().endcap() == 2)
+	    ME42test2->Fill(GeneratorMuon.phi());
 		
-	  }
-		
-		
-	  /*
-	    if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 4))
-	    ME1gangnedtest->Fill(tp->getCSCData().strip);
-			
-	    if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 1))
-	    ME11gangnedtest->Fill(tp->getCSCData().strip);
-	  */
-	  //if(tp->detId<CSCDetId>().triggerSector() == 1){
-		
-	  //std::cout<<"there are sector 1 csc hits\n\n";
-	  //std::cout<<"strip = "<<tp->getCSCData().strip<<std::endl;
-	  //striph->Fill(tp->getCSCData().strip);
-	  //}
 	}
- 
-    }    
+	  
+	if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 4))
+	  ME1gangnedtest->Fill(tp->getCSCData().strip);
+			
+	if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 1))
+	  ME11gangnedtest->Fill(tp->getCSCData().strip);
+	  
+	if(tp->detId<CSCDetId>().triggerSector() == 1){
+		
+	  std::cout<<"there are sector 1 csc hits\n\n";
+	  std::cout<<"strip = "<<tp->getCSCData().strip<<std::endl;
+	  striph->Fill(tp->getCSCData().strip);
+	}
+      }
+    }  
   }
   std::vector<ConvertedHit> CHits[12];
   MatchingOutput MO[12];
@@ -625,6 +621,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     std::vector<ConvertedHit> ahits = FourBest[0].AHits;
 	
     std::cout<<"ahits.size() = "<<ahits.size()<<std::endl;
+    std::cout<<"ahits[0].TP() "<< ahits[0].TP() << std::endl;
 	
     std::cout<<"endcap = "<<ahits[0].TP()->detId<CSCDetId>().endcap()<<std::endl;
     
