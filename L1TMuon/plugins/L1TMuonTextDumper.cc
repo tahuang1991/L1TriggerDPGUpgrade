@@ -622,6 +622,9 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	
     std::cout<<"ahits.size() = "<<ahits.size()<<std::endl;
     std::cout<<"ahits[0].Phi() "<< ahits[0].Phi() << std::endl;
+    std::cout<<"ahits[1].Phi() "<< ahits[1].Phi() << std::endl;
+    std::cout<<"ahits[2].Phi() "<< ahits[2].Phi() << std::endl;
+    std::cout<<"ahits[3].Phi() "<< ahits[3].Phi() << std::endl;
 	
     std::cout<<"endcap = "<<ahits[0].TP()->detId<CSCDetId>().endcap()<<std::endl;
     
