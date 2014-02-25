@@ -628,8 +628,6 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	
     std::cout<<"endcap = "<<ahits[0].TP()->detId<CSCDetId>().endcap()<<std::endl;
     
-    std::cout<<"error 1 "<<std::endl;
-
     if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
       ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
       std::cout<<"\n1\n";}
