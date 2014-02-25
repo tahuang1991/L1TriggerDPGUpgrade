@@ -68,7 +68,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   edm::Handle<std::vector<reco::GenParticle>> GenMuons;
   std::vector<reco::GenParticle>::const_iterator GI;
   ev.getByLabel("genParticles",GenMuons);
-  //bool gpir = false, endcap1 = false, endcap2 = false;
+  bool gpir = false, endcap1 = false, endcap2 = false;
   int etaindex = -99;
   reco::GenParticle GeneratorMuon;
   for(GI=GenMuons->begin();GI!=GenMuons->end();GI++){
@@ -79,7 +79,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	int charge = GenMuon.charge();
 	
 	std::cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
-  	/*
+  	
   	if((fabs(eta) > 1.2) && (fabs(eta) <= 2.4) && (pt >= 5))
 		gpir = true;
 	
@@ -88,7 +88,6 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	
 	if(eta < 0)
 		endcap2 = true;
-	*/
 	
 	for(int y=0;y<24;y++){
 	
@@ -400,8 +399,8 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   
   if(gpir)
   	eff->Fill(FoundTracks->size());
-  //else if(gpir && endcap2)
-  	//eff2->Fill(FoundTracks->size());
+  if(gpir && endcap2)
+  	eff2->Fill(FoundTracks->size());
 
   if(gpir && epir && etaindex != -99)
   	fpire[etaindex]++;
