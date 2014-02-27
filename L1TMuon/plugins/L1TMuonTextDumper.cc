@@ -626,22 +626,30 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     std::cout<<"ahits[2].Phi() "<< ahits[2].Phi() << std::endl;
     std::cout<<"ahits[3].Phi() "<< ahits[3].Phi() << std::endl;
 	
-    std::cout<<"endcap = "<<ahits[0].TP()->detId<CSCDetId>().endcap()<<std::endl;
     
-    if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
-      ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
-      std::cout<<"\n1\n";}
-    else if(FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap()){
-      ecap = FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap();
-      std::cout<<"\n2\n";}
-    else if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
-      ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
-      std::cout<<"\n3\n";}
-    else{if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap())//need ender here
+    if(FourBest[0].AHits[0].Phi() != -999){
+      if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
+	ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
+	std::cout<<"\n1\n";}
+    }
+    else if(FourBest[0].AHits[1].Phi() != -999){
+      if(FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap()){
+	ecap = FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap();
+	std::cout<<"\n2\n";}
+    }
+    else if(FourBest[0].AHits[2].Phi() != -999){
+      if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
+	ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
+	std::cout<<"\n3\n";}
+    }
+    else if(FourBest[0].AHits[3].Phi() != -999){
+      if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap()){
 	ecap = FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap();
-      std::cout<<"\n4\n";}
+	std::cout<<"\n4\n";}
+    }
 		
-	
+    std::cout<<"ecap "<< ecap << std::endl;
+
     std::cout<<"\n5\n";
 	
     int cont = 0, numTP = 0;
