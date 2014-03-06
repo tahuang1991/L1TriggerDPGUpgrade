@@ -117,13 +117,13 @@ void GeometryTranslator::checkAndUpdateGeometry(const edm::EventSetup& es) {
     _geom_cache_id = geomid;
     //}  
 
-  const CaloGeometryRecord& geomC = es.get<CaloGeometryRecord>();
-  geomid = geomC.cacheIdentifier(); 
-  //if( _geom_cache_id != geomid ) {
-    geomC.get(_geohcal);
-    geomC.get(_geohcaltrig);
-    _geom_cache_id = geomid;
-    //}
+  // const CaloGeometryRecord& geomC = es.get<CaloGeometryRecord>();
+  // geomid = geomC.cacheIdentifier(); 
+  // //if( _geom_cache_id != geomid ) {
+  //   geomC.get(_geohcal);
+  //   geomC.get(_geohcaltrig);
+  //   _geom_cache_id = geomid;
+  //   //}
 
 }
 
