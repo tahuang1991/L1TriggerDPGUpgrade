@@ -18,8 +18,9 @@ namespace L1TMuon {
     BDTPtAssignment(const edm::ParameterSet&);
     ~BDTPtAssignment() {}
 
-    virtual void assignPt(const edm::EventSetup&, 
-			  InternalTrack&) const;
+    virtual void updateEventSetup(const edm::EventSetup&);
+
+    virtual void assignPt(InternalTrack&) = 0;
   private:    
   };
 }
