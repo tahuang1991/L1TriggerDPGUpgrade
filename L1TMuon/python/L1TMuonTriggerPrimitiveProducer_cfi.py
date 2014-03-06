@@ -23,8 +23,8 @@ L1TMuonTriggerPrimitives = cms.EDProducer(
                                         'MPCSORTED') ),
 
     GEM  = cms.PSet( collectorType = cms.string('GEMCollector'),
-                     src = cms.InputTag('simMuonGEMDigis') ),
+                     src = cms.InputTag('simMuonGEMDigis') )
 
-    HCAL = cms.PSet( collectorType = cms.string('HCALCollector'),
-                     src = cms.InputTag('simHcalTriggerPrimitiveDigis') )
+#    HCAL = cms.PSet( collectorType = cms.string('HCALCollector'),
+#                     src = cms.InputTag('simHcalTriggerPrimitiveDigis') )
     )
