@@ -35,7 +35,7 @@ namespace L1TMuon{
   public:
     enum subsystem_offset{ kDT, kRPCb, kCSC, kRPCf, kGEM, kHCAL, kNSubsystems };
     InternalTrack():_endcap(0),_wheel(0),_sector(0),_type(5),_mode(0) {}
-    ~InternalTrack() {}    
+    ~InternalTrack() {}
     
     InternalTrack(const L1MuDTTrackCand&);
     InternalTrack(const csc::L1Track&);
@@ -72,7 +72,17 @@ namespace L1TMuon{
     unsigned long hcalMode() const { return (_mode & 0xf<<4*kHCAL)>>4*kHCAL; }
 
     void print(std::ostream&) const;
-
+    
+    /// TEMPORARY ADDITION by G. Brown ///
+    //struct varStorage
+   // {
+        int phi;
+        int theta;
+	int rank;
+	std::vector< std::vector<int> > deltas;
+	// } ;
+    ////////////////////////
+	
   private:
     TriggerPrimitiveStationMap _associatedStubs;
     int _endcap, _wheel, _sector;

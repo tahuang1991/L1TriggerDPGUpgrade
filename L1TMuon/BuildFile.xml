@@ -1,6 +1,7 @@
 <export>
   <lib name="1"/>  
-  <use name="L1TriggerDPGUpgrade/DataFormats"/>    
+  <use name="L1TriggerDPGUpgrade/DataFormats"/>   
+  <use name="root"/> 
 </export>
 
 <use name="L1TriggerDPGUpgrade/DataFormats"/>
@@ -14,8 +15,18 @@
 <use name="L1Trigger/CSCCommonTrigger"/>
 
 <use name="Geometry/RPCGeometry"/>  
-<use name="FWCore/PluginManager"/>
+
 <use name="Geometry/GEMGeometry"/>
 
-<use name="Geometry/CaloGeometry"/>
 <use name="Geometry/HcalTowerAlgo"/>
+
+<use name="FWCore/PluginManager"/>
+<use name="rootrflx"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="rootgraphics"/>
+<use name="root"/>
+<use name="rootmath"/>
+
+<use name="L1Trigger/CSCTrackFinder"/>
+
+<flags ADD_SUBDIR="1"/>

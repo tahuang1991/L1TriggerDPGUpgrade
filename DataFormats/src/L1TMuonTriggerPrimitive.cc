@@ -112,7 +112,6 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
   _csc.cscID   = digi.getCSCID();
   //_csc.gemBX   = digi.getGEMBX();
   _csc.gemDPhi = digi.getGEMDPhi();
-
 }
 
 // constructor from RPC data
@@ -233,7 +232,70 @@ const int TriggerPrimitive::getBX() const {
     return -99; //_hcal.bx;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "L1TMuonTriggerPrimitive: The specified subsystem for this track stub is out of range"
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  return -1;
+}
+
+const int TriggerPrimitive::getStrip() const {
+  switch(_subsystem) {
+  case kDT:
+    return -1;
+  case kCSC:
+    return _csc.strip;
+  case kRPC:
+    return _rpc.strip;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  return -1;
+}
+
+const int TriggerPrimitive::getWire() const {
+  switch(_subsystem) {
+  case kDT:
+    return -1;
+  case kCSC:
+    return _csc.keywire;
+  case kRPC:
+    return -1;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  return -1;
+}
+
+const int TriggerPrimitive::getPattern() const {
+  switch(_subsystem) {
+  case kDT:
+    return -1;
+  case kCSC:
+    return _csc.pattern;
+  case kRPC:
+    return -1;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
+      << std::endl;
+  }
+  return -1;
+}
+const int TriggerPrimitive::Id() const {
+  switch(_subsystem) {
+  case kDT:
+    return -1;
+  case kCSC:
+    return _csc.cscID;
+  case kRPC:
+    return -1;
+  default:
+    throw cms::Exception("Invalid Subsytem") 
+      << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }
   return -1;
@@ -318,7 +380,7 @@ void TriggerPrimitive::print(std::ostream& out) const {
     break;
   default:
     throw cms::Exception("Invalid Subsytem") 
-      << "L1TMuonTriggerPrimitive The specified subsystem for this track stub is out of range"
+      << "The specified subsystem for this track stub is out of range"
       << std::endl;
   }     
 }
