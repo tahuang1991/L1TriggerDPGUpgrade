@@ -19,6 +19,7 @@
 #include "CondFormats/DataRecord/interface/L1MuTriggerScalesRcd.h"
 #include "CondFormats/L1TObjects/interface/L1MuTriggerPtScale.h"
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
+#include <L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -407,6 +408,14 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   CSCTFPtLUT* ptLUT_ = new CSCTFPtLUT(LUTparam, scales.product(),ptScale.product());
    
   cout << "ptLUT_ " << ptLUT_ << endl;
+  ptadd address;
+  address.delta_phi_12 = delta_phi_12;
+  address.delta_phi_23 = delta_phi_23;
+  address.track_eta = track_eta;
+  address.track_mode = track_mode;
+  address.track_fr = track_fr;
+  address.delta_phi_sign = delta_phi_sign;
+
   // vector<csc::L1Track>::iterator titr = tftks.begin();
 
   // for(; titr != tftks.end(); titr++){
