@@ -408,34 +408,45 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   CSCTFPtLUT* ptLUT_ = new CSCTFPtLUT(LUTparam, scales.product(),ptScale.product());
    
   cout << "ptLUT_ " << ptLUT_ << endl;
-  ptadd address;
-  address.delta_phi_12 = delta_phi_12;
-  address.delta_phi_23 = delta_phi_23;
-  address.track_eta = track_eta;
-  address.track_mode = track_mode;
-  address.track_fr = track_fr;
-  address.delta_phi_sign = delta_phi_sign;
+  cout << "FoundTracks->size() " << FoundTracks->size() << endl;
+  //  for (auto foundTrack : FoundTracks){
 
-  // vector<csc::L1Track>::iterator titr = tftks.begin();
+  auto stub = FoundTracks->begin();
+  auto stend = FoundTracks->end();
+  for( ; stub != stend; ++stub ) {
 
-  // for(; titr != tftks.end(); titr++){
-  //   ptadd thePtAddress(titr->ptLUTAddress());
-  //   ptdat thePtData = ptLUT_->Pt(thePtAddress);
+    // cout << "foundTrack->phiValue() " << stub->phiValue() << endl;
+    // cout << "foundTrack->etaValue() " << stub->etaValue() << endl;
+    // cout << "foundTrack->ptValue() " << stub->ptValue() << endl;
 
-  //   if (thePtAddress.track_fr){
-  //     titr->setRank(thePtData.front_rank);
-  //     titr->setChargeValidPacked(thePtData.charge_valid_front);
-  //   }
-  //   else {
-  //     titr->setRank(thePtData.rear_rank);
-  //     titr->setChargeValidPacked(thePtData.charge_valid_rear);
-  //   }
-  //   if ( ((titr->ptLUTAddress()>>16)&0xf)==15 ){
-  //     int unmodBx = titr->bx();
-  //     titr->setBx(unmodBx+2);
-  //   }
-  // }
+    //    ptadd address;
+    // address.delta_phi_12 = delta_phi_12;
+    // address.delta_phi_23 = delta_phi_23;
+    //    address.track_eta = track_eta;
+    // address.track_mode = track_mode;
+    // address.track_fr = track_fr;
+    // address.delta_phi_sign = delta_phi_sign;
 
+    // vector<csc::L1Track>::iterator titr = tftks.begin();
+
+    // for(; titr != tftks.end(); titr++){
+    //   ptadd thePtAddress(titr->ptLUTAddress());
+    //   ptdat thePtData = ptLUT_->Pt(thePtAddress);
+
+    //   if (thePtAddress.track_fr){
+    //     titr->setRank(thePtData.front_rank);
+    //     titr->setChargeValidPacked(thePtData.charge_valid_front);
+    //   }
+    //   else {
+    //     titr->setRank(thePtData.rear_rank);
+    //     titr->setChargeValidPacked(thePtData.charge_valid_rear);
+    //   }
+    //   if ( ((titr->ptLUTAddress()>>16)&0xf)==15 ){
+    //     int unmodBx = titr->bx();
+    //     titr->setBx(unmodBx+2);
+    //   }
+    // }
+  }
   ///////////////////////////////////////////////
   //// Below here is working additions to make //
   //// efficiency plots and can be neglected ////
