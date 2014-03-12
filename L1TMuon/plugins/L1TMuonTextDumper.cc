@@ -133,6 +133,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     auto tpend = tps->cend();
 
     for( ; tp != tpend; ++tp ) {
+      std::cout << "jason: tp->subsystem()" << tp->subsystem() << std::endl;
       if(tp->subsystem() == 1){
 	TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
@@ -230,6 +231,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
  
+    cout << "test PatternOutput " << endl;
     PrintQuality(Test.detected);
  
 
@@ -419,14 +421,14 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     // cout << "foundTrack->etaValue() " << stub->etaValue() << endl;
     // cout << "foundTrack->ptValue() " << stub->ptValue() << endl;
 
-    //    ptadd address;
+    // ptadd address;
     // address.delta_phi_12 = delta_phi_12;
     // address.delta_phi_23 = delta_phi_23;
-    //    address.track_eta = track_eta;
+    // address.track_eta = track_eta;
     // address.track_mode = track_mode;
     // address.track_fr = track_fr;
     // address.delta_phi_sign = delta_phi_sign;
-
+    
     // vector<csc::L1Track>::iterator titr = tftks.begin();
 
     // for(; titr != tftks.end(); titr++){
