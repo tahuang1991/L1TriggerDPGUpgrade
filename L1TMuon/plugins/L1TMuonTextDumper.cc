@@ -484,16 +484,15 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	
       int contribution = 0;
       for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
-			
-	int station = (*C1)->detId<CSCDetId>().station();
-	switch(station){
-			
-	case(1):contribution |= 8;break;
-	case(2):contribution |= 4;break;
-	case(3):contribution |= 2;break;
-	case(4):contribution |= 1;break;
-	default:cout<<"Station is out of range\n";
-			
+	if (C3->subsystem() == TriggerPrimitive::kCSC){
+	  int station = (*C1)->detId<CSCDetId>().station();
+	  switch(station){
+	  case(1):contribution |= 8;break;
+	  case(2):contribution |= 4;break;
+	  case(3):contribution |= 2;break;
+	  case(4):contribution |= 1;break;
+	  default:cout<<"Station is out of range\n";
+	  }
 	}
       }
 		
@@ -724,12 +723,13 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 			
       int stat = 0;
       cout<<"\n2\n";
-		
-      if((*C1)->detId<CSCDetId>().endcap() != ecap){
-	stat = (*C1)->detId<CSCDetId>().station();
-	numTP++;
+      
+      if (C3->subsystem() == TriggerPrimitive::kCSC){
+	if((*C1)->detId<CSCDetId>().endcap() != ecap){
+	  stat = (*C1)->detId<CSCDetId>().station();
+	  numTP++;
+	}
       }
-		
       cout<<"\n3\n";
 		
       switch(stat){
