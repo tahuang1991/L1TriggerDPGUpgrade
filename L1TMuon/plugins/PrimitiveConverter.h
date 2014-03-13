@@ -18,52 +18,52 @@
 #include "L1TriggerDPGUpgrade/L1TMuon/test/PhDisp.h"
 
 /*
-int Thinit[51] = {7,9,7,46,49,46,98,98,98,6,7,6,9,7,9,49,46,49,98,98,98,7,6,7,6,5,6,53,55,53,55,
-   		     53,55,5,6,5,46,44,46,44,46,44,6,7,6,40,38,40,38,40,38};
+  int Thinit[51] = {7,9,7,46,49,46,98,98,98,6,7,6,9,7,9,49,46,49,98,98,98,7,6,7,6,5,6,53,55,53,55,
+  53,55,5,6,5,46,44,46,44,46,44,6,7,6,40,38,40,38,40,38};
 		     
-int Thdisp[51] = {6,8,6,4,7,4,4,4,4,5,6,5,8,6,8,7,4,7,4,4,4,6,5,6,5,4,5,5,7,5,
-   	   	     7,5,7,4,5,4,6,4,6,4,6,4,4,5,4,6,4,6,4,6,4};
+  int Thdisp[51] = {6,8,6,4,7,4,4,4,4,5,6,5,8,6,8,7,4,7,4,4,4,6,5,6,5,4,5,5,7,5,
+  7,5,7,4,5,4,6,4,6,4,6,4,4,5,4,6,4,6,4,6,4};
 		     
-int Phdisp[51] = {4,5,5,4,4,5,5,5,4,4,5,5,4,4,5,5,4,4,4,5,5,4,4,5,5,4,5,4,4,5,5,
-   		     4,6,4,3,4,3,3,5,4,4,5,4,3,4,6,5,5,4,6,5};
+  int Phdisp[51] = {4,5,5,4,4,5,5,5,4,4,5,5,4,4,5,5,4,4,4,5,5,4,4,5,5,4,5,4,4,5,5,
+  4,6,4,3,4,3,3,5,4,4,5,4,3,4,6,5,5,4,6,5};
 		    
  
-int Phinit[5][12] = {{125,725,1325,132,732,1332,215,815,1415,131,731,1331},
-   		     {1925,2525,3125,1932,2532,3132,2015,2615,3215,1931,2531,3131},
-		     {116,1316,2516,132,732,1332,1932,2532,3132,-999,-999,-999},
-		     {1380,2580,3780,764,1364,1964,2564,3164,3764,-999,-999,-999},
-		     {1380,2580,3780,764,1364,1964,2564,3164,3764,-999,-999,-999}};
+  int Phinit[5][12] = {{125,725,1325,132,732,1332,215,815,1415,131,731,1331},
+  {1925,2525,3125,1932,2532,3132,2015,2615,3215,1931,2531,3131},
+  {116,1316,2516,132,732,1332,1932,2532,3132,-999,-999,-999},
+  {1380,2580,3780,764,1364,1964,2564,3164,3764,-999,-999,-999},
+  {1380,2580,3780,764,1364,1964,2564,3164,3764,-999,-999,-999}};
 */
 		     
 int ph_offsetss[5][9][3] = {{{2,2,-99},{20,20,-99},{39,39,-99},{2,-99,-99},{21,-99,-99},{39,-99,-99},{4,-99,-99},{23,-99,-99},{42,-99,-99}},
-			   {{58,58,-99},{77,77,-99},{95,95,-99},{58,-99,-99},{77,-99,-99},{96,-99,-99},{61,-99,-99},{79,-99,-99},{98,-99,-99}},
-			   {{1,1,-99},{39,39,-99},{76,76,-99},{2,2,-99},{21,21,-99},{39,39,-99},{58,58,-99},{77,77,-99},{95,95,-99}},
-			   {{1,-99,-99},{39,-99,-99},{76,-99,-99},{2,2,2},{21,21,21},{39,39,39},{58,58,58},{77,77,77},{95,95,95}},
-			   {{1,-99,-99},{39,-99,-99},{76,-99,-99},{2,1,-99},{21,20,-99},{39,39,-99},{58,58,-99},{77,76,-99},{95,95,-99}}};//[station][id][phzvl look up #(-99 indicates invaled entry)]
+			    {{58,58,-99},{77,77,-99},{95,95,-99},{58,-99,-99},{77,-99,-99},{96,-99,-99},{61,-99,-99},{79,-99,-99},{98,-99,-99}},
+			    {{1,1,-99},{39,39,-99},{76,76,-99},{2,2,-99},{21,21,-99},{39,39,-99},{58,58,-99},{77,77,-99},{95,95,-99}},
+			    {{1,-99,-99},{39,-99,-99},{76,-99,-99},{2,2,2},{21,21,21},{39,39,39},{58,58,58},{77,77,77},{95,95,95}},
+			    {{1,-99,-99},{39,-99,-99},{76,-99,-99},{2,1,-99},{21,20,-99},{39,39,-99},{58,58,-99},{77,76,-99},{95,95,-99}}};//[station][id][phzvl look up #(-99 indicates invaled entry)]
 
 
 std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, int SectIndex){
 
-	std::vector<ConvertedHit> ConvHits;
-	for(std::vector<TriggerPrimitiveRef>::iterator C1 = TriggPrim.begin();C1 != TriggPrim.end();C1++){
+  std::vector<ConvertedHit> ConvHits;
+  for(std::vector<TriggerPrimitiveRef>::iterator C1 = TriggPrim.begin();C1 != TriggPrim.end();C1++){
 	
-  	/////////////////////////////////////
-  	///// get all input variables ///////
-	/////////////////////////////////////
-	TriggerPrimitiveRef C3 = *C1;
-	CSCDetId Det = C3->detId<CSCDetId>();
+    /////////////////////////////////////
+    ///// get all input variables ///////
+    /////////////////////////////////////
+    TriggerPrimitiveRef C3 = *C1;
+    CSCDetId Det = C3->detId<CSCDetId>();
 	
-	int station = Det.station(), chamber = Det.chamber(), ring = Det.ring(), wire = C3->getCSCData().keywire, sector = Det.triggerSector(), strip = C3->getCSCData().strip; 
-	int pattern = C3->getPattern(), Id = C3->Id(), quality = C3->getCSCData().quality, BX = C3->getCSCData().bx, endcap = Det.endcap();
+    int station = Det.station(), chamber = Det.chamber(), ring = Det.ring(), wire = C3->getCSCData().keywire, sector = Det.triggerSector(), strip = C3->getCSCData().strip; 
+    int pattern = C3->getPattern(), Id = C3->Id(), quality = C3->getCSCData().quality, BX = C3->getCSCData().bx, endcap = Det.endcap();
 	
-	if(ring == 4){Id += 9;}
+    if(ring == 4){Id += 9;}
 
-	//if(endcap == 1 && sector == 1)//
-	if(SectIndex ==  (endcap - 1)*6 + sector - 1)
-	{
+    //if(endcap == 1 && sector == 1)//
+    if(SectIndex ==  (endcap - 1)*6 + sector - 1)
+      {
 		
-	 std::cout<<"\n\nSECTOR "<<SectIndex<<"\n\n";
-	 std::cout<<"\n\nRING = "<<ring<<"\n\n";
+	std::cout<<"\n\nSECTOR "<<SectIndex<<"\n\n";
+	std::cout<<"\n\nRING = "<<ring<<"\n\n";
 	
 	/////////////////////////////////////
 	//////// define/set variables////////
@@ -74,33 +74,33 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	int eightstrip = -999;
 	
 	int factor = (station == 1 && ring == 4) ? 1707://ME1/1a1707?
-		     (station == 1 && ring == 3) ? 947: //ME1/3//changed Id > 6 to ring == 3.
-		     (station == 1 && ring == 1) ? 1301://ME1/1b
-			1024;//all other chambers
+	  (station == 1 && ring == 3) ? 947: //ME1/3//changed Id > 6 to ring == 3.
+	  (station == 1 && ring == 1) ? 1301://ME1/1b
+	  1024;//all other chambers
 			
 	//std::cout<<"factor = "<<factor<<std::endl;
 		
 	bool ph_reverse = (endcap == 1 && station >= 3) ? 1:
-			  (endcap == 2 && station < 3) ? 1: 0;
+	  (endcap == 2 && station < 3) ? 1: 0;
 		
 	int ph_coverage  = (station <= 1 && Id > 6 && Id < 10) ? 15 : //30 :
-		(station >= 2 && Id <= 3) ? 40 : 20; //80 : 40;
+	  (station >= 2 && Id <= 3) ? 40 : 20; //80 : 40;
 		
 	int th_coverage =  (station == 1 && Id <= 3) ? 45 :
-	 		   (station == 1 && Id > 6 && Id < 10) ? 27 :
-			   (station == 1 && Id > 3) ? 39 :
-			   (station == 2 && Id <= 3) ? 43 :
-			   (station == 2 && Id > 3) ? 56 :
-			   (station == 3 && Id <= 3) ? 34 :
-			   (station == 3 && Id > 3) ? 52 :
-			   (station == 4 && Id <= 3) ? 28 :
-			   (station == 4 && Id > 3) ? 50 : 0;
+	  (station == 1 && Id > 6 && Id < 10) ? 27 :
+	  (station == 1 && Id > 3) ? 39 :
+	  (station == 2 && Id <= 3) ? 43 :
+	  (station == 2 && Id > 3) ? 56 :
+	  (station == 3 && Id <= 3) ? 34 :
+	  (station == 3 && Id > 3) ? 52 :
+	  (station == 4 && Id <= 3) ? 28 :
+	  (station == 4 && Id > 3) ? 50 : 0;
 		
 	int ph_zone_bnd1 = (station <= 1 && (Id <= 3 || Id > 9)) ? 41 :
-			   (station == 2 && Id <= 3) ? 41 :
-			   (station == 2 && Id >  3) ? 87 :
-			   (station == 3 && Id >  3) ? 49 :
-			   (station == 4 && Id >  3) ? 49 : 127;
+	  (station == 2 && Id <= 3) ? 41 :
+	  (station == 2 && Id >  3) ? 87 :
+	  (station == 3 && Id >  3) ? 49 :
+	  (station == 4 && Id >  3) ? 49 : 127;
 												   
 	int ph_zone_bnd2 = (station == 3 && Id >  3) ? 87 : 127;
 						
@@ -116,17 +116,17 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	////////////////////////
 	
 	if(station == 1)
-	{
+	  {
 	
-		if(chamber%6 > 2)
-			sub = 1;
-		else
-			sub = 2;
+	    if(chamber%6 > 2)
+	      sub = 1;
+	    else
+	      sub = 2;
 		
-	}
+	  }
 	
 	if(sub)
-		std::cout<<"\nsub = "<<sub<<"\n";
+	  std::cout<<"\nsub = "<<sub<<"\n";
 
 	////////////////////////////
 	/// Define look-up index ///
@@ -134,20 +134,20 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	int LUTi = -999;
 	switch(station)
-	{
-		case 1: 
-			switch(sub)
-			{
-				case 1: LUTi = Id - 1;break;
-				case 2: LUTi = 11 + Id;break;
-				default:std::cout<<"Sub is out of range"<<std::endl;
-			}
-			break;
-		case 2: LUTi = 23 + Id;break;
-		case 3: LUTi = 32 + Id;break;
-		case 4: LUTi = 41 + Id;break;
-		default:std::cout<<"station is out of range"<<std::endl;
-	}
+	  {
+	  case 1: 
+	    switch(sub)
+	      {
+	      case 1: LUTi = Id - 1;break;
+	      case 2: LUTi = 11 + Id;break;
+	      default:std::cout<<"Sub is out of range"<<std::endl;
+	      }
+	    break;
+	  case 2: LUTi = 23 + Id;break;
+	  case 3: LUTi = 32 + Id;break;
+	  case 4: LUTi = 41 + Id;break;
+	  default:std::cout<<"station is out of range"<<std::endl;
+	  }
 	
 	/////////////////////////////////////
 	//////// CLCT Pattern Correc ////////
@@ -158,11 +158,11 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	if(pattern > 0 && pattern < 11){
 		
-		clctpatsign = ((pattern%2) == 0);
+	  clctpatsign = ((pattern%2) == 0);
 		
-		if(pattern >= 2) {clctpatcor = 5;}
-		if(pattern >= 6) {clctpatcor = 2;}
-		if(pattern == 10) {clctpatcor = 0;clctpatsign = 0;}
+	  if(pattern >= 2) {clctpatcor = 5;}
+	  if(pattern >= 6) {clctpatcor = 2;}
+	  if(pattern == 10) {clctpatcor = 0;clctpatsign = 0;}
 	}
 	
 	
@@ -176,9 +176,9 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	if(station == 1 || Id > 3){//10 Degree Chambers
 	
-		eightstrip = (eightstrip>>1);
-		patcor = (patcor>>1);
-		//if(ring == 4) eightstrip -= 512;
+	  eightstrip = (eightstrip>>1);
+	  patcor = (patcor>>1);
+	  //if(ring == 4) eightstrip -= 512;
 	}	
 	
 	if(clctpatsign) patcor = -patcor;
@@ -194,19 +194,19 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 
 	if(ph_reverse){
 	
-		ph_tmp = -ph_tmp;
-		phShift = -phShift;
-		phLow = ph_coverage;
+	  ph_tmp = -ph_tmp;
+	  phShift = -phShift;
+	  phLow = ph_coverage;
 	}
 	
 	
 	if(station == 1){
-		//fph = Phinit[sub-1][Id - 1] + ph_tmp;
-		fph = PhInit[SectIndex][sub-1][Id - 1] + ph_tmp;
+	  //fph = Phinit[sub-1][Id - 1] + ph_tmp;
+	  fph = PhInit[SectIndex][sub-1][Id - 1] + ph_tmp;
 	}
 	else{
-		//fph = Phinit[station][Id - 1] + ph_tmp;
-		fph = PhInit[SectIndex][station][Id - 1] + ph_tmp;
+	  //fph = Phinit[station][Id - 1] + ph_tmp;
+	  fph = PhInit[SectIndex][station][Id - 1] + ph_tmp;
 	}
 	
 	//ph_hit = phLow + phShift + (Phdisp[LUTi]>>1);
@@ -221,16 +221,16 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	if(station == 1){
 	
-		int idl = Id;
-		if(Id < 4)//
-			idl += 9;
+	  int idl = Id;
+	  if(Id < 4)//
+	    idl += 9;
 		
-		th_tmp = St1ThLUT[sub-1][SectIndex][idl -1][wire];
-		std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
+	  th_tmp = St1ThLUT[sub-1][SectIndex][idl -1][wire];
+	  std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
 	}
 	else{
-		th_tmp = ThLUT[station-2][SectIndex][Id-1][wire];
-		std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
+	  th_tmp = ThLUT[station-2][SectIndex][Id-1][wire];
+	  std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
 	}
 	
 	//th = th_tmp + Thinit[LUTi];
@@ -239,32 +239,32 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	if(station == 1 && (ring == 1 || ring == 4) /*&& endcap == 1*/){
 	
-		index = (wire>>4)*32 + (eightstrip>>4);
+	  index = (wire>>4)*32 + (eightstrip>>4);
 		
-		if(Id > 3){
-			th_corr = THCORR[sub-1][SectIndex][Id-10][index];
-			std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
-		}
-		else{
-			th_corr = THCORR[sub-1][SectIndex][Id-1][index];
-			std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
-		}
-		
-		
-		if(ph_reverse) th_corr = -th_corr;
+	  if(Id > 3){
+	    th_corr = THCORR[sub-1][SectIndex][Id-10][index];
+	    std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
+	  }
+	  else{
+	    th_corr = THCORR[sub-1][SectIndex][Id-1][index];
+	    std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
+	  }
 		
 		
-		th_tmp += th_corr;                  //add correction to th_tmp
-		th_tmp &= 0x3f;                     //keep only lowest 6 bits
+	  if(ph_reverse) th_corr = -th_corr;
 		
 		
-		if(th_tmp < th_coverage){
+	  th_tmp += th_corr;                  //add correction to th_tmp
+	  th_tmp &= 0x3f;                     //keep only lowest 6 bits
 		
-			if(ring == 1){LUTi += 9;}  //change because new Verilog3 sp_tf treats ME11b with LUT's of ME11a
-			//th = th_tmp + Thinit[LUTi];
-			th = th_tmp + ThInit[SectIndex][LUTi];
-		}
-		else{th = -999;}
+		
+	  if(th_tmp < th_coverage){
+		
+	    if(ring == 1){LUTi += 9;}  //change because new Verilog3 sp_tf treats ME11b with LUT's of ME11a
+	    //th = th_tmp + Thinit[LUTi];
+	    th = th_tmp + ThInit[SectIndex][LUTi];
+	  }
+	  else{th = -999;}
  
 	}
 	
@@ -274,16 +274,16 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	if(th != -999){
 	
-		phzvl = 0;
+	  phzvl = 0;
 		
-		if(th <= (ph_zone_bnd1 + zone_overlap)) 
-			{phzvl |= 1;}
+	  if(th <= (ph_zone_bnd1 + zone_overlap)) 
+	    {phzvl |= 1;}
 			
-		if(th > (ph_zone_bnd2 - zone_overlap)) 
-			{phzvl |= 4;}
+	  if(th > (ph_zone_bnd2 - zone_overlap)) 
+	    {phzvl |= 4;}
 			
-		if((th > (ph_zone_bnd1 - zone_overlap)) && (th <= (ph_zone_bnd2 + zone_overlap)))
-			{phzvl |= 2;}
+	  if((th > (ph_zone_bnd1 - zone_overlap)) && (th <= (ph_zone_bnd2 + zone_overlap)))
+	    {phzvl |= 2;}
 	}
 	
 	
@@ -296,7 +296,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	
 	if(Id > 9){
-		Id -= 9;strip += 128;
+	  Id -= 9;strip += 128;
 	}
 	
 	
@@ -317,9 +317,9 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	
 	//applying ph_offsets
 	if(sub == 1)
-		zhit = ph_hit + ph_offsetss[station-1][Id-1][pz];
+	  zhit = ph_hit + ph_offsetss[station-1][Id-1][pz];
 	else
-		zhit = ph_hit + ph_offsetss[station][Id-1][pz];
+	  zhit = ph_hit + ph_offsetss[station][Id-1][pz];
 		
 		
 		
@@ -339,19 +339,19 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	Hit.SetZoneContribution(zonecontribution);
 
 	if(Hit.Theta() != -999){//if theta is valid
-		ConvHits.push_back(Hit);std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
-		std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
-		std::cout<<"\n\nIn Zones: ";
-		for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){
-			std::cout<<" "<<*in<<" ";
-		}
+	  ConvHits.push_back(Hit);std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
+	  std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
+	  std::cout<<"\n\nIn Zones: ";
+	  for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){
+	    std::cout<<" "<<*in<<" ";
+	  }
 	}	
 	
 	
-	}//if sector 1 && endcap 1
+      }//if sector 1 && endcap 1
 	
-    }
-    return ConvHits;
+  }
+  return ConvHits;
     
 }
 
