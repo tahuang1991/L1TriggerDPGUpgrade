@@ -35,6 +35,7 @@
 #include "DataFormats/MuonDetId/interface/DTChamberId.h"
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
 #include "DataFormats/MuonDetId/interface/RPCDetId.h"
+#include "DataFormats/MuonDetId/interface/GEMDetId.h"
 #include "DataFormats/HcalDetId/interface/HcalTrigTowerDetId.h"
 
 using namespace L1TMuon;
@@ -303,8 +304,8 @@ getBestTriggerPrimitive(const TriggerPrimitiveList& list,
       }
     }
     break;
-  case TriggerPrimitive::kRPCf:
-  case TriggerPrimitive::kRPCb: // RPCb/f
+    //  case TriggerPrimitive::kRPCf:
+  case TriggerPrimitive::kRPC: // RPCb/f
     phiavg = 0;
     lsize = list.size();
     for( ; tp != tpend; ++tp ) {
