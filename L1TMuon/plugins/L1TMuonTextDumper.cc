@@ -484,7 +484,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	
       int contribution = 0;
       for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
-	if (C3->subsystem() == TriggerPrimitive::kCSC){
+	if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
 	  int station = (*C1)->detId<CSCDetId>().station();
 	  switch(station){
 	  case(1):contribution |= 8;break;
@@ -724,7 +724,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       int stat = 0;
       cout<<"\n2\n";
       
-      if (C3->subsystem() == TriggerPrimitive::kCSC){
+      if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
 	if((*C1)->detId<CSCDetId>().endcap() != ecap){
 	  stat = (*C1)->detId<CSCDetId>().station();
 	  numTP++;
