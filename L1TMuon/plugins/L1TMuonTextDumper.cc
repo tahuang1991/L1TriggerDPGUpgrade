@@ -134,11 +134,11 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 
     for( ; tp != tpend; ++tp ) {
       std::cout << "jason: tp->subsystem()" << tp->subsystem() << std::endl;
+      TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
+		
+      tester.push_back(tpref);
+		
       if(tp->subsystem() == 1){
-	TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
-		
-	tester.push_back(tpref);
-		
 	cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
 		
 	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
@@ -164,7 +164,11 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	  striph->Fill(tp->getCSCData().strip);
 	}
       }
-    }  
+      if(tp->subsystem() == 3){
+	if((tp->detId<GEMDetId>().station() == 1))
+	  h_GE11->Fill(1);			
+      }
+    }
   }
   vector<ConvertedHit> CHits[12];
   MatchingOutput MO[12];
@@ -806,6 +810,7 @@ void L1TMuonTextDumper::beginJob()
   dphi = fopen("dphi1.txt","w");
   tptest = fopen("dth.txt","w");
 	
+  h_GE11 = dir1.make<TH1F>("GE11","GE11",10,0,10);h_GE11->SetFillColor(2);
   striph = dir1.make<TH1F>("striph","TP strip distribution",250,0,250);striph->SetFillColor(2);
   eff = dir.make<TH1F>("eff","If GenParticle how many EmulatorMuons (Endcap 1)",5,0,5);eff->SetFillColor(4);
   eff2 = dir.make<TH1F>("eff2","If GenParticle how many EmulatorMuons (Endcap 2)",5,0,5);eff2->SetFillColor(4);

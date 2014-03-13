@@ -110,10 +110,24 @@ namespace L1TMuon {
       int theta_quality;
     };
  
-    struct GEMData {// GEMDigi only has strip and bx
-    GEMData() : strip(0), bx(0) {}
+    struct GEMData {
+      GEMData() : trknmb(0), valid(0), quality(0), keywire(0), strip(0),
+		  pattern(0), bend(0), bx(0), mpclink(0), bx0(0), syncErr(0),
+		  gemID(0) {}
+      uint16_t trknmb;
+      uint16_t valid;
+      uint16_t quality;
+      uint16_t keywire;
       uint16_t strip;
+      uint16_t pattern;
+      uint16_t bend;
       uint16_t bx;
+      uint16_t mpclink;
+      uint16_t bx0; 
+      uint16_t syncErr;
+      uint16_t gemID;
+      //uint16_t gemBX;
+      float gemDPhi;
     };
 
     struct HCALData {
