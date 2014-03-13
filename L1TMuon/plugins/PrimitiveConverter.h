@@ -51,6 +51,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     ///// get all input variables ///////
     /////////////////////////////////////
     TriggerPrimitiveRef C3 = *C1;
+    std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
     CSCDetId Det = C3->detId<CSCDetId>();
 	
     int station = Det.station(), chamber = Det.chamber(), ring = Det.ring(), wire = C3->getCSCData().keywire, sector = Det.triggerSector(), strip = C3->getCSCData().strip; 
