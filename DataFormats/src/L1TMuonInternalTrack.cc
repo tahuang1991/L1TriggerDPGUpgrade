@@ -60,7 +60,6 @@ void InternalTrack::addStub(const TriggerPrimitiveRef& stub) {
   unsigned station;
   subsystem_offset offset;
   TriggerPrimitive::subsystem_type type = stub->subsystem();
-  std::cout<< "jason type " << type << std::endl;
   switch(type){
   case TriggerPrimitive::kCSC:    
     offset = kCSC;
