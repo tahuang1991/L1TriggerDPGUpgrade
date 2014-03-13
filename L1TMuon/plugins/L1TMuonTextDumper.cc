@@ -21,6 +21,8 @@
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
 #include <L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h>
 
+#include "DataFormats/MuonDetId/interface/GEMDetId.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

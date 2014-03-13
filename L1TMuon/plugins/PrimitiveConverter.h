@@ -53,8 +53,8 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     TriggerPrimitiveRef C3 = *C1;
     std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
 
-    int station, chamber, ring, wire, sector, strip; 
-    int pattern, Id, quality, BX, endcap;
+    int station = -999, chamber = -999, ring = -999, wire = -999, sector = -999, strip = -999; 
+    int pattern = -999, Id = -999, quality = -999, BX = -999, endcap = -999;
 
     if(C3->subsystem() == TriggerPrimitive::kCSC){
       CSCDetId Det = C3->detId<CSCDetId>();
@@ -63,8 +63,10 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     }
     if(C3->subsystem() == TriggerPrimitive::kGEM){
       GEMDetId Det = C3->detId<GEMDetId>();
-      station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; sector = Det.triggerSector(); strip = C3->getGEMData().strip; 
-      pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; endcap = Det.endcap();
+      station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; //sector = Det.triggerSector(); 
+      strip = C3->getGEMData().strip; 
+      pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; 
+      //endcap = Det.endcap();
     }
    
     if(ring == 4){Id += 9;}
