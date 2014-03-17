@@ -72,16 +72,16 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	                         ((static_cast<unsigned>(chamber-3) & 0x7f) / 6) + 1;
     }
     std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
-    std::cout << "station " << station
-	      << "chamber " << chamber
-	      << "ring " << ring
-	      << "wire " << wire
-	      << "sector " << sector
-	      << "pattern " << pattern
-	      << "Id " << Id
-	      << "quality " << quality
-	      << "BX " << BX
-	      << "endcap " << endcap << std::endl;
+    std::cout << " station " << station
+	      << ", chamber " << chamber
+	      << ", ring " << ring
+	      << ", wire " << wire
+	      << ", sector " << sector
+	      << ", pattern " << pattern
+	      << ", Id " << Id
+	      << ", quality " << quality
+	      << ", BX " << BX
+	      << ", endcap " << endcap << std::endl;
 
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
