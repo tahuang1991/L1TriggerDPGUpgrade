@@ -135,7 +135,6 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     auto tpend = tps->cend();
 
     for( ; tp != tpend; ++tp ) {
-      std::cout << "jason: tp->subsystem()" << tp->subsystem() << std::endl;
       TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
       tester.push_back(tpref);

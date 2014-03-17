@@ -376,6 +376,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     }//if sector 1 && endcap 1
   }
   
+  std::cout<<"PrimitiveConverter::return ConvHits"<<std::endl;
   return ConvHits;
 }
 
