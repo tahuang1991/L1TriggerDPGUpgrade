@@ -84,8 +84,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	      << ", BX " << BX
 	      << ", endcap " << endcap << std::endl;
 
-    std::cout << "SectIndex " << SectIndex << std::endl;
-    std::cout << "(endcap - 1)*6 + sector - 1 " << (endcap - 1)*6 + sector - 1 << std::endl;
+    std::cout << "SectIndex " << SectIndex << " this hit sector "<< (endcap - 1)*6 + sector - 1 << std::endl;
 
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
