@@ -64,12 +64,29 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       GEMDetId Det = C3->detId<GEMDetId>();
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; //sector = Det.triggerSector(); 
       strip = C3->getGEMData().strip; 
-      pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; 
+      pattern = C3->getPattern(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; 
       endcap = Det.region();
       if (Det.region() == -1) endcap = 2;
       // temp trigger sector not defined in GEM
       sector =  (station != 1) ? ((static_cast<unsigned>(chamber-2) & 0x1f) / 3) + 1 : // ch 2-4-> 1, 5-7->2, ...
 	                         ((static_cast<unsigned>(chamber-3) & 0x7f) / 6) + 1;
+      // temp trigger ID not defined in GEM
+      int result = -1;
+      if( station == 1 ) {
+	result = (chamber) % 3 + 1; // 1,2,3
+	switch (ring) {
+	case 1:
+	  break;
+	case 2:
+	  result += 3; // 4,5,6
+	  break;
+	case 3:
+	  result += 6; // 7,8,9
+	  break;
+	}
+      }
+      Id = result-1;
+
     }
     std::cout << "jason: C3->subsystem() " << C3->subsystem() << std::endl;
     std::cout << " station " << station

@@ -135,6 +135,7 @@ TriggerPrimitive::TriggerPrimitive(const GEMDetId& detid,
   calculateGEMGlobalSector(detid,_globalsector,_subsector);
   _gem.strip  = digi.strip();
   _gem.bx   = digi.bx();
+  std::cout <<"TriggerPrimitive gem.strip " << _gem.strip << " gem.bx " << _gem.bx << std::endl;
 }
 
 // constructor from HCAL data

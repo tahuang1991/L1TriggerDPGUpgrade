@@ -139,7 +139,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 		
       tester.push_back(tpref);
 		
-      if(tp->subsystem() == 1){
+      if(tp->subsystem() == TriggerPrimitive::kCSC){
 	cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
 		
 	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
@@ -151,7 +151,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	    ME42test2->Fill(GeneratorMuon.phi());
 		
 	}
-	  
+	
 	if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 4))
 	  ME1gangnedtest->Fill(tp->getCSCData().strip);
 			
@@ -165,7 +165,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	  striph->Fill(tp->getCSCData().strip);
 	}
       }
-      if(tp->subsystem() == 3){
+      if(tp->subsystem() == TriggerPrimitive::kGEM){
 	if((tp->detId<GEMDetId>().station() == 1))
 	  h_GE11->Fill(1);			
       }
@@ -182,17 +182,18 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////// TP Conversion //////////////////////  Output is vector of Converted Hits
     //////////////////////////////////////////////////////
 
+    cout<<"TP Conversion" << endl;
 
     vector<ConvertedHit> ConvHits = PrimConv(tester,SectIndex);
     CHits[SectIndex] = ConvHits;
-	
+    
     for(vector<ConvertedHit>::iterator i=ConvHits.begin();i!=ConvHits.end();i++){
-	
-      if(i->TP()->detId<CSCDetId>().ring() == 4)
-	ME1gangnedtest->Fill(i->Phi());
-	
+      if(i->TP()->subsystem() == TriggerPrimitive::kCSC){	
+	if(i->TP()->detId<CSCDetId>().ring() == 4)
+	  ME1gangnedtest->Fill(i->Phi());
+      }
     }
-   
+    
  
   
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -215,7 +216,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////////////////////////////////////////////////////  past from the central BX, this analyzes a total of 5 BX's.
     //////////////////////////////////////////////////////
  
- 
+    cout<<"BX Grouper" << endl;
     vector<vector<ConvertedHit>> GroupedHits = GroupBX(ConvHits);
  
  
@@ -223,6 +224,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ////////// Creat Zones for pattern Recognition /////////  The output of this module not only contains the zones but also the 
     ////////////////////////////////////////////////////////  reference back to the TriggerPrimitives that went into making them.
 	
+    cout<<"Creat Zones for pattern Recognition" << endl;
     vector<ZonesOutput> Zout = Zones(GroupedHits);
    
 
@@ -232,6 +234,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////////////////////  same hits. This is where the BX analysis ends; Only 1 list of found patterns is given to the next module.
   
 
+    cout<<"Pattern Recognition" << endl;
     vector<PatternOutput> Pout = Patterns(Zout);
   
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
@@ -244,8 +247,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////Sector Sorting/////////// Sorts through the patterns found in each zone and selects the best three per zone to send to the next module.
     ///////Finding 3 Best Pattern// 
     ///////////////////////////////
-  
-  
+    cout<<"Sector Sorting" << endl;
     SortingOutput Sout = SortSect(Test);
 	
  
@@ -253,8 +255,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////// Match ph patterns ////// Loops over each sorted pattern and then loops over all possible triggerprimitives which could have made the pattern
     ////// to segment inputs ///////// and matches the associated full precision triggerprimitives to the detected pattern. 
     //////////////////////////////////   
-      
-
+    cout<<"Match ph patterns" << endl;
     MatchingOutput Mout = PhiMatching(Sout);
     MO[SectIndex] = Mout;
 
@@ -262,8 +263,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////// Calculate delta //////// Once we have matched the hits we calculate the delta phi and theta between all 
     ////////    ph and th    //////// stations present. 
     /////////////////////////////////
-  
-  
+    cout<<"Calculate delta" << endl;
     vector<vector<DeltaOutput>> Dout = CalcDeltas(Mout);////
  
 
@@ -271,8 +271,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     /////// Sorts and gives /////////  Loops over all of the found tracks(looking across zones) and selects the best three per sector. 
     ////// Best 3 tracks/sector /////  Here ghost busting is done to delete tracks which are comprised of the same associated stubs. 
     /////////////////////////////////  
-  
-  
+    cout<<"Sorts BestTracks" << endl;
     vector<BTrack> Bout = BestTracks(Dout);
     PTracks[SectIndex] = Bout;
    
@@ -284,6 +283,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //// Ghost Cancellation between ////not done correct
   //////////   sectors     ///////////
   ////////////////////////////////////
+  cout<<"Ghost Cancellation" << endl;
  
   for(int i1=0;i1<36;i1++){
  
@@ -339,8 +339,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Sorting through all sectors ////
   ///   to find 4 best muons      ////
   ////////////////////////////////////
- 
- 
+  cout<<"Sorting through all sectors" << endl;
   BTrack FourBest[4];
   vector<BTrack> PTemp[12] = PTracks;
   int windex[4] = {-1,-1,-1,-1};
@@ -371,6 +370,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Make Internal track if ////////
   /////// tracks are found //////////
   ///////////////////////////////////
+  cout<<"Make Internal track" << endl;
 
   bool epir = false;
   
