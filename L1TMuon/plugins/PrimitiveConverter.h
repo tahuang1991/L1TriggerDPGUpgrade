@@ -71,17 +71,21 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       sector =  (station != 1) ? ((static_cast<unsigned>(chamber-2) & 0x1f) / 3) + 1 : // ch 2-4-> 1, 5-7->2, ...
 	                         ((static_cast<unsigned>(chamber-3) & 0x7f) / 6) + 1;
     }
-    std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
+    std::cout << "jason: C3->subsystem() " << C3->subsystem() << std::endl;
     std::cout << " station " << station
 	      << ", chamber " << chamber
 	      << ", ring " << ring
 	      << ", wire " << wire
+	      << ", strip " << strip
 	      << ", sector " << sector
 	      << ", pattern " << pattern
 	      << ", Id " << Id
 	      << ", quality " << quality
 	      << ", BX " << BX
 	      << ", endcap " << endcap << std::endl;
+
+    std::cout << "SectIndex " << SectIndex << std::endl;
+    std::cout << "(endcap - 1)*6 + sector - 1 " << (endcap - 1)*6 + sector - 1 << std::endl;
 
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
