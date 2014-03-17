@@ -300,14 +300,48 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     cout << "test PatternOutput " << endl;
     PrintQuality(Test.detected);
  
+    vector<ConvertedHit> PatHits = Test.hits;
+    for(vector<ConvertedHit>::iterator i=PatHits.begin();i!=PatHits.end();i++){
+      cout<<"Pattern Recognition: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
+    }
+      
 
     ///////////////////////////////
     //////Sector Sorting/////////// Sorts through the patterns found in each zone and selects the best three per zone to send to the next module.
     ///////Finding 3 Best Pattern// 
     ///////////////////////////////
-    cout<<"Sector Sorting" << endl;
+    cout<<"\nSector Sorting" << endl;
     SortingOutput Sout = SortSect(Test);
 	
+    vector<ConvertedHit> SoutHits = Sout.Hits();
+    for(vector<ConvertedHit>::iterator i=SoutHits.begin();i!=SoutHits.end();i++){
+      cout<<"SortingOutput: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
+    }
+
  
     //////////////////////////////////
     ///////// Match ph patterns ////// Loops over each sorted pattern and then loops over all possible triggerprimitives which could have made the pattern
@@ -446,12 +480,25 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       tempTrack.rank = FourBest[fbest].winner.Rank();
       tempTrack.deltas = FourBest[fbest].deltas;
 		
+      cout<<"Make Internal track: no. " << fbest << endl;
       for(vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
-		
 	if(A->Phi() != -999){
-			
+	  cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
+	      << ", Station " << A->Station()
+	      << ", Id " << A->Id()
+	    //	  << ", chamber " << A->TP()->chamber()
+	    //	  << ", ring " << A->TP()->ring()
+	      << ", strip " << A->Strip()
+	      << ", BX " << A->BX()
+	      << ", wire " << A->Wire()
+	      << ", pattern " << A->Pattern()
+	      << ", quality " << A->Quality()
+	      << ", Phi " << A->Phi()
+	      << ", Theta " << A->Theta()
+	      << endl;
+	  
 	  tempTrack.addStub(A->TP());
-	  //cout<<"Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
+	  cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
 	}
 			
       }
