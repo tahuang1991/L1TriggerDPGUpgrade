@@ -51,7 +51,6 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     ///// get all input variables ///////
     /////////////////////////////////////
     TriggerPrimitiveRef C3 = *C1;
-    std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
 
     int station = -999, chamber = -999, ring = -999, wire = -999, sector = -999, strip = -999; 
     int pattern = -999, Id = -999, quality = -999, BX = -999, endcap = -999;
@@ -66,9 +65,24 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; //sector = Det.triggerSector(); 
       strip = C3->getGEMData().strip; 
       pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; 
-      //endcap = Det.endcap();
+      endcap = Det.region();
+      if (Det.region() == -1) endcap = 2;
+      // temp trigger sector not defined in GEM
+      sector =  (station != 1) ? ((static_cast<unsigned>(chamber-2) & 0x1f) / 3) + 1 : // ch 2-4-> 1, 5-7->2, ...
+	                         ((static_cast<unsigned>(chamber-3) & 0x7f) / 6) + 1;
     }
-   
+    std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
+    std::cout << "station " << station
+	      << "chamber " << chamber
+	      << "ring " << ring
+	      << "wire " << wire
+	      << "sector " << sector
+	      << "pattern " << pattern
+	      << "Id " << Id
+	      << "quality " << quality
+	      << "BX " << BX
+	      << "endcap " << endcap << std::endl;
+
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
     if(SectIndex ==  (endcap - 1)*6 + sector - 1){
@@ -347,14 +361,15 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       Hit.SetZoneContribution(zonecontribution);
 
       if(Hit.Theta() != -999){//if theta is valid
-	ConvHits.push_back(Hit);std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
+	ConvHits.push_back(Hit);
+	std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
 	std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
 	std::cout<<"\n\nIn Zones: ";
 	for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){
 	  std::cout<<" "<<*in<<" ";
 	}
-      }	
-	
+      }
+      
     }//if sector 1 && endcap 1
   }
   
