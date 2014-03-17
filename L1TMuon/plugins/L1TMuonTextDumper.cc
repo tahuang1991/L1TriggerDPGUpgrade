@@ -138,9 +138,12 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
       tester.push_back(tpref);
-		
+      
+      if(tp->subsystem() == TriggerPrimitive::kGEM){
+	cout<<"GEM trigger prim found station:"<<tp->detId<GEMDetId>().station()<<endl;
+      }
       if(tp->subsystem() == TriggerPrimitive::kCSC){
-	cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
+	cout<<"CSC trigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
 		
 	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
 		
@@ -187,7 +190,21 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     vector<ConvertedHit> ConvHits = PrimConv(tester,SectIndex);
     CHits[SectIndex] = ConvHits;
     
+    cout << "SectIndex " << SectIndex  << endl;
     for(vector<ConvertedHit>::iterator i=ConvHits.begin();i!=ConvHits.end();i++){
+      cout<<"TP ConvertedHit: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
       if(i->TP()->subsystem() == TriggerPrimitive::kCSC){	
 	if(i->TP()->detId<CSCDetId>().ring() == 4)
 	  ME1gangnedtest->Fill(i->Phi());
@@ -198,13 +215,14 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
     ////////////////////////////////print values for input into Alex's emulator code/////////////////////////////////////////////////////
-    //for(vector<ConvertedHit>::iterator h = ConvHits.begin();h != ConvHits.end();h++){
-	
-    //if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
-    //fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
-    //fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
-    //fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
-    //}
+    //   for(vector<ConvertedHit>::iterator h = ConvHits.begin();h != ConvHits.end();h++){
+      
+
+      // if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
+      // fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
+      // fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
+      // fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
+    //  }
     ////////////////////////////////print values for input into Alex's emulator code/////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -216,17 +234,57 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////////////////////////////////////////////////////  past from the central BX, this analyzes a total of 5 BX's.
     //////////////////////////////////////////////////////
  
-    cout<<"BX Grouper" << endl;
+    cout<<"\nBX Grouper" << endl;
     vector<vector<ConvertedHit>> GroupedHits = GroupBX(ConvHits);
  
+    int nBX = 0;
+    for(vector<vector<ConvertedHit>>::iterator j=GroupedHits.begin();j!=GroupedHits.end();j++){
+      cout<<"\nBX Grouper nBX = " << nBX++ << endl;
+      for(vector<ConvertedHit>::iterator i=j->begin();i!=j->end();i++){
+	cout<<"BX GroupedHits: subsystem " << i->TP()->subsystem()
+	    << ", Station " << i->Station()
+	    << ", Id " << i->Id()
+	  //	  << ", chamber " << i->TP()->chamber()
+	  //	  << ", ring " << i->TP()->ring()
+	    << ", strip " << i->Strip()
+	    << ", BX " << i->BX()
+	    << ", wire " << i->Wire()
+	    << ", pattern " << i->Pattern()
+	    << ", quality " << i->Quality()
+	    << ", Phi " << i->Phi()
+	    << ", Theta " << i->Theta()
+	    << endl;
+      }
+    }
  
     ////////////////////////////////////////////////////////  Creates a zone for each of the three groups created in the BX Grouper module.
     ////////// Creat Zones for pattern Recognition /////////  The output of this module not only contains the zones but also the 
     ////////////////////////////////////////////////////////  reference back to the TriggerPrimitives that went into making them.
 	
-    cout<<"Creat Zones for pattern Recognition" << endl;
+    cout<<"\nCreat Zones for pattern Recognition" << endl;
     vector<ZonesOutput> Zout = Zones(GroupedHits);
-   
+
+    int nZones = 0;
+    for(vector<ZonesOutput>::iterator j=Zout.begin();j!=Zout.end();j++){
+      vector<ConvertedHit> k = j->convertedhits;
+      cout<<"\nnZones = " << nZones++ << endl;
+      for(vector<ConvertedHit>::iterator i=k.begin();i!=k.end();i++){
+	cout<<"ZonesOutput: subsystem " << i->TP()->subsystem()
+	    << ", Station " << i->Station()
+	    << ", Id " << i->Id()
+	  //	  << ", chamber " << i->TP()->chamber()
+	  //	  << ", ring " << i->TP()->ring()
+	    << ", strip " << i->Strip()
+	    << ", BX " << i->BX()
+	    << ", wire " << i->Wire()
+	    << ", pattern " << i->Pattern()
+	    << ", quality " << i->Quality()
+	    << ", Phi " << i->Phi()
+	    << ", Theta " << i->Theta()
+	    << endl;
+      }
+    }
+
 
     ///////////////////////////////
     ///// Pattern Recognition /////  Applies pattern recognition logic on each of the 3 BX groups and assigns a quality to each keystrip in the zone.
@@ -234,7 +292,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////////////////////  same hits. This is where the BX analysis ends; Only 1 list of found patterns is given to the next module.
   
 
-    cout<<"Pattern Recognition" << endl;
+    cout<<"\n Pattern Recognition" << endl;
     vector<PatternOutput> Pout = Patterns(Zout);
   
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
