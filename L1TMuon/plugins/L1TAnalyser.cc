@@ -30,9 +30,6 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include "FWCore/Framework/interface/LuminosityBlock.h"
-#include "DataFormats/Luminosity/interface/LumiSummary.h"
-
 #include "TH1F.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -50,8 +47,6 @@ private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-  virtual void beginLuminosityBlock(edm::LuminosityBlock const& iLumiBlock, 
-				    edm::EventSetup const& iSetup);
 
   // ----------member data ---------------------------
 
@@ -61,14 +56,12 @@ private:
   edm::InputTag vertexColTag;	
   edm::Service<TFileService> fs;
   csctf_analysis::RunSRLUTs* runSRLUTs;
-  float insLumi;
   int nVertex;
   bool haveRECO;
   int singleSectorNum;
   std::string outTreeFileName;
 
   TH1F* hNVertex;
-  TH1F* hInsLumi;
 
   TH1F* hMPCLink;
   TH1F* hLocalPhi;
@@ -166,7 +159,6 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
     }
 
   tree->Branch("nVertex",&nVertex,"nVertex/I");  
-  tree->Branch("insLumi",&insLumi,"insLumi/F");  
 
   tree->Branch("occStation1SubSec1","vector<int>",&occStation1SubSec1);
   tree->Branch("occStation1SubSec2","vector<int>",&occStation1SubSec2);
@@ -467,7 +459,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      nVertex++;
 	  }
 	//std::cout << "nVertex: " << nVertex << std::endl;
-	//std::cout << "luminosity: " <<insLumi << std::endl;
 	hNVertex->Fill(nVertex);
       }
 
@@ -483,9 +474,6 @@ L1TAnalyser::beginJob()
   hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",30,0,30);
   hNVertex->GetXaxis()->SetTitle("N Primary Vertices");
   hNVertex->GetYaxis()->SetTitle("Counts");
-  hInsLumi=fs->make<TH1F>("InsLumi","Lumi Section Instantanious Luminosity",10000,0,1000000);
-  hInsLumi->GetXaxis()->SetTitle("Lumi Section Instantanious Luminosity (Uncorrected HF--10^{30} cm^{2}s^{-1})");
-  hInsLumi->GetYaxis()->SetTitle("Counts");
 
   hMPCLink=fs->make<TH1F>("MPCLink","Stub MPC Link Number",5,-1,4);
   hMPCLink->GetXaxis()->SetTitle("MPC Link");
@@ -649,24 +637,6 @@ L1TAnalyser::endJob()
   hOccAddStations->Add(hOccStation2);
   hOccAddStations->Add(hOccStation3);
   hOccAddStations->Add(hOccStation4);
-}
-
-void
-L1TAnalyser::beginLuminosityBlock(edm::LuminosityBlock const& iLumiBlock, 
-				  edm::EventSetup const& iSetup)
-{
-  if(haveRECO)
-    {
-      edm::Handle<LumiSummary> lumiSummary;
-      iLumiBlock.getByLabel("lumiProducer", lumiSummary);
- 
-      //
-      //collect lumi. 
-      //
-      insLumi=lumiSummary->avgInsDelLumi();//*93.244;
-      //std::cout << "luminosity: " <<insLumi << std::endl;
-      hInsLumi->Fill(insLumi);
-    }
 }
 
 //define this as a plug-in
