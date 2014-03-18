@@ -41,89 +41,89 @@ using namespace std;
 using namespace edm;
 
 class L1TAnalyser : public edm::EDAnalyzer {
-   public:
-      explicit L1TAnalyser(const edm::ParameterSet&);
-      ~L1TAnalyser();
+public:
+  explicit L1TAnalyser(const edm::ParameterSet&);
+  ~L1TAnalyser();
 
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-      virtual void beginLuminosityBlock(edm::LuminosityBlock const& iLumiBlock, 
-					edm::EventSetup const& iSetup);
+private:
+  virtual void beginJob() ;
+  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  virtual void endJob() ;
+  virtual void beginLuminosityBlock(edm::LuminosityBlock const& iLumiBlock, 
+				    edm::EventSetup const& iSetup);
 
-      // ----------member data ---------------------------
+  // ----------member data ---------------------------
 
   //TH1F* rateHist;
 
-	edm::InputTag lctsTag;	
-	edm::InputTag vertexColTag;	
-  	edm::Service<TFileService> fs;
-        csctf_analysis::RunSRLUTs* runSRLUTs;
-	float insLumi;
-	int nVertex;
-	bool haveRECO;
-	int singleSectorNum;
-	std::string outTreeFileName;
+  edm::InputTag lctsTag;	
+  edm::InputTag vertexColTag;	
+  edm::Service<TFileService> fs;
+  csctf_analysis::RunSRLUTs* runSRLUTs;
+  float insLumi;
+  int nVertex;
+  bool haveRECO;
+  int singleSectorNum;
+  std::string outTreeFileName;
 
-	TH1F* hNVertex;
-	TH1F* hInsLumi;
+  TH1F* hNVertex;
+  TH1F* hInsLumi;
 
-	TH1F* hMPCLink;
-	TH1F* hLocalPhi;
-	TH1F* hPhi;
-	TH1F* hEta;
-	TH1F* hPhiPacked;
-	TH1F* hEtaPacked;
-	TH1F* hBx;
+  TH1F* hMPCLink;
+  TH1F* hLocalPhi;
+  TH1F* hPhi;
+  TH1F* hEta;
+  TH1F* hPhiPacked;
+  TH1F* hEtaPacked;
+  TH1F* hBx;
 
-	TH1F* hSector;
-	TH1F* hStation;
-	TH1F* hEndcap;
-	TH1F* hSubSector;
+  TH1F* hSector;
+  TH1F* hStation;
+  TH1F* hEndcap;
+  TH1F* hSubSector;
 
-	TH1F* hOccStation1SubSec1;
-	TH1F* hOccStation1SubSec2;
-	TH1F* hOccStation2;
-	TH1F* hOccStation3;
-	TH1F* hOccStation4;
-	TH1F* hOccMax;
-	TH1F* hOccMaxNo0;
-	TH1F* hStubsTotal;
+  TH1F* hOccStation1SubSec1;
+  TH1F* hOccStation1SubSec2;
+  TH1F* hOccStation2;
+  TH1F* hOccStation3;
+  TH1F* hOccStation4;
+  TH1F* hOccMax;
+  TH1F* hOccMaxNo0;
+  TH1F* hStubsTotal;
 
-	TH1F* hOccME11a;
-	TH1F* hOccME11b;
-	TH1F* hOccME12;
-	TH1F* hOccME13;
-	TH1F* hOccME21;
-	TH1F* hOccME22;
-	TH1F* hOccME31;
-	TH1F* hOccME32;
-	TH1F* hOccME41;
-	TH1F* hOccME42;
-	TH1F* hOccME42SingleSector;
+  TH1F* hOccME11a;
+  TH1F* hOccME11b;
+  TH1F* hOccME12;
+  TH1F* hOccME13;
+  TH1F* hOccME21;
+  TH1F* hOccME22;
+  TH1F* hOccME31;
+  TH1F* hOccME32;
+  TH1F* hOccME41;
+  TH1F* hOccME42;
+  TH1F* hOccME42SingleSector;
 
-	std::vector<TH1F*> hOccME1ChambsSubSec1;
-	std::vector<TH1F*> hOccME1ChambsSubSec2;
-	std::vector<TH1F*> hOccME2Chambs;
-	std::vector<TH1F*> hOccME3Chambs;
-	std::vector<TH1F*> hOccME4Chambs;
+  std::vector<TH1F*> hOccME1ChambsSubSec1;
+  std::vector<TH1F*> hOccME1ChambsSubSec2;
+  std::vector<TH1F*> hOccME2Chambs;
+  std::vector<TH1F*> hOccME3Chambs;
+  std::vector<TH1F*> hOccME4Chambs;
 
-	//Tree stuff
-	TFile* treeFile;
-	TTree* tree;
-	std::vector<int> occStation1SubSec1;
-	std::vector<int> occStation1SubSec2;
-	std::vector<int> occStation2;
-	std::vector<int> occStation3;
-	std::vector<int> occStation4;
+  //Tree stuff
+  TFile* treeFile;
+  TTree* tree;
+  std::vector<int> occStation1SubSec1;
+  std::vector<int> occStation1SubSec2;
+  std::vector<int> occStation2;
+  std::vector<int> occStation3;
+  std::vector<int> occStation4;
 
-	std::vector<std::vector<int> > occME1ChamberSubSec1;
-	std::vector<std::vector<int> > occME1ChamberSubSec2;
-	std::vector<std::vector<int> > occME2Chamber;
-	std::vector<std::vector<int> > occME3Chamber;
-	std::vector<std::vector<int> > occME4Chamber;
+  std::vector<std::vector<int> > occME1ChamberSubSec1;
+  std::vector<std::vector<int> > occME1ChamberSubSec2;
+  std::vector<std::vector<int> > occME2Chamber;
+  std::vector<std::vector<int> > occME3Chamber;
+  std::vector<std::vector<int> > occME4Chamber;
 };
 //
 // constants, enums and typedefs
@@ -139,46 +139,46 @@ class L1TAnalyser : public edm::EDAnalyzer {
 L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 
 {
-   //now do what ever initialization is needed
-   runSRLUTs = new csctf_analysis::RunSRLUTs();
-   lctsTag= iConfig.getParameter<edm::InputTag>("lctsTag");
-   vertexColTag= iConfig.getParameter<edm::InputTag>("vertexColTag");
-   outTreeFileName= iConfig.getUntrackedParameter<std::string>("outTreeFileName");
-   haveRECO = iConfig.getUntrackedParameter<bool>("haveRECO");
-   singleSectorNum = iConfig.getUntrackedParameter<int>("singleSectorNum");
+  //now do what ever initialization is needed
+  runSRLUTs = new csctf_analysis::RunSRLUTs();
+  lctsTag= iConfig.getParameter<edm::InputTag>("lctsTag");
+  vertexColTag= iConfig.getParameter<edm::InputTag>("vertexColTag");
+  outTreeFileName= iConfig.getUntrackedParameter<std::string>("outTreeFileName");
+  haveRECO = iConfig.getUntrackedParameter<bool>("haveRECO");
+  singleSectorNum = iConfig.getUntrackedParameter<int>("singleSectorNum");
    
-   treeFile = new TFile(outTreeFileName.c_str(),"RECREATE");
-   tree = new TTree("tree","tree");
+  treeFile = new TFile(outTreeFileName.c_str(),"RECREATE");
+  tree = new TTree("tree","tree");
 
-   occStation1SubSec1 = std::vector<int>(12,0);
-   occStation1SubSec2 = std::vector<int>(12,0);
-   occStation2 = std::vector<int>(12,0);
-   occStation3 = std::vector<int>(12,0);
-   occStation4 = std::vector<int>(12,0);
+  occStation1SubSec1 = std::vector<int>(12,0);
+  occStation1SubSec2 = std::vector<int>(12,0);
+  occStation2 = std::vector<int>(12,0);
+  occStation3 = std::vector<int>(12,0);
+  occStation4 = std::vector<int>(12,0);
 
-   for(int iSector = 0; iSector<12; iSector++)
-   {
+  for(int iSector = 0; iSector<12; iSector++)
+    {
       occME1ChamberSubSec1.push_back(std::vector<int>(12,0));
       occME1ChamberSubSec2.push_back(std::vector<int>(12,0));
       occME2Chamber.push_back(std::vector<int>(9,0));
       occME3Chamber.push_back(std::vector<int>(9,0));
       occME4Chamber.push_back(std::vector<int>(9,0));
-   }
+    }
 
-   tree->Branch("nVertex",&nVertex,"nVertex/I");  
-   tree->Branch("insLumi",&insLumi,"insLumi/F");  
+  tree->Branch("nVertex",&nVertex,"nVertex/I");  
+  tree->Branch("insLumi",&insLumi,"insLumi/F");  
 
-   tree->Branch("occStation1SubSec1","vector<int>",&occStation1SubSec1);
-   tree->Branch("occStation1SubSec2","vector<int>",&occStation1SubSec2);
-   tree->Branch("occStation2","vector<int>",&occStation2);
-   tree->Branch("occStation3","vector<int>",&occStation3);
-   tree->Branch("occStation4","vector<int>",&occStation4);
+  tree->Branch("occStation1SubSec1","vector<int>",&occStation1SubSec1);
+  tree->Branch("occStation1SubSec2","vector<int>",&occStation1SubSec2);
+  tree->Branch("occStation2","vector<int>",&occStation2);
+  tree->Branch("occStation3","vector<int>",&occStation3);
+  tree->Branch("occStation4","vector<int>",&occStation4);
 
-   tree->Branch("occME1ChamberSubSec1","vector<std::vector<int> >",&occME1ChamberSubSec1);
-   tree->Branch("occME1ChamberSubSec2","vector<std::vector<int> >",&occME1ChamberSubSec2);
-   tree->Branch("occME2Chamber","vector<std::vector<int> >",&occME2Chamber);
-   tree->Branch("occME3Chamber","vector<std::vector<int> >",&occME3Chamber);
-   tree->Branch("occME4Chamber","vector<std::vector<int> >",&occME4Chamber);
+  tree->Branch("occME1ChamberSubSec1","vector<std::vector<int> >",&occME1ChamberSubSec1);
+  tree->Branch("occME1ChamberSubSec2","vector<std::vector<int> >",&occME1ChamberSubSec2);
+  tree->Branch("occME2Chamber","vector<std::vector<int> >",&occME2Chamber);
+  tree->Branch("occME3Chamber","vector<std::vector<int> >",&occME3Chamber);
+  tree->Branch("occME4Chamber","vector<std::vector<int> >",&occME4Chamber);
 }
 
 
@@ -186,11 +186,11 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 L1TAnalyser::~L1TAnalyser()
 {
  
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-   treeFile->cd();
-   tree->Write();
-   delete runSRLUTs;
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
+  treeFile->cd();
+  tree->Write();
+  delete runSRLUTs;
 }
 
 
@@ -229,8 +229,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<csctf::TrackStub> stubs;
   std::vector<csctf::TrackStub>::const_iterator stub;
 
-  //MuonDigiCollection<CSCDetId,CSCCorrelatedLCTDigi>    "csctfunpacker"          ""        "CsctfFilter"   
-  edm::Handle<CSCCorrelatedLCTDigiCollection> lctDigiColls;
+  MuonDigiCollection<CSCDetId,CSCCorrelatedLCTDigi>    "csctfunpacker"          ""        "CsctfFilter"   
+    edm::Handle<CSCCorrelatedLCTDigiCollection> lctDigiColls;
   iEvent.getByLabel(lctsTag,lctDigiColls);
 
   std::vector<csctf::TrackStub>* trackStubs = new std::vector<csctf::TrackStub>;
@@ -240,8 +240,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<csctf::TrackStub>::const_iterator tsEnd = trackStubs->end();
 
   for(unsigned i=0;i<12;i++)
-  {
-  }
+    {
+    }
 
   std::vector<int> occME11a(24,0);
   std::vector<int> occME11b(24,0);
@@ -256,158 +256,158 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   int occME42SingleSector=0;
 
   for(int iSectors = 0; iSectors<12; iSectors++)
-  {
-   occStation1SubSec1[iSectors]=0;
-   occStation1SubSec2[iSectors]=0;
-   occStation2[iSectors]=0;
-   occStation3[iSectors]=0;
-   occStation4[iSectors]=0;
-   for(int iChambers = 0; iChambers<12; iChambers++)
-   {
-    occME1ChamberSubSec1[iSectors][iChambers]=0;
-    occME1ChamberSubSec2[iSectors][iChambers]=0;
-    if(iChambers<9)
     {
-      occME2Chamber[iSectors][iChambers]=0;
-      occME3Chamber[iSectors][iChambers]=0;
-      occME4Chamber[iSectors][iChambers]=0;
+      occStation1SubSec1[iSectors]=0;
+      occStation1SubSec2[iSectors]=0;
+      occStation2[iSectors]=0;
+      occStation3[iSectors]=0;
+      occStation4[iSectors]=0;
+      for(int iChambers = 0; iChambers<12; iChambers++)
+	{
+	  occME1ChamberSubSec1[iSectors][iChambers]=0;
+	  occME1ChamberSubSec2[iSectors][iChambers]=0;
+	  if(iChambers<9)
+	    {
+	      occME2Chamber[iSectors][iChambers]=0;
+	      occME3Chamber[iSectors][iChambers]=0;
+	      occME4Chamber[iSectors][iChambers]=0;
+	    }
+	}
     }
-   }
-  }
 
   for (;ts != tsEnd; ts++)
-  {
-	//std::cout << "etaValue: \t" <<ts->etaValue()<< std::endl;
-	//std::cout << "phiValue: \t" <<ts->phiValue()<< std::endl;
-	//std::cout << "eta: \t" <<ts->etaPacked()<< std::endl;
-	//std::cout << "phi: \t" <<ts->phiPacked()<< std::endl;
-	//std::cout << "cscid: \t" <<ts->cscid()<< std::endl;
-	//std::cout << "subsector: \t" <<ts->subsector()<< std::endl;
-	//std::cout << "sector: \t" <<ts->sector()<< std::endl;
-	//std::cout << "station: \t" <<ts->station()<< std::endl;
-	//std::cout << "endcap: \t" <<ts->endcap()<< std::endl;
-	//std::cout << "bx: \t" <<ts->BX()<< std::endl;
-	//std::cout << "MPCLink: \t" <<ts->getMPCLink()<< std::endl;
-	//std::cout << std::endl;
+    {
+      //std::cout << "etaValue: \t" <<ts->etaValue()<< std::endl;
+      //std::cout << "phiValue: \t" <<ts->phiValue()<< std::endl;
+      //std::cout << "eta: \t" <<ts->etaPacked()<< std::endl;
+      //std::cout << "phi: \t" <<ts->phiPacked()<< std::endl;
+      //std::cout << "cscid: \t" <<ts->cscid()<< std::endl;
+      //std::cout << "subsector: \t" <<ts->subsector()<< std::endl;
+      //std::cout << "sector: \t" <<ts->sector()<< std::endl;
+      //std::cout << "station: \t" <<ts->station()<< std::endl;
+      //std::cout << "endcap: \t" <<ts->endcap()<< std::endl;
+      //std::cout << "bx: \t" <<ts->BX()<< std::endl;
+      //std::cout << "MPCLink: \t" <<ts->getMPCLink()<< std::endl;
+      //std::cout << std::endl;
 
-	unsigned sector = ts->sector()-1;
+      unsigned sector = ts->sector()-1;
 
-	if(ts->BX() != 0)
-		continue;
-	hMPCLink->Fill(ts->getMPCLink());
-	hLocalPhi->Fill(ts->phiValue());
-	hPhi->Fill(ts->phiValue()+15.0*M_PI/180+(sector)*60.0*M_PI/180); 
-	hPhiPacked->Fill(ts->phiPacked());
-	hEta->Fill(ts->etaValue());
-	hEtaPacked->Fill(ts->etaPacked());
-	hBx->Fill(ts->BX());
-        int station = ts->station();
-        int subsector = ts->subsector();
-	//CSCDetId detId(ts->getDetId().rawId());
-	CSCDetId detId(ts->getDetId());
-        int ring = detId.ring();
-	int triggerChamber = CSCTriggerNumbering::triggerCscIdFromLabels(detId);
-	//ME11a ring==4 doesn't work, no ring==4 events ?
-	//std::cout << "station: \t" <<ts->station()<< std::endl;
-	//std::cout << "ring: \t" <<ring<< std::endl << std::endl;
-	if (ts->endcap()==2)
+      if(ts->BX() != 0)
+	continue;
+      hMPCLink->Fill(ts->getMPCLink());
+      hLocalPhi->Fill(ts->phiValue());
+      hPhi->Fill(ts->phiValue()+15.0*M_PI/180+(sector)*60.0*M_PI/180); 
+      hPhiPacked->Fill(ts->phiPacked());
+      hEta->Fill(ts->etaValue());
+      hEtaPacked->Fill(ts->etaPacked());
+      hBx->Fill(ts->BX());
+      int station = ts->station();
+      int subsector = ts->subsector();
+      //CSCDetId detId(ts->getDetId().rawId());
+      CSCDetId detId(ts->getDetId());
+      int ring = detId.ring();
+      int triggerChamber = CSCTriggerNumbering::triggerCscIdFromLabels(detId);
+      //ME11a ring==4 doesn't work, no ring==4 events ?
+      //std::cout << "station: \t" <<ts->station()<< std::endl;
+      //std::cout << "ring: \t" <<ring<< std::endl << std::endl;
+      if (ts->endcap()==2)
 	{
 	  station = -station;
 	  sector = sector+6;
 	}
-	hSector->Fill(sector+1);
-	hStation->Fill(station);
-	hSubSector->Fill(subsector);
+      hSector->Fill(sector+1);
+      hStation->Fill(station);
+      hSubSector->Fill(subsector);
 
-        //std::cout << "station: " << station << std::endl;
-        //std::cout << "my sector packed: " << sector << std::endl;
-        //std::cout << "trigger Chamber: " << triggerChamber << std::endl;
+      //std::cout << "station: " << station << std::endl;
+      //std::cout << "my sector packed: " << sector << std::endl;
+      //std::cout << "trigger Chamber: " << triggerChamber << std::endl;
 	
-	station = abs(station);
-	if (station==1)
+      station = abs(station);
+      if (station==1)
 	{
 	  if(subsector==1)
-	  {
-  		occME1ChamberSubSec1[sector][triggerChamber-1]++;
-		occStation1SubSec1[sector]++;
-		if (ring==4)
-		  occME11a[sector]++;
-		else if (ring==1)
-		  occME11b[sector]++;
-		else if (ring==2)
-		  occME12[sector]++;
-		else if (ring==3)
-		  occME13[sector]++;
-          }
+	    {
+	      occME1ChamberSubSec1[sector][triggerChamber-1]++;
+	      occStation1SubSec1[sector]++;
+	      if (ring==4)
+		occME11a[sector]++;
+	      else if (ring==1)
+		occME11b[sector]++;
+	      else if (ring==2)
+		occME12[sector]++;
+	      else if (ring==3)
+		occME13[sector]++;
+	    }
 	  else
-	  {
-  		occME1ChamberSubSec2[sector][triggerChamber-1]++;
-		occStation1SubSec2[sector]++;
-		if (ring==4)
-		  occME11a[sector+12]++;
-		else if (ring==1)
-		  occME11b[sector+12]++;
-		else if (ring==2)
-		  occME12[sector+12]++;
-		else if (ring==3)
-		  occME13[sector+12]++;
-          }
+	    {
+	      occME1ChamberSubSec2[sector][triggerChamber-1]++;
+	      occStation1SubSec2[sector]++;
+	      if (ring==4)
+		occME11a[sector+12]++;
+	      else if (ring==1)
+		occME11b[sector+12]++;
+	      else if (ring==2)
+		occME12[sector+12]++;
+	      else if (ring==3)
+		occME13[sector+12]++;
+	    }
 	}
-	if (station==2)
+      if (station==2)
 	{
-	  	occME2Chamber[sector][triggerChamber-1]++;
-		occStation2[sector]++;
-		if (ring==1)
-		  occME21[sector]++;
-		else if (ring==2)
-		  occME22[sector]++;
+	  occME2Chamber[sector][triggerChamber-1]++;
+	  occStation2[sector]++;
+	  if (ring==1)
+	    occME21[sector]++;
+	  else if (ring==2)
+	    occME22[sector]++;
 	}
-	if (station==3)
+      if (station==3)
 	{
-	  	occME3Chamber[sector][triggerChamber-1]++;
-		occStation3[sector]++;
-		if (ring==1)
-		  occME31[sector]++;
-		else if (ring==2)
-		  occME32[sector]++;
+	  occME3Chamber[sector][triggerChamber-1]++;
+	  occStation3[sector]++;
+	  if (ring==1)
+	    occME31[sector]++;
+	  else if (ring==2)
+	    occME32[sector]++;
 	}
-	if (station==4)
+      if (station==4)
 	{
-	  	occME4Chamber[sector][triggerChamber-1]++;
-		occStation4[sector]++;
-		if (ring==1)
-		  occME41[sector]++;
-		else if (ring==2)
-		{
-		  occME42[sector]++;
-		  occME42SingleSector++;
-		}
+	  occME4Chamber[sector][triggerChamber-1]++;
+	  occStation4[sector]++;
+	  if (ring==1)
+	    occME41[sector]++;
+	  else if (ring==2)
+	    {
+	      occME42[sector]++;
+	      occME42SingleSector++;
+	    }
 	}
-  }
+    }
 
   int maxOcc = 0;
 
   for (unsigned iSector=0; iSector<12; iSector++)
-  {
-    if (singleSectorNum != -1 && singleSectorNum != (int) iSector)
+    {
+      if (singleSectorNum != -1 && singleSectorNum != (int) iSector)
 	continue;
-    hOccStation1SubSec1->Fill(occStation1SubSec1[iSector]);
-    hOccStation1SubSec2->Fill(occStation1SubSec2[iSector]);
-    hOccStation2->Fill(occStation2[iSector]);
-    hOccStation3->Fill(occStation3[iSector]);
-    hOccStation4->Fill(occStation4[iSector]);
+      hOccStation1SubSec1->Fill(occStation1SubSec1[iSector]);
+      hOccStation1SubSec2->Fill(occStation1SubSec2[iSector]);
+      hOccStation2->Fill(occStation2[iSector]);
+      hOccStation3->Fill(occStation3[iSector]);
+      hOccStation4->Fill(occStation4[iSector]);
 
-    if (occStation1SubSec1[iSector]>maxOcc)
+      if (occStation1SubSec1[iSector]>maxOcc)
 	maxOcc = occStation1SubSec1[iSector];
-    if (occStation1SubSec2[iSector]>maxOcc)
+      if (occStation1SubSec2[iSector]>maxOcc)
 	maxOcc = occStation1SubSec2[iSector];
-    if (occStation2[iSector]>maxOcc)
+      if (occStation2[iSector]>maxOcc)
 	maxOcc = occStation2[iSector];
-    if (occStation3[iSector]>maxOcc)
+      if (occStation3[iSector]>maxOcc)
 	maxOcc = occStation3[iSector];
-    if (occStation4[iSector]>maxOcc)
+      if (occStation4[iSector]>maxOcc)
 	maxOcc = occStation4[iSector];
-  }
+    }
   hOccMax->Fill(maxOcc);
   if(maxOcc>0)
     hOccMaxNo0->Fill(maxOcc);
@@ -415,61 +415,61 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   hStubsTotal->Fill(trackStubs->size());
 
   for (unsigned iSector=0; iSector<24; iSector++)
-  {
-    if (singleSectorNum != -1 && abs(singleSectorNum) != (int) iSector
-		&& abs(singleSectorNum) != (int) iSector-12)
-	continue;
-    hOccME11a->Fill(occME11a[iSector]);
-    hOccME11b->Fill(occME11b[iSector]);
-    hOccME12->Fill(occME12[iSector]);
-    hOccME13->Fill(occME13[iSector]);
-    if(iSector<12)
     {
-      hOccME21->Fill(occME21[iSector]);
-      hOccME22->Fill(occME22[iSector]);
-      hOccME31->Fill(occME31[iSector]);
-      hOccME32->Fill(occME32[iSector]);
-      hOccME41->Fill(occME41[iSector]);
-      hOccME42->Fill(occME42[iSector]);
+      if (singleSectorNum != -1 && abs(singleSectorNum) != (int) iSector
+	  && abs(singleSectorNum) != (int) iSector-12)
+	continue;
+      hOccME11a->Fill(occME11a[iSector]);
+      hOccME11b->Fill(occME11b[iSector]);
+      hOccME12->Fill(occME12[iSector]);
+      hOccME13->Fill(occME13[iSector]);
+      if(iSector<12)
+	{
+	  hOccME21->Fill(occME21[iSector]);
+	  hOccME22->Fill(occME22[iSector]);
+	  hOccME31->Fill(occME31[iSector]);
+	  hOccME32->Fill(occME32[iSector]);
+	  hOccME41->Fill(occME41[iSector]);
+	  hOccME42->Fill(occME42[iSector]);
+	}
     }
-  }
   hOccME42SingleSector->Fill(occME42SingleSector);
 
   for (unsigned iChamb=0; iChamb<12;iChamb++)
-  {
-    for (unsigned iSector=0; iSector<12;iSector++)
     {
-      if (singleSectorNum != -1 && abs(singleSectorNum) != (int) iSector
-		&& abs(singleSectorNum) != (int) iSector-12)
-	  continue;
-      hOccME1ChambsSubSec1[iChamb]->Fill(occME1ChamberSubSec1[iSector][iChamb]);
-      hOccME1ChambsSubSec2[iChamb]->Fill(occME1ChamberSubSec2[iSector][iChamb]);
-      if(iChamb<9)
-      {
-        hOccME2Chambs[iChamb]->Fill(occME2Chamber[iSector][iChamb]);
-        hOccME3Chambs[iChamb]->Fill(occME3Chamber[iSector][iChamb]);
-        hOccME4Chambs[iChamb]->Fill(occME4Chamber[iSector][iChamb]);
-      }
+      for (unsigned iSector=0; iSector<12;iSector++)
+	{
+	  if (singleSectorNum != -1 && abs(singleSectorNum) != (int) iSector
+	      && abs(singleSectorNum) != (int) iSector-12)
+	    continue;
+	  hOccME1ChambsSubSec1[iChamb]->Fill(occME1ChamberSubSec1[iSector][iChamb]);
+	  hOccME1ChambsSubSec2[iChamb]->Fill(occME1ChamberSubSec2[iSector][iChamb]);
+	  if(iChamb<9)
+	    {
+	      hOccME2Chambs[iChamb]->Fill(occME2Chamber[iSector][iChamb]);
+	      hOccME3Chambs[iChamb]->Fill(occME3Chamber[iSector][iChamb]);
+	      hOccME4Chambs[iChamb]->Fill(occME4Chamber[iSector][iChamb]);
+	    }
+	}
     }
-  }
 
   //Vertex Counting
 
   if(haveRECO)
-   if(vertexColTag.label() != "null")
-   {
-     edm::Handle<reco::VertexCollection> vertexCol;
-     iEvent.getByLabel(vertexColTag,vertexCol);
-     reco::VertexCollection::const_iterator vertex;
-     for(vertex = vertexCol->begin(); vertex != vertexCol->end(); vertex++)
-     {
-  	if(vertex->isValid() && !vertex->isFake()) //&& vertex->normalizedChi2()<10)
-  		nVertex++;
-     }
-     //std::cout << "nVertex: " << nVertex << std::endl;
-     //std::cout << "luminosity: " <<insLumi << std::endl;
-     hNVertex->Fill(nVertex);
-   }
+    if(vertexColTag.label() != "null")
+      {
+	edm::Handle<reco::VertexCollection> vertexCol;
+	iEvent.getByLabel(vertexColTag,vertexCol);
+	reco::VertexCollection::const_iterator vertex;
+	for(vertex = vertexCol->begin(); vertex != vertexCol->end(); vertex++)
+	  {
+	    if(vertex->isValid() && !vertex->isFake()) //&& vertex->normalizedChi2()<10)
+	      nVertex++;
+	  }
+	//std::cout << "nVertex: " << nVertex << std::endl;
+	//std::cout << "luminosity: " <<insLumi << std::endl;
+	hNVertex->Fill(nVertex);
+      }
 
   tree->Fill();
 }
@@ -585,49 +585,49 @@ L1TAnalyser::beginJob()
   TFileDirectory chambsME4Dir = fs->mkdir("chambsME4");
 
   for(int i=0; i<12;i++)
-  {
-	std::stringstream tmpName;
-	std::stringstream tmpTitle;
-	tmpName << "OccME1Chamb" << i+1;
-	tmpTitle << "Stub Occupancy ME1, Chamber " << i+1 << " Summed Over Sectors, SubSectors";
-	TH1F* tempHist = chambsME1Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
-	tempHist->GetXaxis()->SetTitle(tmpTitle.str().c_str());
-	tempHist->GetYaxis()->SetTitle("Counts");
-	hOccME1ChambsSubSec1.push_back(tempHist);
-	hOccME1ChambsSubSec2.push_back((TH1F*) tempHist->Clone());
-  }
+    {
+      std::stringstream tmpName;
+      std::stringstream tmpTitle;
+      tmpName << "OccME1Chamb" << i+1;
+      tmpTitle << "Stub Occupancy ME1, Chamber " << i+1 << " Summed Over Sectors, SubSectors";
+      TH1F* tempHist = chambsME1Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
+      tempHist->GetXaxis()->SetTitle(tmpTitle.str().c_str());
+      tempHist->GetYaxis()->SetTitle("Counts");
+      hOccME1ChambsSubSec1.push_back(tempHist);
+      hOccME1ChambsSubSec2.push_back((TH1F*) tempHist->Clone());
+    }
 
   for(int i=0; i<9;i++)
-  {
-    for(int j=2; j<5;j++)
     {
-	std::stringstream tmpName;
-	std::stringstream tmpTitle;
-	tmpName << "OccME"<<j<<"Chamb" << i+1;
-	tmpTitle << "Stub Occupancy ME"<<j<<", Chamber " << i+1 << " Summed Over Sectors";
-	TH1F* tempHist; 
-	if(j==2)
+      for(int j=2; j<5;j++)
 	{
-	  tempHist = chambsME2Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
-	  hOccME2Chambs.push_back(tempHist);
-	}
-	else if(j==3)
-	{
-	  tempHist = chambsME3Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
-	  hOccME3Chambs.push_back(tempHist);
-	}
-	else if(j==4)
-	{
-	  tempHist = chambsME4Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
-	  hOccME4Chambs.push_back(tempHist);
-	}
-	else
-	  std::cout << "Warning: problem in initializing Chamber Occ hists!" << std::endl;
+	  std::stringstream tmpName;
+	  std::stringstream tmpTitle;
+	  tmpName << "OccME"<<j<<"Chamb" << i+1;
+	  tmpTitle << "Stub Occupancy ME"<<j<<", Chamber " << i+1 << " Summed Over Sectors";
+	  TH1F* tempHist; 
+	  if(j==2)
+	    {
+	      tempHist = chambsME2Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
+	      hOccME2Chambs.push_back(tempHist);
+	    }
+	  else if(j==3)
+	    {
+	      tempHist = chambsME3Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
+	      hOccME3Chambs.push_back(tempHist);
+	    }
+	  else if(j==4)
+	    {
+	      tempHist = chambsME4Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
+	      hOccME4Chambs.push_back(tempHist);
+	    }
+	  else
+	    std::cout << "Warning: problem in initializing Chamber Occ hists!" << std::endl;
 
-	tempHist->GetXaxis()->SetTitle(tmpTitle.str().c_str());
-	tempHist->GetYaxis()->SetTitle("Counts");
+	  tempHist->GetXaxis()->SetTitle(tmpTitle.str().c_str());
+	  tempHist->GetYaxis()->SetTitle("Counts");
+	}
     }
-  }
 
 }
 
@@ -653,20 +653,20 @@ L1TAnalyser::endJob()
 
 void
 L1TAnalyser::beginLuminosityBlock(edm::LuminosityBlock const& iLumiBlock, 
-                                         edm::EventSetup const& iSetup)
+				  edm::EventSetup const& iSetup)
 {
   if(haveRECO)
-  {
-   edm::Handle<LumiSummary> lumiSummary;
-   iLumiBlock.getByLabel("lumiProducer", lumiSummary);
+    {
+      edm::Handle<LumiSummary> lumiSummary;
+      iLumiBlock.getByLabel("lumiProducer", lumiSummary);
  
-   //
-   //collect lumi. 
-   //
-   insLumi=lumiSummary->avgInsDelLumi();//*93.244;
-   //std::cout << "luminosity: " <<insLumi << std::endl;
-   hInsLumi->Fill(insLumi);
-  }
+      //
+      //collect lumi. 
+      //
+      insLumi=lumiSummary->avgInsDelLumi();//*93.244;
+      //std::cout << "luminosity: " <<insLumi << std::endl;
+      hInsLumi->Fill(insLumi);
+    }
 }
 
 //define this as a plug-in
