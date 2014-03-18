@@ -8,6 +8,7 @@
 <use name="Geometry/Records"/>
 
 <use name="L1Trigger/CSCTrackFinder"/>
+<use name="L1Trigger/CSCTrackFinder/test"/>
 <use name="L1Trigger/DTTrackFinder"/>
 <use name="Geometry/DTGeometry"/>
 <use name="L1Trigger/DTUtilities"/>
