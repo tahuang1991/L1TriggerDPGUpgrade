@@ -205,6 +205,24 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   ///////////////////
   //Setup Stuff//////
   ///////////////////
+  edm::Handle<L1CSCTrackCollection> l1csctracks;
+  iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
+
+  L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
+
+  for(; tmp_trk != l1csctracks->end(); tmp_trk++)
+    {
+      stripped_tracks.push_back(tmp_trk->first);
+      //std::cout << "hyunyong : Station = " << tmp_trk->first.station() << std::endl;
+      for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
+
+        std::cout << "hyunyong : Station = " << (*csc).first.station() << std::endl;
+        std::cout << "hyunyong : GEM_dphi = " << (*csc).second.first->getGEMDPhi() << std::endl;
+
+      }
+    }
+
+
   nVertex=0;
 
   std::vector<csctf::TrackStub> stubs;
