@@ -133,7 +133,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ev.getByLabel(*tpsrc,tps);
     auto tp = tps->cbegin();
     auto tpend = tps->cend();
-
+    
     for( ; tp != tpend; ++tp ) {
       TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
