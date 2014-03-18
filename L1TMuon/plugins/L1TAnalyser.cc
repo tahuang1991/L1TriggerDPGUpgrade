@@ -18,17 +18,20 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h"
 #include "L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h"
+#include "L1Trigger/CSCTrackFinder/test/src/RunSRLUTs.h"
+
 #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
 #include "DataFormats/L1CSCTrackFinder/interface/TrackStub.h"//
 #include "DataFormats/L1CSCTrackFinder/interface/CSCTriggerContainer.h"
+#include "DataFormats/L1CSCTrackFinder/interface/L1CSCTrackCollection.h"
 #include "DataFormats/MuonDetId/interface/CSCTriggerNumbering.h"
-#include "L1Trigger/CSCTrackFinder/interface/CSCTrackFinderDataTypes.h"
-
-#include "L1Trigger/CSCTrackFinder/test/src/RunSRLUTs.h"
 
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
 #include "TH1F.h"
 #include "TFile.h"
@@ -36,6 +39,7 @@
 
 using namespace std;
 using namespace edm;
+using namespace L1TMuon;
 
 class L1TAnalyser : public edm::EDAnalyzer {
 public:
@@ -59,7 +63,11 @@ private:
   int nVertex;
   bool haveRECO;
   int singleSectorNum;
-  std::string outTreeFileName;
+  string outTreeFileName;
+
+
+  TH1F* h_nStubinTrack;
+  TH1F* h_nStubinTrackWithGEM;
 
   TH1F* hNVertex;
 
@@ -97,26 +105,26 @@ private:
   TH1F* hOccME42;
   TH1F* hOccME42SingleSector;
 
-  std::vector<TH1F*> hOccME1ChambsSubSec1;
-  std::vector<TH1F*> hOccME1ChambsSubSec2;
-  std::vector<TH1F*> hOccME2Chambs;
-  std::vector<TH1F*> hOccME3Chambs;
-  std::vector<TH1F*> hOccME4Chambs;
+  vector<TH1F*> hOccME1ChambsSubSec1;
+  vector<TH1F*> hOccME1ChambsSubSec2;
+  vector<TH1F*> hOccME2Chambs;
+  vector<TH1F*> hOccME3Chambs;
+  vector<TH1F*> hOccME4Chambs;
 
   //Tree stuff
   TFile* treeFile;
   TTree* tree;
-  std::vector<int> occStation1SubSec1;
-  std::vector<int> occStation1SubSec2;
-  std::vector<int> occStation2;
-  std::vector<int> occStation3;
-  std::vector<int> occStation4;
+  vector<int> occStation1SubSec1;
+  vector<int> occStation1SubSec2;
+  vector<int> occStation2;
+  vector<int> occStation3;
+  vector<int> occStation4;
 
-  std::vector<std::vector<int> > occME1ChamberSubSec1;
-  std::vector<std::vector<int> > occME1ChamberSubSec2;
-  std::vector<std::vector<int> > occME2Chamber;
-  std::vector<std::vector<int> > occME3Chamber;
-  std::vector<std::vector<int> > occME4Chamber;
+  vector<vector<int> > occME1ChamberSubSec1;
+  vector<vector<int> > occME1ChamberSubSec2;
+  vector<vector<int> > occME2Chamber;
+  vector<vector<int> > occME3Chamber;
+  vector<vector<int> > occME4Chamber;
 };
 //
 // constants, enums and typedefs
@@ -136,26 +144,26 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
   //  runSRLUTs = new csctf_analysis::RunSRLUTs();
   lctsTag= iConfig.getParameter<edm::InputTag>("lctsTag");
   vertexColTag= iConfig.getParameter<edm::InputTag>("vertexColTag");
-  outTreeFileName= iConfig.getUntrackedParameter<std::string>("outTreeFileName");
+  outTreeFileName= iConfig.getUntrackedParameter<string>("outTreeFileName");
   haveRECO = iConfig.getUntrackedParameter<bool>("haveRECO");
   singleSectorNum = iConfig.getUntrackedParameter<int>("singleSectorNum");
    
   treeFile = new TFile(outTreeFileName.c_str(),"RECREATE");
   tree = new TTree("tree","tree");
 
-  occStation1SubSec1 = std::vector<int>(12,0);
-  occStation1SubSec2 = std::vector<int>(12,0);
-  occStation2 = std::vector<int>(12,0);
-  occStation3 = std::vector<int>(12,0);
-  occStation4 = std::vector<int>(12,0);
+  occStation1SubSec1 = vector<int>(12,0);
+  occStation1SubSec2 = vector<int>(12,0);
+  occStation2 = vector<int>(12,0);
+  occStation3 = vector<int>(12,0);
+  occStation4 = vector<int>(12,0);
 
   for(int iSector = 0; iSector<12; iSector++)
     {
-      occME1ChamberSubSec1.push_back(std::vector<int>(12,0));
-      occME1ChamberSubSec2.push_back(std::vector<int>(12,0));
-      occME2Chamber.push_back(std::vector<int>(9,0));
-      occME3Chamber.push_back(std::vector<int>(9,0));
-      occME4Chamber.push_back(std::vector<int>(9,0));
+      occME1ChamberSubSec1.push_back(vector<int>(12,0));
+      occME1ChamberSubSec2.push_back(vector<int>(12,0));
+      occME2Chamber.push_back(vector<int>(9,0));
+      occME3Chamber.push_back(vector<int>(9,0));
+      occME4Chamber.push_back(vector<int>(9,0));
     }
 
   tree->Branch("nVertex",&nVertex,"nVertex/I");  
@@ -166,11 +174,11 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
   tree->Branch("occStation3","vector<int>",&occStation3);
   tree->Branch("occStation4","vector<int>",&occStation4);
 
-  tree->Branch("occME1ChamberSubSec1","vector<std::vector<int> >",&occME1ChamberSubSec1);
-  tree->Branch("occME1ChamberSubSec2","vector<std::vector<int> >",&occME1ChamberSubSec2);
-  tree->Branch("occME2Chamber","vector<std::vector<int> >",&occME2Chamber);
-  tree->Branch("occME3Chamber","vector<std::vector<int> >",&occME3Chamber);
-  tree->Branch("occME4Chamber","vector<std::vector<int> >",&occME4Chamber);
+  tree->Branch("occME1ChamberSubSec1","vector<vector<int> >",&occME1ChamberSubSec1);
+  tree->Branch("occME1ChamberSubSec2","vector<vector<int> >",&occME1ChamberSubSec2);
+  tree->Branch("occME2Chamber","vector<vector<int> >",&occME2Chamber);
+  tree->Branch("occME3Chamber","vector<vector<int> >",&occME3Chamber);
+  tree->Branch("occME4Chamber","vector<vector<int> >",&occME4Chamber);
 }
 
 
@@ -197,54 +205,77 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   ///////////////////
   //Setup Stuff//////
   ///////////////////
+  //  edm::RefProd<CSCTrackCollection> csctfProd = ev.getRefBeforePut<CSCTrackCollection>("input");  
   edm::Handle<L1CSCTrackCollection> l1csctracks;
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
+  edm::Handle<TriggerPrimitiveCollection> trigPrims;
+  iEvent.getByLabel("L1TMuonTriggerPrimitives",trigPrims);
 
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
-  CSCTriggerContainer<csc::L1Track> stripped_tracks;
 
-  for(; tmp_trk != l1csctracks->end(); tmp_trk++)
-    {
-      stripped_tracks.push_back(tmp_trk->first);
-      //std::cout << "hyunyong : Station = " << tmp_trk->first.station() << std::endl;
-      for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
+  for(; tmp_trk != l1csctracks->end(); tmp_trk++){
+    //cout << "hyunyong : Station = " << tmp_trk->first.station() << endl;
+    auto l1track = tmp_trk->first;
+    cout << "track = "
+	 << ", ptValue " << l1track.ptValue()
+	 << ", etaValue " << l1track.etaValue()
+	 << ", phiValue " << l1track.phiValue()
+	 << ", ptLUTAddress " << l1track.ptLUTAddress()
+	 << ", quality " << l1track.quality()
+	 << ", front_rear " << l1track.front_rear()
+	 << endl;
+    //      l1track.Print();
 
-        std::cout << "hyunyong : Station = " << (*csc).first.station() << std::endl;
-        std::cout << "hyunyong : GEM_dphi = " << (*csc).second.first->getGEMDPhi() << std::endl;
-
-      }
+    int nstubs=0;
+    bool hasGEM = false;
+    for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
+      auto lctdigi = (*csc).second.first;
+      if ((*csc).first.station() == 1)
+	cout << "Station = " << (*csc).first.station()
+	     << ", getGEMDPhi " << lctdigi->getGEMDPhi()
+	     << ", getQuality " << lctdigi->getQuality()
+	     << ", getKeyWG " << lctdigi->getKeyWG()
+	     << ", getStrip " << lctdigi->getStrip()
+	     << ", getPattern " << lctdigi->getPattern()
+	     << ", getBend " << lctdigi->getBend()
+	     << ", getCLCTPattern " << lctdigi->getCLCTPattern()
+	     << ", getMPCLink " << lctdigi->getMPCLink()
+	     << endl;
+      nstubs++;
+      if ((*csc).second.first->getGEMDPhi() > -99)
+	hasGEM = true;
     }
+    h_nStubinTrack->Fill(nstubs);
+    if (hasGEM)
+      h_nStubinTrackWithGEM->Fill(nstubs);
+  }
 
 
   nVertex=0;
 
-  std::vector<csctf::TrackStub> stubs;
-  std::vector<csctf::TrackStub>::const_iterator stub;
+  vector<csctf::TrackStub> stubs;
+  vector<csctf::TrackStub>::const_iterator stub;
 
   //  MuonDigiCollection<CSCDetId,CSCCorrelatedLCTDigi>    "csctfunpacker"          ""        "CsctfFilter"   
   edm::Handle<CSCCorrelatedLCTDigiCollection> lctDigiColls;
   iEvent.getByLabel(lctsTag,lctDigiColls);
 
-  std::vector<csctf::TrackStub>* trackStubs = new std::vector<csctf::TrackStub>;
+  vector<csctf::TrackStub>* trackStubs = new vector<csctf::TrackStub>;
   //  runSRLUTs->makeTrackStubs(lctDigiColls.product(),trackStubs);
 
-  std::vector<csctf::TrackStub>::const_iterator ts = trackStubs->begin();
-  std::vector<csctf::TrackStub>::const_iterator tsEnd = trackStubs->end();
+  vector<csctf::TrackStub>::const_iterator ts = trackStubs->begin();
+  vector<csctf::TrackStub>::const_iterator tsEnd = trackStubs->end();
 
-  for(unsigned i=0;i<12;i++)
-    {
-    }
-
-  std::vector<int> occME11a(24,0);
-  std::vector<int> occME11b(24,0);
-  std::vector<int> occME12(24,0);
-  std::vector<int> occME13(24,0);
-  std::vector<int> occME21(12,0);
-  std::vector<int> occME22(12,0);
-  std::vector<int> occME31(12,0);
-  std::vector<int> occME32(12,0);
-  std::vector<int> occME41(12,0);
-  std::vector<int> occME42(12,0);
+  vector<int> occME11a(24,0);
+  vector<int> occME11b(24,0);
+  vector<int> occME12(24,0);
+  vector<int> occME13(24,0);
+  vector<int> occME21(12,0);
+  vector<int> occME22(12,0);
+  vector<int> occME31(12,0);
+  vector<int> occME32(12,0);
+  vector<int> occME41(12,0);
+  vector<int> occME42(12,0);
   int occME42SingleSector=0;
 
   for(int iSectors = 0; iSectors<12; iSectors++)
@@ -269,18 +300,18 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for (;ts != tsEnd; ts++)
     {
-      //std::cout << "etaValue: \t" <<ts->etaValue()<< std::endl;
-      //std::cout << "phiValue: \t" <<ts->phiValue()<< std::endl;
-      //std::cout << "eta: \t" <<ts->etaPacked()<< std::endl;
-      //std::cout << "phi: \t" <<ts->phiPacked()<< std::endl;
-      //std::cout << "cscid: \t" <<ts->cscid()<< std::endl;
-      //std::cout << "subsector: \t" <<ts->subsector()<< std::endl;
-      //std::cout << "sector: \t" <<ts->sector()<< std::endl;
-      //std::cout << "station: \t" <<ts->station()<< std::endl;
-      //std::cout << "endcap: \t" <<ts->endcap()<< std::endl;
-      //std::cout << "bx: \t" <<ts->BX()<< std::endl;
-      //std::cout << "MPCLink: \t" <<ts->getMPCLink()<< std::endl;
-      //std::cout << std::endl;
+      //cout << "etaValue: \t" <<ts->etaValue()<< endl;
+      //cout << "phiValue: \t" <<ts->phiValue()<< endl;
+      //cout << "eta: \t" <<ts->etaPacked()<< endl;
+      //cout << "phi: \t" <<ts->phiPacked()<< endl;
+      //cout << "cscid: \t" <<ts->cscid()<< endl;
+      //cout << "subsector: \t" <<ts->subsector()<< endl;
+      //cout << "sector: \t" <<ts->sector()<< endl;
+      //cout << "station: \t" <<ts->station()<< endl;
+      //cout << "endcap: \t" <<ts->endcap()<< endl;
+      //cout << "bx: \t" <<ts->BX()<< endl;
+      //cout << "MPCLink: \t" <<ts->getMPCLink()<< endl;
+      //cout << endl;
 
       unsigned sector = ts->sector()-1;
 
@@ -300,8 +331,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int ring = detId.ring();
       int triggerChamber = CSCTriggerNumbering::triggerCscIdFromLabels(detId);
       //ME11a ring==4 doesn't work, no ring==4 events ?
-      //std::cout << "station: \t" <<ts->station()<< std::endl;
-      //std::cout << "ring: \t" <<ring<< std::endl << std::endl;
+      //cout << "station: \t" <<ts->station()<< endl;
+      //cout << "ring: \t" <<ring<< endl << endl;
       if (ts->endcap()==2)
 	{
 	  station = -station;
@@ -311,9 +342,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hStation->Fill(station);
       hSubSector->Fill(subsector);
 
-      //std::cout << "station: " << station << std::endl;
-      //std::cout << "my sector packed: " << sector << std::endl;
-      //std::cout << "trigger Chamber: " << triggerChamber << std::endl;
+      //cout << "station: " << station << endl;
+      //cout << "my sector packed: " << sector << endl;
+      //cout << "trigger Chamber: " << triggerChamber << endl;
 	
       station = abs(station);
       if (station==1)
@@ -458,7 +489,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if(vertex->isValid() && !vertex->isFake()) //&& vertex->normalizedChi2()<10)
 	      nVertex++;
 	  }
-	//std::cout << "nVertex: " << nVertex << std::endl;
+	//cout << "nVertex: " << nVertex << endl;
 	hNVertex->Fill(nVertex);
       }
 
@@ -474,6 +505,14 @@ L1TAnalyser::beginJob()
   hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",30,0,30);
   hNVertex->GetXaxis()->SetTitle("N Primary Vertices");
   hNVertex->GetYaxis()->SetTitle("Counts");
+
+  h_nStubinTrack=fs->make<TH1F>("nStubinTrack","N Stubs in Track",10,0,10);
+  h_nStubinTrack->GetXaxis()->SetTitle("N Stubs in Track");
+  h_nStubinTrack->GetYaxis()->SetTitle("Counts");
+
+  h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrack","N Stubs in Track",10,0,10);
+  h_nStubinTrackWithGEM->GetXaxis()->SetTitle("N Stubs in Track");
+  h_nStubinTrackWithGEM->GetYaxis()->SetTitle("Counts");
 
   hMPCLink=fs->make<TH1F>("MPCLink","Stub MPC Link Number",5,-1,4);
   hMPCLink->GetXaxis()->SetTitle("MPC Link");
@@ -574,8 +613,8 @@ L1TAnalyser::beginJob()
 
   for(int i=0; i<12;i++)
     {
-      std::stringstream tmpName;
-      std::stringstream tmpTitle;
+      stringstream tmpName;
+      stringstream tmpTitle;
       tmpName << "OccME1Chamb" << i+1;
       tmpTitle << "Stub Occupancy ME1, Chamber " << i+1 << " Summed Over Sectors, SubSectors";
       TH1F* tempHist = chambsME1Dir.make<TH1F>(tmpName.str().c_str(),tmpTitle.str().c_str(),3,-0.5,2.5);
@@ -589,8 +628,8 @@ L1TAnalyser::beginJob()
     {
       for(int j=2; j<5;j++)
 	{
-	  std::stringstream tmpName;
-	  std::stringstream tmpTitle;
+	  stringstream tmpName;
+	  stringstream tmpTitle;
 	  tmpName << "OccME"<<j<<"Chamb" << i+1;
 	  tmpTitle << "Stub Occupancy ME"<<j<<", Chamber " << i+1 << " Summed Over Sectors";
 	  TH1F* tempHist; 
@@ -610,7 +649,7 @@ L1TAnalyser::beginJob()
 	      hOccME4Chambs.push_back(tempHist);
 	    }
 	  else
-	    std::cout << "Warning: problem in initializing Chamber Occ hists!" << std::endl;
+	    cout << "Warning: problem in initializing Chamber Occ hists!" << endl;
 
 	  tempHist->GetXaxis()->SetTitle(tmpTitle.str().c_str());
 	  tempHist->GetYaxis()->SetTitle("Counts");
