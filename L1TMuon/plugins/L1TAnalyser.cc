@@ -209,6 +209,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
 
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
+  CSCTriggerContainer<csc::L1Track> stripped_tracks;
 
   for(; tmp_trk != l1csctracks->end(); tmp_trk++)
     {
