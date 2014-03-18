@@ -133,7 +133,7 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 
 {
   //now do what ever initialization is needed
-  //   runSRLUTs = new csctf_analysis::RunSRLUTs();
+  runSRLUTs = new csctf_analysis::RunSRLUTs();
   lctsTag= iConfig.getParameter<edm::InputTag>("lctsTag");
   vertexColTag= iConfig.getParameter<edm::InputTag>("vertexColTag");
   outTreeFileName= iConfig.getUntrackedParameter<std::string>("outTreeFileName");
@@ -182,7 +182,7 @@ L1TAnalyser::~L1TAnalyser()
   // (e.g. close files, deallocate resources etc.)
   treeFile->cd();
   tree->Write();
-  //   delete runSRLUTs;
+  delete runSRLUTs;
 }
 
 
