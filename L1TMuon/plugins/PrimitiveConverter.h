@@ -60,7 +60,11 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getCSCData().keywire; sector = Det.triggerSector(); strip = C3->getCSCData().strip; 
       pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getCSCData().quality; BX = C3->getCSCData().bx; endcap = Det.endcap();
 
-      if (station==1) std::cout << "CSC-gemDPhi "<< C3->getCSCData().gemDPhi<< std::endl;
+      if (station==1){
+	std::cout << "CSC-gemDPhi "<< C3->getCSCData().gemDPhi
+		  << ", quality "<< quality
+		  << std::endl;
+      }
     }
     if(C3->subsystem() == TriggerPrimitive::kGEM){
       GEMDetId Det = C3->detId<GEMDetId>();
