@@ -228,7 +228,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 << ", front_rear " << l1track.front_rear()
 	 << endl;
     //      l1track.Print();
-
     int nstubs=0;
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
