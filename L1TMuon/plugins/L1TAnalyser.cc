@@ -66,6 +66,9 @@ private:
   string outTreeFileName;
 
 
+  TH1F* h_GemdPhi;
+  TH1F* h_nStation;  
+
   TH1F* h_nStubinTrack;
   TH1F* h_nStubinTrackWithGEM;
 
@@ -230,7 +233,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
       auto lctdigi = (*csc).second.first;
-      if ((*csc).first.station() == 1)
+      h_nStation->Fill((*csc).first.station());
+      if ((*csc).first.station() == 1){
+        h_GemdPhi->Fill((*csc).second.first->getGEMDPhi());
 	cout << "Station = " << (*csc).first.station()
 	     << ", getGEMDPhi " << lctdigi->getGEMDPhi()
 	     << ", getQuality " << lctdigi->getQuality()
@@ -240,7 +245,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     << ", getBend " << lctdigi->getBend()
 	     << ", getCLCTPattern " << lctdigi->getCLCTPattern()
 	     << ", getMPCLink " << lctdigi->getMPCLink()
-	     << endl;
+	     << endl;}
       nstubs++;
       if ((*csc).second.first->getGEMDPhi() > -99)
 	hasGEM = true;
@@ -513,6 +518,16 @@ L1TAnalyser::beginJob()
   h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrack","N Stubs in Track",10,0,10);
   h_nStubinTrackWithGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_nStubinTrackWithGEM->GetYaxis()->SetTitle("Counts");
+
+  h_GemdPhi=fs->make<TH1F>("GemdPhi","GEM-SCS dPhi in station 1",18,-9.0,9.0);
+  h_GemdPhi->GetXaxis()->SetTitle("dPhi");
+  h_GemdPhi->GetYaxis()->SetTitle("Counts");
+
+  h_nStation=fs->make<TH1F>("nStation","Number of station",5,0,5);
+  h_nStation->GetXaxis()->SetTitle("Station mumber");
+  h_nStation->GetYaxis()->SetTitle("Counts");
+
+
 
   hMPCLink=fs->make<TH1F>("MPCLink","Stub MPC Link Number",5,-1,4);
   hMPCLink->GetXaxis()->SetTitle("MPC Link");
