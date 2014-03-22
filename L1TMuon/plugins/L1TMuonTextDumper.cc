@@ -133,15 +133,17 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ev.getByLabel(*tpsrc,tps);
     auto tp = tps->cbegin();
     auto tpend = tps->cend();
-
+    
     for( ; tp != tpend; ++tp ) {
-      std::cout << "jason: tp->subsystem()" << tp->subsystem() << std::endl;
       TriggerPrimitiveRef tpref(tps,tp - tps -> cbegin());
 		
       tester.push_back(tpref);
-		
-      if(tp->subsystem() == 1){
-	cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
+      
+      if(tp->subsystem() == TriggerPrimitive::kGEM){
+	cout<<"GEM trigger prim found station:"<<tp->detId<GEMDetId>().station()<<endl;
+      }
+      if(tp->subsystem() == TriggerPrimitive::kCSC){
+	cout<<"CSC trigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
 		
 	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
 		
@@ -152,7 +154,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	    ME42test2->Fill(GeneratorMuon.phi());
 		
 	}
-	  
+	
 	if((tp->detId<CSCDetId>().station() == 1) && (tp->detId<CSCDetId>().ring() == 4))
 	  ME1gangnedtest->Fill(tp->getCSCData().strip);
 			
@@ -166,7 +168,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	  striph->Fill(tp->getCSCData().strip);
 	}
       }
-      if(tp->subsystem() == 3){
+      if(tp->subsystem() == TriggerPrimitive::kGEM){
 	if((tp->detId<GEMDetId>().station() == 1))
 	  h_GE11->Fill(1);			
       }
@@ -183,28 +185,44 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////// TP Conversion //////////////////////  Output is vector of Converted Hits
     //////////////////////////////////////////////////////
 
+    cout<<"TP Conversion" << endl;
 
     vector<ConvertedHit> ConvHits = PrimConv(tester,SectIndex);
     CHits[SectIndex] = ConvHits;
-	
+    
+    cout << "SectIndex " << SectIndex  << endl;
     for(vector<ConvertedHit>::iterator i=ConvHits.begin();i!=ConvHits.end();i++){
-	
-      if(i->TP()->detId<CSCDetId>().ring() == 4)
-	ME1gangnedtest->Fill(i->Phi());
-	
+      cout<<"TP ConvertedHit: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
+      if(i->TP()->subsystem() == TriggerPrimitive::kCSC){	
+	if(i->TP()->detId<CSCDetId>().ring() == 4)
+	  ME1gangnedtest->Fill(i->Phi());
+      }
     }
-   
+    
  
   
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
     ////////////////////////////////print values for input into Alex's emulator code/////////////////////////////////////////////////////
-    //for(vector<ConvertedHit>::iterator h = ConvHits.begin();h != ConvHits.end();h++){
-	
-    //if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
-    //fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
-    //fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
-    //fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
-    //}
+    //   for(vector<ConvertedHit>::iterator h = ConvHits.begin();h != ConvHits.end();h++){
+      
+
+      // if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
+      // fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
+      // fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
+      // fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
+    //  }
     ////////////////////////////////print values for input into Alex's emulator code/////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -216,16 +234,57 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////////////////////////////////////////////////////  past from the central BX, this analyzes a total of 5 BX's.
     //////////////////////////////////////////////////////
  
- 
+    cout<<"\nBX Grouper" << endl;
     vector<vector<ConvertedHit>> GroupedHits = GroupBX(ConvHits);
  
+    int nBX = 0;
+    for(vector<vector<ConvertedHit>>::iterator j=GroupedHits.begin();j!=GroupedHits.end();j++){
+      cout<<"\nBX Grouper nBX = " << nBX++ << endl;
+      for(vector<ConvertedHit>::iterator i=j->begin();i!=j->end();i++){
+	cout<<"BX GroupedHits: subsystem " << i->TP()->subsystem()
+	    << ", Station " << i->Station()
+	    << ", Id " << i->Id()
+	  //	  << ", chamber " << i->TP()->chamber()
+	  //	  << ", ring " << i->TP()->ring()
+	    << ", strip " << i->Strip()
+	    << ", BX " << i->BX()
+	    << ", wire " << i->Wire()
+	    << ", pattern " << i->Pattern()
+	    << ", quality " << i->Quality()
+	    << ", Phi " << i->Phi()
+	    << ", Theta " << i->Theta()
+	    << endl;
+      }
+    }
  
     ////////////////////////////////////////////////////////  Creates a zone for each of the three groups created in the BX Grouper module.
     ////////// Creat Zones for pattern Recognition /////////  The output of this module not only contains the zones but also the 
     ////////////////////////////////////////////////////////  reference back to the TriggerPrimitives that went into making them.
 	
+    cout<<"\nCreat Zones for pattern Recognition" << endl;
     vector<ZonesOutput> Zout = Zones(GroupedHits);
-   
+
+    int nZones = 0;
+    for(vector<ZonesOutput>::iterator j=Zout.begin();j!=Zout.end();j++){
+      vector<ConvertedHit> k = j->convertedhits;
+      cout<<"\nnZones = " << nZones++ << endl;
+      for(vector<ConvertedHit>::iterator i=k.begin();i!=k.end();i++){
+	cout<<"ZonesOutput: subsystem " << i->TP()->subsystem()
+	    << ", Station " << i->Station()
+	    << ", Id " << i->Id()
+	  //	  << ", chamber " << i->TP()->chamber()
+	  //	  << ", ring " << i->TP()->ring()
+	    << ", strip " << i->Strip()
+	    << ", BX " << i->BX()
+	    << ", wire " << i->Wire()
+	    << ", pattern " << i->Pattern()
+	    << ", quality " << i->Quality()
+	    << ", Phi " << i->Phi()
+	    << ", Theta " << i->Theta()
+	    << endl;
+      }
+    }
+
 
     ///////////////////////////////
     ///// Pattern Recognition /////  Applies pattern recognition logic on each of the 3 BX groups and assigns a quality to each keystrip in the zone.
@@ -233,6 +292,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////////////////////  same hits. This is where the BX analysis ends; Only 1 list of found patterns is given to the next module.
   
 
+    cout<<"\n Pattern Recognition" << endl;
     vector<PatternOutput> Pout = Patterns(Zout);
   
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
@@ -240,22 +300,54 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     cout << "test PatternOutput " << endl;
     PrintQuality(Test.detected);
  
+    vector<ConvertedHit> PatHits = Test.hits;
+    for(vector<ConvertedHit>::iterator i=PatHits.begin();i!=PatHits.end();i++){
+      cout<<"Pattern Recognition: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
+    }
+      
 
     ///////////////////////////////
     //////Sector Sorting/////////// Sorts through the patterns found in each zone and selects the best three per zone to send to the next module.
     ///////Finding 3 Best Pattern// 
     ///////////////////////////////
-  
-  
+    cout<<"\nSector Sorting" << endl;
     SortingOutput Sout = SortSect(Test);
 	
+    vector<ConvertedHit> SoutHits = Sout.Hits();
+    for(vector<ConvertedHit>::iterator i=SoutHits.begin();i!=SoutHits.end();i++){
+      cout<<"SortingOutput: subsystem " << i->TP()->subsystem()
+	  << ", Station " << i->Station()
+	  << ", Id " << i->Id()
+	//	  << ", chamber " << i->TP()->chamber()
+	//	  << ", ring " << i->TP()->ring()
+	  << ", strip " << i->Strip()
+	  << ", BX " << i->BX()
+	  << ", wire " << i->Wire()
+	  << ", pattern " << i->Pattern()
+	  << ", quality " << i->Quality()
+	  << ", Phi " << i->Phi()
+	  << ", Theta " << i->Theta()
+	  << endl;
+    }
+
  
     //////////////////////////////////
     ///////// Match ph patterns ////// Loops over each sorted pattern and then loops over all possible triggerprimitives which could have made the pattern
     ////// to segment inputs ///////// and matches the associated full precision triggerprimitives to the detected pattern. 
     //////////////////////////////////   
-      
-
+    cout<<"Match ph patterns" << endl;
     MatchingOutput Mout = PhiMatching(Sout);
     MO[SectIndex] = Mout;
 
@@ -263,8 +355,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////// Calculate delta //////// Once we have matched the hits we calculate the delta phi and theta between all 
     ////////    ph and th    //////// stations present. 
     /////////////////////////////////
-  
-  
+    cout<<"Calculate delta" << endl;
     vector<vector<DeltaOutput>> Dout = CalcDeltas(Mout);////
  
 
@@ -272,8 +363,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     /////// Sorts and gives /////////  Loops over all of the found tracks(looking across zones) and selects the best three per sector. 
     ////// Best 3 tracks/sector /////  Here ghost busting is done to delete tracks which are comprised of the same associated stubs. 
     /////////////////////////////////  
-  
-  
+    cout<<"Sorts BestTracks" << endl;
     vector<BTrack> Bout = BestTracks(Dout);
     PTracks[SectIndex] = Bout;
    
@@ -285,6 +375,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //// Ghost Cancellation between ////not done correct
   //////////   sectors     ///////////
   ////////////////////////////////////
+  cout<<"Ghost Cancellation" << endl;
  
   for(int i1=0;i1<36;i1++){
  
@@ -340,8 +431,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Sorting through all sectors ////
   ///   to find 4 best muons      ////
   ////////////////////////////////////
- 
- 
+  cout<<"Sorting through all sectors" << endl;
   BTrack FourBest[4];
   vector<BTrack> PTemp[12] = PTracks;
   int windex[4] = {-1,-1,-1,-1};
@@ -372,6 +462,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Make Internal track if ////////
   /////// tracks are found //////////
   ///////////////////////////////////
+  cout<<"Make Internal track" << endl;
 
   bool epir = false;
   
@@ -389,12 +480,25 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       tempTrack.rank = FourBest[fbest].winner.Rank();
       tempTrack.deltas = FourBest[fbest].deltas;
 		
+      cout<<"Make Internal track: no. " << fbest << endl;
       for(vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
-		
 	if(A->Phi() != -999){
-			
+	  cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
+	      << ", Station " << A->Station()
+	      << ", Id " << A->Id()
+	    //	  << ", chamber " << A->TP()->chamber()
+	    //	  << ", ring " << A->TP()->ring()
+	      << ", strip " << A->Strip()
+	      << ", BX " << A->BX()
+	      << ", wire " << A->Wire()
+	      << ", pattern " << A->Pattern()
+	      << ", quality " << A->Quality()
+	      << ", Phi " << A->Phi()
+	      << ", Theta " << A->Theta()
+	      << endl;
+	  
 	  tempTrack.addStub(A->TP());
-	  //cout<<"Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
+	  cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
 	}
 			
       }

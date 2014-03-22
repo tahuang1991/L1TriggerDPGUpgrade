@@ -51,7 +51,6 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     ///// get all input variables ///////
     /////////////////////////////////////
     TriggerPrimitiveRef C3 = *C1;
-    std::cout << "jason: C3->subsystem()" << C3->subsystem() << std::endl;
 
     int station = -999, chamber = -999, ring = -999, wire = -999, sector = -999, strip = -999; 
     int pattern = -999, Id = -999, quality = -999, BX = -999, endcap = -999;
@@ -60,20 +59,52 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       CSCDetId Det = C3->detId<CSCDetId>();
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getCSCData().keywire; sector = Det.triggerSector(); strip = C3->getCSCData().strip; 
       pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getCSCData().quality; BX = C3->getCSCData().bx; endcap = Det.endcap();
+
+      if (station==1){
+	std::cout << "CSC-gemDPhi "<< C3->getCSCData().gemDPhi
+		  << ", quality "<< quality
+		  << std::endl;
+      }
     }
     if(C3->subsystem() == TriggerPrimitive::kGEM){
       GEMDetId Det = C3->detId<GEMDetId>();
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; //sector = Det.triggerSector(); 
       strip = C3->getGEMData().strip; 
-      pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getGEMData().quality; BX = C3->getGEMData().bx; 
-      //endcap = Det.endcap();
+      pattern = C3->getPattern(); quality = C3->getGEMData().quality; 
+      endcap = Det.region();
+      if (Det.region() == -1) endcap = 2;
+      // temp BX fix for gem
+      if (C3->getGEMData().bx > 60000) 
+	BX = 65530-C3->getGEMData().bx;
+      else 
+	BX = C3->getGEMData().bx + 6;
+      // temp trigger sector not defined in GEM
+      sector =  (station != 1) ? ((static_cast<unsigned>(chamber-2) & 0x1f) / 3) + 1 : // ch 2-4-> 1, 5-7->2, ...
+	                         ((static_cast<unsigned>(chamber-3) & 0x7f) / 6) + 1;
+      // temp trigger ID not defined in GEM
+      int result = -1;
+      if( station == 1 ) {
+	result = (chamber) % 3 + 1; // 1,2,3
+	switch (ring) {
+	case 1:
+	  break;
+	case 2:
+	  result += 3; // 4,5,6
+	  break;
+	case 3:
+	  result += 6; // 7,8,9
+	  break;
+	}
+      }
+      Id = result-1;
+
     }
-   
+
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
     if(SectIndex ==  (endcap - 1)*6 + sector - 1){
-      std::cout<<"\n\nSECTOR "<<SectIndex<<"\n\n";
-      std::cout<<"\n\nRING = "<<ring<<"\n\n";
+      std::cout<<"SECTOR "<<SectIndex<<std::endl;
+      std::cout<<"RING = "<<ring<<std::endl;
 	
       /////////////////////////////////////
       //////// define/set variables////////
@@ -134,7 +165,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 		
       }
       if(sub)
-	std::cout<<"\nsub = "<<sub<<"\n";
+	std::cout<<"sub = "<<sub<<std::endl;
 
       ////////////////////////////
       /// Define look-up index ///
@@ -234,16 +265,16 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	  idl += 9;
 		
 	th_tmp = St1ThLUT[sub-1][SectIndex][idl -1][wire];
-	std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
+	std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
       }
       else{
 	th_tmp = ThLUT[station-2][SectIndex][Id-1][wire];
-	std::cout<<"\n\nth_tmpr = "<<th_tmp<<"\n\n";
+	std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
       }
 	
       //th = th_tmp + Thinit[LUTi];
       th = th_tmp + ThInit[SectIndex][LUTi];
-      std::cout<<"ThInit = "<<ThInit[SectIndex][LUTi]<<"\n";
+      std::cout<<"ThInit = "<<ThInit[SectIndex][LUTi]<<std::endl;
 	
       if(station == 1 && (ring == 1 || ring == 4) /*&& endcap == 1*/){
 	
@@ -251,11 +282,11 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 		
 	if(Id > 3){
 	  th_corr = THCORR[sub-1][SectIndex][Id-10][index];
-	  std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
+	  std::cout<<"th_corr = "<<th_corr<<std::endl;
 	}
 	else{
 	  th_corr = THCORR[sub-1][SectIndex][Id-1][index];
-	  std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
+	  std::cout<<"th_corr = "<<th_corr<<std::endl;
 	}
 		
 		
@@ -347,17 +378,19 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       Hit.SetZoneContribution(zonecontribution);
 
       if(Hit.Theta() != -999){//if theta is valid
-	ConvHits.push_back(Hit);std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
+	ConvHits.push_back(Hit);
+	std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
 	std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
-	std::cout<<"\n\nIn Zones: ";
+	std::cout<<"In Zones: ";
 	for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){
 	  std::cout<<" "<<*in<<" ";
 	}
-      }	
-	
+      }
+      
     }//if sector 1 && endcap 1
   }
   
+  std::cout<<"PrimitiveConverter::return ConvHits"<<std::endl;
   return ConvHits;
 }
 

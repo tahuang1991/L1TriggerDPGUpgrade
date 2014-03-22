@@ -86,7 +86,7 @@ namespace L1TMuon {
     TriggerPrimitiveList 
     getPrimitivesByCSCTriggerInfo(const int endcap,
 				  const int sector,
-			    const edm::Handle<TriggerPrimitiveCollection>& tps,
+				  const edm::Handle<TriggerPrimitiveCollection>& tps,
 				  const std::vector<unsigned>& trkNmbs) {
       TriggerPrimitiveList result;
       auto tp = tps->cbegin();
@@ -162,7 +162,7 @@ namespace L1TMuon {
     getPrimitivesByDTTriggerInfo(const int wheel,
 				 const int sp_wheel,
 				 const int sector,
-			    const edm::Handle<TriggerPrimitiveCollection>& tps,
+				 const edm::Handle<TriggerPrimitiveCollection>& tps,
 				 const unsigned mode,
 				 const std::vector<unsigned>& trkNmbs) {
       TriggerPrimitiveList result;
