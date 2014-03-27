@@ -26,7 +26,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5000)
+    input = cms.untracked.int32(100)
 )
 
 # Input source
@@ -64,7 +64,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7A::All', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
 	PGunParameters = cms.PSet(
