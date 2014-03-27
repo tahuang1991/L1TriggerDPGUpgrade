@@ -66,7 +66,7 @@ private:
   string outTreeFileName;
 
 
-  TH1F* h_GemdPhi;
+  TH1F* h_GEMDPhi;
   TH1F* h_nStation;  
 
   TH1F* h_nStubinTrack;
@@ -227,6 +227,12 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 << ", quality " << l1track.quality()
 	 << ", front_rear " << l1track.front_rear()
 	 << endl;
+    cout << "track = "
+	 << ", pt_packed " << l1track.pt_packed()
+	 << ", eta_packed " << l1track.eta_packed()
+	 << ", phi_packed " << l1track.phi_packed()
+	 << ", ptLUTAddress " << l1track.ptLUTAddress()
+	 << endl;
     //      l1track.Print();
     int nstubs=0;
     bool hasGEM = false;
@@ -234,7 +240,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       auto lctdigi = (*csc).second.first;
       h_nStation->Fill((*csc).first.station());
       if ((*csc).first.station() == 1){
-        h_GemdPhi->Fill((*csc).second.first->getGEMDPhi());
+        h_GEMDPhi->Fill((*csc).second.first->getGEMDPhi());
 	cout << "Station = " << (*csc).first.station()
 	     << ", getGEMDPhi " << lctdigi->getGEMDPhi()
 	     << ", getQuality " << lctdigi->getQuality()
@@ -319,8 +325,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       unsigned sector = ts->sector()-1;
 
-      if(ts->BX() != 0)
-	continue;
+      // if(ts->BX() != 0)
+      // 	continue;
       hMPCLink->Fill(ts->getMPCLink());
       hLocalPhi->Fill(ts->phiValue());
       hPhi->Fill(ts->phiValue()+15.0*M_PI/180+(sector)*60.0*M_PI/180); 
@@ -514,13 +520,13 @@ L1TAnalyser::beginJob()
   h_nStubinTrack->GetXaxis()->SetTitle("N Stubs in Track");
   h_nStubinTrack->GetYaxis()->SetTitle("Counts");
 
-  h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrack","N Stubs in Track",10,0,10);
+  h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrackWithGEM","N Stubs in Track",10,0,10);
   h_nStubinTrackWithGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_nStubinTrackWithGEM->GetYaxis()->SetTitle("Counts");
 
-  h_GemdPhi=fs->make<TH1F>("GemdPhi","GEM-SCS dPhi in station 1",18,-9.0,9.0);
-  h_GemdPhi->GetXaxis()->SetTitle("dPhi");
-  h_GemdPhi->GetYaxis()->SetTitle("Counts");
+  h_GEMDPhi=fs->make<TH1F>("GemDPhi","GEM-SCS dPhi in station 1",100,-0.1,0.1);
+  h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
+  h_GEMDPhi->GetYaxis()->SetTitle("Counts");
 
   h_nStation=fs->make<TH1F>("nStation","Number of station",5,0,5);
   h_nStation->GetXaxis()->SetTitle("Station mumber");
