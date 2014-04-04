@@ -90,13 +90,12 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
   	
     if((fabs(eta) > 1.2) && (fabs(eta) <= 2.4) && (pt >= 5))
-      gpir = true;
+    //      gpir = true;
+    // if(eta > 0)
+    //   endcap1 = true;
 	
-    if(eta > 0)
-      endcap1 = true;
-	
-    if(eta < 0)
-      endcap2 = true;
+    // if(eta < 0)
+    //   endcap2 = true;
 	
     for(int y=0;y<24;y++){
 	
