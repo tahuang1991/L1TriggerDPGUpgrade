@@ -77,7 +77,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   edm::Handle<vector<reco::GenParticle>> GenMuons;
   vector<reco::GenParticle>::const_iterator GI;
   ev.getByLabel("genParticles",GenMuons);
-  bool gpir = false, endcap1 = false, endcap2 = false;
+  //  bool gpir = false, endcap1 = false, endcap2 = false;
   int etaindex = -99;
   reco::GenParticle GeneratorMuon;
   for(GI=GenMuons->begin();GI!=GenMuons->end();GI++){
@@ -464,13 +464,13 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   ///////////////////////////////////
   cout<<"Make Internal track" << endl;
 
-  bool epir = false;
+  //  bool epir = false;
   
   for(int fbest=0;fbest<4;fbest++){
   
     if(FourBest[fbest].phi){
 	
-      epir = true;
+      //      epir = true;
 	
       InternalTrack tempTrack;
       tempTrack.setType(2); 
