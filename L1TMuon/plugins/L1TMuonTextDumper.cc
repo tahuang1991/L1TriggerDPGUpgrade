@@ -778,113 +778,112 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   }
   
   
-  if(gpir && !detectorinefficiency)
-    gpire[etaindex]++;
+  // if(gpir && !detectorinefficiency)
+  //   gpire[etaindex]++;
   
 
-  if(gpir && (FoundTracks->size() == 1)){
+  // if(gpir && (FoundTracks->size() == 1)){
   
-    cout<<"\nFOUND ONE MUON-------------Sector "<<windex[0]/3<<"\n";
+  //   // cout<<"\nFOUND ONE MUON-------------Sector "<<windex[0]/3<<"\n";
 	
-    int ecap = 0;
+  //   // int ecap = 0;
 	
-    vector<ConvertedHit> ahits = FourBest[0].AHits;
+  //   // vector<ConvertedHit> ahits = FourBest[0].AHits;
 	
-    cout<<"ahits.size() = "<<ahits.size()<<endl;
-    cout<<"ahits[0].Phi() "<< ahits[0].Phi() << endl;
-    cout<<"ahits[1].Phi() "<< ahits[1].Phi() << endl;
-    cout<<"ahits[2].Phi() "<< ahits[2].Phi() << endl;
-    cout<<"ahits[3].Phi() "<< ahits[3].Phi() << endl;
+  //   // cout<<"ahits.size() = "<<ahits.size()<<endl;
+  //   // cout<<"ahits[0].Phi() "<< ahits[0].Phi() << endl;
+  //   // cout<<"ahits[1].Phi() "<< ahits[1].Phi() << endl;
+  //   // cout<<"ahits[2].Phi() "<< ahits[2].Phi() << endl;
+  //   // cout<<"ahits[3].Phi() "<< ahits[3].Phi() << endl;
 	
-    
-    if(FourBest[0].AHits[0].Phi() != -999){
-      if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
-	ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
-	cout<<"\n1\n";}
-    }
-    else if(FourBest[0].AHits[1].Phi() != -999){
-      if(FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap()){
-	ecap = FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap();
-	cout<<"\n2\n";}
-    }
-    else if(FourBest[0].AHits[2].Phi() != -999){
-      if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
-	ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
-	cout<<"\n3\n";}
-    }
-    else if(FourBest[0].AHits[3].Phi() != -999){
-      if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap()){
-	ecap = FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap();
-	cout<<"\n4\n";}
-    }
+  //   // if(FourBest[0].AHits[0].Phi() != -999){
+  //   //   if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
+  //   // 	ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
+  //   // 	cout<<"\n1\n";}
+  //   // }
+  //   // else if(FourBest[0].AHits[1].Phi() != -999){
+  //   //   if(FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap()){
+  //   // 	ecap = FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap();
+  //   // 	cout<<"\n2\n";}
+  //   // }
+  //   // else if(FourBest[0].AHits[2].Phi() != -999){
+  //   //   if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
+  //   // 	ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
+  //   // 	cout<<"\n3\n";}
+  //   // }
+  //   // else if(FourBest[0].AHits[3].Phi() != -999){
+  //   //   if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap()){
+  //   // 	ecap = FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap();
+  //   // 	cout<<"\n4\n";}
+  //   // }
 		
-    cout<<"ecap "<< ecap << endl;
+  //   // cout<<"ecap "<< ecap << endl;
 
-    cout<<"\n5\n";
+  //   cout<<"\n5\n";
 	
-    int cont = 0, numTP = 0;
-    for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
+  //   int cont = 0, numTP = 0;
+  //   for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
 			
-      int stat = 0;
-      cout<<"\n2\n";
+  //     int stat = 0;
+  //     cout<<"\n2\n";
       
-      if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
-	if((*C1)->detId<CSCDetId>().endcap() != ecap){
-	  stat = (*C1)->detId<CSCDetId>().station();
-	  numTP++;
-	}
-      }
-      cout<<"\n3\n";
+  //     if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
+  // 	if((*C1)->detId<CSCDetId>().endcap()){
+  // 	  stat = (*C1)->detId<CSCDetId>().station();
+  // 	  numTP++;
+  // 	}
+  //     }
+  //     cout<<"\n3\n";
 		
-      switch(stat){
+  //     switch(stat){
 			
-	//case(0):cont |= 0;break
-      case(1):cont |= 8;break;
-      case(2):cont |= 4;break;
-      case(3):cont |= 2;break;
-      case(4):cont |= 1;break;
-      default:cout<<"Station is out of range\n";
+  // 	//case(0):cont |= 0;break
+  //     case(1):cont |= 8;break;
+  //     case(2):cont |= 4;break;
+  //     case(3):cont |= 2;break;
+  //     case(4):cont |= 1;break;
+  //     default:cout<<"Station is out of range\n";
 			
-      }
-    }
+  //     }
+  //   }
 	
-    if(numTP < 2){
-      detectorineff->Fill(numTP);
-    }
-    else{
+  //   if(numTP < 2){
+  //     detectorineff->Fill(numTP);
+  //   }
+  //   else{
 	
-      switch(cont){
-      case(1):detectorineff->Fill(2);break;//only st 4 present
-      case(2):detectorineff->Fill(3);break;//only st 3 present
-      case(3):detectorineff->Fill(4);break;//only st's 3 and 4 present
-      case(4):detectorineff->Fill(5);break;//only st 2 present
-      case(8):detectorineff->Fill(6);break;//only st 1 present
-      }	
-    }	
+  //     switch(cont){
+  //     case(1):detectorineff->Fill(2);break;//only st 4 present
+  //     case(2):detectorineff->Fill(3);break;//only st 3 present
+  //     case(3):detectorineff->Fill(4);break;//only st's 3 and 4 present
+  //     case(4):detectorineff->Fill(5);break;//only st 2 present
+  //     case(8):detectorineff->Fill(6);break;//only st 1 present
+  //     }	
+  //   }	
   
-  }
+  // }
   
-  if(gpir && (FoundTracks->size() == 2)){
+  // if(gpir && (FoundTracks->size() == 2)){
   
   	
   
-    int sectors[2] = {windex[0]/3,windex[1]/3};
-    sector1->Fill(sectors[0]);
-    sector2->Fill(sectors[1]);
-    secdiff->Fill(fabs(sectors[0] - sectors[1]));
+  //   int sectors[2] = {windex[0]/3,windex[1]/3};
+  //   sector1->Fill(sectors[0]);
+  //   sector2->Fill(sectors[1]);
+  //   secdiff->Fill(fabs(sectors[0] - sectors[1]));
 	
-    if(fabs(sectors[0] - sectors[1]) == 0)
-      cout<<"\nTWO IN SAME SECTOR\n";
+  //   if(fabs(sectors[0] - sectors[1]) == 0)
+  //     cout<<"\nTWO IN SAME SECTOR\n";
 	
-    cout<<"\nTWO MUONS FOUND------- Sectors: "<<sectors[0]<<" and "<<sectors[1]<<"\n";
+  //   cout<<"\nTWO MUONS FOUND------- Sectors: "<<sectors[0]<<" and "<<sectors[1]<<"\n";
 	
   
-  }
+  // }
   
-  if(gpir && (FoundTracks->size() == 3)){
+  // if(gpir && (FoundTracks->size() == 3)){
   
-    cout<<"\nFOUND THREE MUONS---------- Sectors: "<<windex[0]/3<<", "<<windex[1]/3<<" and "<<windex[2]/3<<"\n";
-  }
+  //   cout<<"\nFOUND THREE MUONS---------- Sectors: "<<windex[0]/3<<", "<<windex[1]/3<<" and "<<windex[2]/3<<"\n";
+  // }
 
   
   //  cout<<"Begin Put function\n\n";
