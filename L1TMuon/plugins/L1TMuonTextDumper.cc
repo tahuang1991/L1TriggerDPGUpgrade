@@ -563,219 +563,218 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //// Below here is working additions to make //
   //// efficiency plots and can be neglected ////
   ///////////////////////////////////////////////
-  
-  if(gpir)
-    eff->Fill(FoundTracks->size());
-  if(gpir && endcap2)
-    eff2->Fill(FoundTracks->size());
+  // if(gpir)
+  //   eff->Fill(FoundTracks->size());
+  // if(gpir && endcap2)
+  //   eff2->Fill(FoundTracks->size());
 
-  if(gpir && epir && etaindex != -99)
-    fpire[etaindex]++;
+  // if(gpir && epir && etaindex != -99)
+  //   fpire[etaindex]++;
 
-  bool detectorinefficiency = false;
+  // bool detectorinefficiency = false;
   
-  if(gpir && !epir){
+  // if(gpir && !epir){
   
-    if(endcap1)
-      trigprimsize->Fill(tester.size());
-    else if(endcap2)
-      trigprimsize2->Fill(tester.size());
+  //   if(endcap1)
+  //     trigprimsize->Fill(tester.size());
+  //   else if(endcap2)
+  //     trigprimsize2->Fill(tester.size());
 	
-    if(tester.size() < 2)
-      detectorinefficiency = true;
+  //   if(tester.size() < 2)
+  //     detectorinefficiency = true;
 	
-    if(tester.size() >= 2){
+  //   if(tester.size() >= 2){
 	
-      int contribution = 0;
-      for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
-	if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
-	  int station = (*C1)->detId<CSCDetId>().station();
-	  switch(station){
-	  case(1):contribution |= 8;break;
-	  case(2):contribution |= 4;break;
-	  case(3):contribution |= 2;break;
-	  case(4):contribution |= 1;break;
-	  default:cout<<"Station is out of range\n";
-	  }
-	}
-      }
+  //     int contribution = 0;
+  //     for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
+  // 	if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
+  // 	  int station = (*C1)->detId<CSCDetId>().station();
+  // 	  switch(station){
+  // 	  case(1):contribution |= 8;break;
+  // 	  case(2):contribution |= 4;break;
+  // 	  case(3):contribution |= 2;break;
+  // 	  case(4):contribution |= 1;break;
+  // 	  default:cout<<"Station is out of range\n";
+  // 	  }
+  // 	}
+  //     }
 		
-      if(endcap1)
-	st_cont->Fill(contribution);
-      else if(endcap2)
-	st_cont2->Fill(contribution);
+  //     if(endcap1)
+  // 	st_cont->Fill(contribution);
+  //     else if(endcap2)
+  // 	st_cont2->Fill(contribution);
 		
-      if(contribution == 1 || contribution == 2 || contribution == 3 || contribution == 4 || contribution == 8)
-	detectorinefficiency = true;
+  //     if(contribution == 1 || contribution == 2 || contribution == 3 || contribution == 4 || contribution == 8)
+  // 	detectorinefficiency = true;
 		
-      if(contribution == 6){//had stations 2&3 but no track
-	cout<<"Stations 2 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
-	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
-      }
+  //     if(contribution == 6){//had stations 2&3 but no track
+  // 	cout<<"Stations 2 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
+  //     }
 		
-      if(contribution == 11){//had stations 1&3&4 but no track
-	cout<<"Stations 1 & 3 & 4\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
-	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
-      }
+  //     if(contribution == 11){//had stations 1&3&4 but no track
+  // 	cout<<"Stations 1 & 3 & 4\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
+  //     }
 		
-      if(contribution == 10){//had stations 1&3 but no track
-	cout<<"Stations 1 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
-	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
-      }
+  //     if(contribution == 10){//had stations 1&3 but no track
+  // 	cout<<"Stations 1 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
+  //     }
 		
 		
 		
-      if(contribution == 12){//had stations 1 & 2 but didn't make a track
+  //     if(contribution == 12){//had stations 1 & 2 but didn't make a track
 		
-	int sindex0 = ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1;
-	int sindex1 = ((tester[1]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[1]->detId<CSCDetId>().triggerSector()) - 1;
-	int zhit1 = CHits[sindex0][0].Zhit(), zhit2 = CHits[sindex0][1].Zhit();
+  // 	int sindex0 = ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1;
+  // 	int sindex1 = ((tester[1]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[1]->detId<CSCDetId>().triggerSector()) - 1;
+  // 	int zhit1 = CHits[sindex0][0].Zhit(), zhit2 = CHits[sindex0][1].Zhit();
 			
-	bool ptf = (fabs(zhit2 - zhit1) > 15);
-	bool thwindow = false;
+  // 	bool ptf = (fabs(zhit2 - zhit1) > 15);
+  // 	bool thwindow = false;
 			
-	for(int zone=0;zone<4;zone++){
-	  for(int winner=0;winner<3;winner++){
+  // 	for(int zone=0;zone<4;zone++){
+  // 	  for(int winner=0;winner<3;winner++){
 			
-	    ThOutput thmatch = MO[sindex0].ThetaMatch();
-	    int dth[6][4] = {{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999}};
-	    for(int s1=0;s1<3;s1++){
+  // 	    ThOutput thmatch = MO[sindex0].ThetaMatch();
+  // 	    int dth[6][4] = {{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999},{-999,-999,-999,-999}};
+  // 	    for(int s1=0;s1<3;s1++){
 	
-	      for(int s2=s1+1;s2<4;s2++){
+  // 	      for(int s2=s1+1;s2<4;s2++){
 			
 			
-		///////////////////////// There is a further index on dTh because there are 4 dth combinations 
-		/// calc delta theta  /// possible if there are two theta segments for both stations. 
-		///////////////////////// EXPLAIN ABOUT [I+J] AND [I+J+1] 
+  // 		///////////////////////// There is a further index on dTh because there are 4 dth combinations 
+  // 		/// calc delta theta  /// possible if there are two theta segments for both stations. 
+  // 		///////////////////////// EXPLAIN ABOUT [I+J] AND [I+J+1] 
 					
-		for(int i=0;i<2;i++){
+  // 		for(int i=0;i<2;i++){
 						
 					
-		  for(int j=0;j<2;j++){
+  // 		  for(int j=0;j<2;j++){
 						
-		    int thi = thmatch[zone][winner][s1][i].Theta();
-		    int thj = thmatch[zone][winner][s2][j].Theta();
-		    int deltath = thi - thj;
+  // 		    int thi = thmatch[zone][winner][s1][i].Theta();
+  // 		    int thj = thmatch[zone][winner][s2][j].Theta();
+  // 		    int deltath = thi - thj;
 					
 					
-		    if((s1 == 0) && (thi != -999) && (thj != -999)){///need to fix still////
+  // 		    if((s1 == 0) && (thi != -999) && (thj != -999)){///need to fix still////
 								
-		      if(!i){dth[s2-1][i+j] = deltath;}
-		      else{dth[s2-1][i+j+1] = deltath;}
+  // 		      if(!i){dth[s2-1][i+j] = deltath;}
+  // 		      else{dth[s2-1][i+j+1] = deltath;}
 								
 								
-		    }
-		    else if((s1 != 0) && (thi != -999) && (thj != -999)){
+  // 		    }
+  // 		    else if((s1 != 0) && (thi != -999) && (thj != -999)){
 							
-		      if(!i){dth[s1+s2][i+j] = deltath;}
-		      else{dth[s1+s2][i+j+1] = deltath;}
-		    }
+  // 		      if(!i){dth[s1+s2][i+j] = deltath;}
+  // 		      else{dth[s1+s2][i+j+1] = deltath;}
+  // 		    }
 							
-		  }
-		}
+  // 		  }
+  // 		}
 		
-	      }
-	    }
+  // 	      }
+  // 	    }
 			
-	    for(int b1=0;b1<6;b1++){
-	      for(int b2=0;b2<2;b2++){
+  // 	    for(int b1=0;b1<6;b1++){
+  // 	      for(int b2=0;b2<2;b2++){
 					
-		if((dth[b1][b2] != -999) && (fabs(dth[b1][b2]) <= 4))
-		  thwindow = true;
-	      }
-	    }
-	  }
-	}
+  // 		if((dth[b1][b2] != -999) && (fabs(dth[b1][b2]) <= 4))
+  // 		  thwindow = true;
+  // 	      }
+  // 	    }
+  // 	  }
+  // 	}
 			
 			
-	if(sindex0 != sindex1){
+  // 	if(sindex0 != sindex1){
 			
-	  if((sindex0 > 5) || (sindex1 > 5))
-	    st12errors->Fill(1);
-	  else
-	    st12errors->Fill(0);
-	}
-	else if(sindex0 == sindex1){
-	  bool samezone = false;
+  // 	  if((sindex0 > 5) || (sindex1 > 5))
+  // 	    st12errors->Fill(1);
+  // 	  else
+  // 	    st12errors->Fill(0);
+  // 	}
+  // 	else if(sindex0 == sindex1){
+  // 	  bool samezone = false;
 			
-	  for(unsigned int i1 = 0;i1 != tester.size();i1++){
+  // 	  for(unsigned int i1 = 0;i1 != tester.size();i1++){
 			
-	    for(unsigned int i2 = i1+1;i2 != tester.size();i2++){
+  // 	    for(unsigned int i2 = i1+1;i2 != tester.size();i2++){
 				
 					
-	      int s1 = tester[i1]->detId<CSCDetId>().station(), s2 = tester[i2]->detId<CSCDetId>().station();
-	      vector<int> z1 = CHits[sindex0][i1].ZoneContribution(), z2 = CHits[sindex0][i2].ZoneContribution();
+  // 	      int s1 = tester[i1]->detId<CSCDetId>().station(), s2 = tester[i2]->detId<CSCDetId>().station();
+  // 	      vector<int> z1 = CHits[sindex0][i1].ZoneContribution(), z2 = CHits[sindex0][i2].ZoneContribution();
 					
-	      if(s1 != s2){
+  // 	      if(s1 != s2){
 					
-		for(vector<int>::iterator a1=z1.begin();a1 != z1.end();a1++){
-		  for(vector<int>::iterator a2=z2.begin();a2 != z2.end();a2++){
+  // 		for(vector<int>::iterator a1=z1.begin();a1 != z1.end();a1++){
+  // 		  for(vector<int>::iterator a2=z2.begin();a2 != z2.end();a2++){
 							
-		    if((*a1) == (*a2))
-		      samezone = true;
+  // 		    if((*a1) == (*a2))
+  // 		      samezone = true;
 								
-		  }
-		}
-	      }
-	    }
-	  }
+  // 		  }
+  // 		}
+  // 	      }
+  // 	    }
+  // 	  }
 			
 			
 			
-	  if(!samezone){
+  // 	  if(!samezone){
 				
-	    if(sindex0 > 5)
-	      st12errors->Fill(3);
-	    else
-	      st12errors->Fill(2);
+  // 	    if(sindex0 > 5)
+  // 	      st12errors->Fill(3);
+  // 	    else
+  // 	      st12errors->Fill(2);
 					
-	  }
-	  else if(samezone){
+  // 	  }
+  // 	  else if(samezone){
 				
 					
-	    if(ptf){
+  // 	    if(ptf){
 						
-	      if(sindex0 > 5)
-		st12errors->Fill(5);
-	      else
-		st12errors->Fill(4);
-	    }
-	    else if(!ptf){
+  // 	      if(sindex0 > 5)
+  // 		st12errors->Fill(5);
+  // 	      else
+  // 		st12errors->Fill(4);
+  // 	    }
+  // 	    else if(!ptf){
 						
-	      if(!thwindow){
+  // 	      if(!thwindow){
 						
-		if(sindex0 > 5)
-		  st12errors->Fill(7);
-		else
-		  st12errors->Fill(6);
+  // 		if(sindex0 > 5)
+  // 		  st12errors->Fill(7);
+  // 		else
+  // 		  st12errors->Fill(6);
 								
-		cout<<"\n!thwindow\n";
-	      }
-	      //else if(thwindow){
+  // 		cout<<"\n!thwindow\n";
+  // 	      }
+  // 	      //else if(thwindow){
 						
 						
 							
 						
-	      //}
-	    }
-	  }
-	}
-      }
+  // 	      //}
+  // 	    }
+  // 	  }
+  // 	}
+  //     }
 		
-      if((contribution > 4) && (contribution != 8)){
+  //     if((contribution > 4) && (contribution != 8)){
 		
-	cout<<"\nMISSED\n";
+  // 	cout<<"\nMISSED\n";
 			
-	if(contribution == 12)
-	  cout<<"ONLY STATIONS 1 AND 2 : (\nevent = "<<ev.id().event()<<"\n\n";
+  // 	if(contribution == 12)
+  // 	  cout<<"ONLY STATIONS 1 AND 2 : (\nevent = "<<ev.id().event()<<"\n\n";
 		
-	MissVsEta->Fill(GeneratorMuon.eta());
-	MissVsPhi->Fill(GeneratorMuon.phi());
-	MissVsPt->Fill(GeneratorMuon.pt());	
+  // 	MissVsEta->Fill(GeneratorMuon.eta());
+  // 	MissVsPhi->Fill(GeneratorMuon.phi());
+  // 	MissVsPt->Fill(GeneratorMuon.pt());	
 		
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
   
   
   // if(gpir && !detectorinefficiency)
