@@ -252,7 +252,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     << ", getBend " << lctdigi->getBend()
 	     << ", getCLCTPattern " << lctdigi->getCLCTPattern()
 	     << ", getMPCLink " << lctdigi->getMPCLink()
-	     << endl;}
+	     << endl;
+      }
       nstubs++;
       if ((*csc).second.first->getGEMDPhi() > -99){
 	hasGEM = true;
