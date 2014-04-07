@@ -215,6 +215,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   iEvent.getByLabel("L1TMuonTriggerPrimitives",trigPrims);
+  edm::Handle<CSCCorrelatedLCTDigiCollection> LCTs;
+  iEvent.getByLabel("cscTriggerPrimitiveDigis","MPCSORTED", LCTs);
 
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
 
