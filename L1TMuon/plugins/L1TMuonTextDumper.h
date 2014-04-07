@@ -104,7 +104,7 @@ class L1TMuonTextDumper : public edm::EDProducer {
   edm::InputTag _geninput;
   std::vector<edm::InputTag> _tpinputs, _convTrkInputs;
   edm::Service<TFileService> histofile;
-  
+  bool doDebug;
 };
 
 

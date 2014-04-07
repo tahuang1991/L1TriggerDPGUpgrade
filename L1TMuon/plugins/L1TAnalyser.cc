@@ -34,6 +34,7 @@
 #include "L1TriggerDPGUpgrade/DataFormats/interface/L1TMuonTriggerPrimitiveFwd.h"
 
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -59,6 +60,7 @@ private:
   edm::InputTag lctsTag;	
   edm::InputTag vertexColTag;	
   edm::Service<TFileService> fs;
+  
   //  csctf_analysis::RunSRLUTs* runSRLUTs;
   int nVertex;
   bool haveRECO;
@@ -69,10 +71,20 @@ private:
   TH1F* h_GEMDPhi;
   TH1F* h_nStation;  
 
-  TH1F* h_nStubinTrack;
-  TH1F* h_nStubinTrackWithGEM;
   TH1F* h_StubQuality;
   TH1F* h_StubQualityGEM;
+
+  TH1F* h_TFStubQuality;
+  TH1F* h_TFStubQualityGEM;
+
+  TH1F* h_TFnStubinTrack;
+  TH1F* h_TFnStubinTrackGEM;
+
+  TH2F* h_TFnStubvsPTAdd;
+  TH2F* h_TFnStubvsPTAddGEM;
+
+  TH1F* h_noTFnStub;
+  TH1F* h_noTFnStubGEM;
 
   TH1F* hNVertex;
 
@@ -215,59 +227,115 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
   iEvent.getByLabel("L1TMuonTriggerPrimitives",trigPrims);
-  edm::Handle<CSCCorrelatedLCTDigiCollection> LCTs;
-  iEvent.getByLabel("cscTriggerPrimitiveDigis","MPCSORTED", LCTs);
+  edm::Handle<CSCCorrelatedLCTDigiCollection> lcts;
+  iEvent.getByLabel("simCscTriggerPrimitiveDigis","MPCSORTED", lcts);
 
+  bool hasTrkFwd = false;
+  bool hasTrkBwd = false;
+  // bool hasTrkFwdGE11 = false;
+  // bool hasTrkBwdGE11 = false;
+
+  // lcts used in tracks
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
-
   for(; tmp_trk != l1csctracks->end(); tmp_trk++){
-    //cout << "hyunyong : Station = " << tmp_trk->first.station() << endl;
     auto l1track = tmp_trk->first;
-    cout << "track = "
-	 << ", ptValue " << l1track.ptValue()
-	 << ", etaValue " << l1track.etaValue()
-	 << ", phiValue " << l1track.phiValue()
-	 << ", ptLUTAddress " << l1track.ptLUTAddress()
-	 << ", quality " << l1track.quality()
-	 << ", front_rear " << l1track.front_rear()
-	 << endl;
-    cout << "track = "
-	 << ", pt_packed " << l1track.pt_packed()
-	 << ", eta_packed " << l1track.eta_packed()
-	 << ", phi_packed " << l1track.phi_packed()
-	 << ", ptLUTAddress " << l1track.ptLUTAddress()
-	 << endl;
-    //      l1track.Print();
+    // cout << "track = "
+    // 	 << ", ptValue " << l1track.ptValue()
+    // 	 << ", etaValue " << l1track.etaValue()
+    // 	 << ", phiValue " << l1track.phiValue()
+    // 	 << ", ptLUTAddress " << l1track.ptLUTAddress()
+    // 	 << ", quality " << l1track.quality()
+    // 	 << ", front_rear " << l1track.front_rear()
+    // 	 << endl;
+    // cout << "track = "
+    // 	 << ", pt_packed " << l1track.pt_packed()
+    // 	 << ", eta_packed " << l1track.eta_packed()
+    // 	 << ", phi_packed " << l1track.phi_packed()
+    // 	 << ", ptLUTAddress " << l1track.ptLUTAddress()
+    // 	 << endl;
+    // //      l1track.Print();
     int nstubs=0;
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
       auto lctdigi = (*csc).second.first;
-      h_nStation->Fill((*csc).first.station());
-      if ((*csc).first.station() == 1){
-        h_GEMDPhi->Fill((*csc).second.first->getGEMDPhi());
-	cout << "Station = " << (*csc).first.station()
-	     << ", getGEMDPhi " << lctdigi->getGEMDPhi()
-	     << ", getQuality " << lctdigi->getQuality()
-	     << ", getKeyWG " << lctdigi->getKeyWG()
-	     << ", getStrip " << lctdigi->getStrip()
-	     << ", getPattern " << lctdigi->getPattern()
-	     << ", getBend " << lctdigi->getBend()
-	     << ", getCLCTPattern " << lctdigi->getCLCTPattern()
-	     << ", getMPCLink " << lctdigi->getMPCLink()
-	     << endl;
+      h_GEMDPhi->Fill((*csc).second.first->getGEMDPhi());
+
+      if ((*csc).first.endcap() == 1){
+	h_nStation->Fill((*csc).first.station());
+	hasTrkFwd = true;
+	// if ((*csc).first.station() == 1)
+	//   hasTrkFwdGE11 = true;
       }
+      if ((*csc).first.endcap() == 2){
+	h_nStation->Fill(-((*csc).first.station()));
+	hasTrkBwd = true;
+	// if ((*csc).first.station() == 1)
+	//   hasTrkBwdGE11 = true;
+      }
+
+      // if ((*csc).first.station() == 1){
+      // 	// cout << "Station = " << (*csc).first.station()
+      // 	//      << ", getGEMDPhi " << lctdigi->getGEMDPhi()
+      // 	//      << ", getQuality " << lctdigi->getQuality()
+      // 	//      << ", getKeyWG " << lctdigi->getKeyWG()
+      // 	//      << ", getStrip " << lctdigi->getStrip()
+      // 	//      << ", getPattern " << lctdigi->getPattern()
+      // 	//      << ", getBend " << lctdigi->getBend()
+      // 	//      << ", getCLCTPattern " << lctdigi->getCLCTPattern()
+      // 	//      << ", getMPCLink " << lctdigi->getMPCLink()
+      // 	//      << endl;
+      // }
       nstubs++;
       if ((*csc).second.first->getGEMDPhi() > -99){
 	hasGEM = true;
-	h_StubQualityGEM->Fill(lctdigi->getQuality());
+	h_TFStubQualityGEM->Fill(lctdigi->getQuality());
       }
-      h_StubQuality->Fill(lctdigi->getQuality());
+      h_TFStubQuality->Fill(lctdigi->getQuality());
     }
-    h_nStubinTrack->Fill(nstubs);
-    if (hasGEM)
-      h_nStubinTrackWithGEM->Fill(nstubs);
+
+    h_TFnStubinTrack->Fill(nstubs);
+    h_TFnStubvsPTAdd->Fill(nstubs,l1track.ptLUTAddress());
+    if (hasGEM){
+      h_TFnStubinTrackGEM->Fill(nstubs);
+      h_TFnStubvsPTAddGEM->Fill(nstubs,l1track.ptLUTAddress());
+    }
   }
 
+  // all lcts
+  int nFwdStubs = 0;
+  int nBwdStubs = 0;
+  bool hasFwdGE11 = false;
+  bool hasBwdGE11 = false;
+
+  CSCCorrelatedLCTDigiCollection::DigiRangeIterator Citer;
+  for(Citer = lcts->begin(); Citer != lcts->end(); Citer++){
+    CSCCorrelatedLCTDigiCollection::const_iterator Diter = (*Citer).second.first;
+    CSCCorrelatedLCTDigiCollection::const_iterator Dend = (*Citer).second.second;
+    for(; Diter != Dend; Diter++){
+      if ((*Citer).first.endcap() == 1){
+	nFwdStubs++;
+	if (Diter->getGEMDPhi() > -99) hasFwdGE11 = true;
+      }
+      if ((*Citer).first.endcap() == 2){
+	nBwdStubs++;
+	if (Diter->getGEMDPhi() > -99) hasBwdGE11 = true;
+      }
+      if (Diter->getGEMDPhi() > -99){
+	h_StubQualityGEM->Fill(Diter->getQuality());
+      }
+      h_StubQuality->Fill(Diter->getQuality());
+    }
+  }
+  if (!hasTrkFwd){
+    h_noTFnStub->Fill(nFwdStubs);
+    if (hasFwdGE11)
+      h_noTFnStubGEM->Fill(nFwdStubs);
+  }
+  if (!hasTrkBwd){
+    h_noTFnStub->Fill(nBwdStubs);
+    if (hasBwdGE11)
+      h_noTFnStubGEM->Fill(nBwdStubs);
+  }
 
   nVertex=0;
 
@@ -519,19 +587,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 L1TAnalyser::beginJob()
 {
-
-  hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",30,0,30);
-  hNVertex->GetXaxis()->SetTitle("N Primary Vertices");
-  hNVertex->GetYaxis()->SetTitle("Counts");
-
-  h_nStubinTrack=fs->make<TH1F>("nStubinTrack","N Stubs in Track",10,0,10);
-  h_nStubinTrack->GetXaxis()->SetTitle("N Stubs in Track");
-  h_nStubinTrack->GetYaxis()->SetTitle("Counts");
-
-  h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrackWithGEM","N Stubs in Track",10,0,10);
-  h_nStubinTrackWithGEM->GetXaxis()->SetTitle("N Stubs in Track");
-  h_nStubinTrackWithGEM->GetYaxis()->SetTitle("Counts");
-
   h_StubQuality=fs->make<TH1F>("StubQuality","Stub Quality",20,0,20);
   h_StubQuality->GetXaxis()->SetTitle("Stub Quality");
   h_StubQuality->GetYaxis()->SetTitle("Counts");
@@ -540,15 +595,50 @@ L1TAnalyser::beginJob()
   h_StubQualityGEM->GetXaxis()->SetTitle("Stub Quality");
   h_StubQualityGEM->GetYaxis()->SetTitle("Counts");
 
+  h_TFStubQuality=fs->make<TH1F>("TFStubQuality","Stub Quality",20,0,20);
+  h_TFStubQuality->GetXaxis()->SetTitle("Stub Quality");
+  h_TFStubQuality->GetYaxis()->SetTitle("Counts");
+
+  h_TFStubQualityGEM=fs->make<TH1F>("TFStubQualityGEM","Stub Quality",20,0,20);
+  h_TFStubQualityGEM->GetXaxis()->SetTitle("Stub Quality");
+  h_TFStubQualityGEM->GetYaxis()->SetTitle("Counts");
+
+  h_TFnStubinTrack=fs->make<TH1F>("TFnStubinTrack","N Stubs in Track",6,0,6);
+  h_TFnStubinTrack->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubinTrack->GetYaxis()->SetTitle("Counts");
+
+  h_TFnStubinTrackGEM=fs->make<TH1F>("TFnStubinTrackGEM","N Stubs in Track",6,0,6);
+  h_TFnStubinTrackGEM->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubinTrackGEM->GetYaxis()->SetTitle("Counts");
+
+  h_TFnStubvsPTAdd=fs->make<TH2F>("TFnStubvsPTAdd","N Stubs in Track Vs Pt address",6,0,6,100,0,4500000);
+  h_TFnStubvsPTAdd->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubvsPTAdd->GetYaxis()->SetTitle("Pt address");
+
+  h_TFnStubvsPTAddGEM=fs->make<TH2F>("TFnStubvsPTAddGEM","N Stubs in Track Vs Pt address",6,0,6,100,0,4500000);
+  h_TFnStubvsPTAddGEM->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
+
+  h_noTFnStub=fs->make<TH1F>("noTFnStub","no track, No. Stubs",6,0,6);
+  h_noTFnStub->GetXaxis()->SetTitle("No. Stubs");
+  h_noTFnStub->GetYaxis()->SetTitle("Counts");
+
+  h_noTFnStubGEM=fs->make<TH1F>("noTFnStubGEM","no track, No. Stubs",6,0,6);
+  h_noTFnStubGEM->GetXaxis()->SetTitle("No. Stubs");
+  h_noTFnStubGEM->GetYaxis()->SetTitle("Counts");
+
   h_GEMDPhi=fs->make<TH1F>("GemDPhi","GEM-SCS dPhi in station 1",100,-0.1,0.1);
   h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
   h_GEMDPhi->GetYaxis()->SetTitle("Counts");
 
-  h_nStation=fs->make<TH1F>("nStation","Number of station",5,0,5);
+  h_nStation=fs->make<TH1F>("nStation","Number of station",10,-5,5);
   h_nStation->GetXaxis()->SetTitle("Station mumber");
   h_nStation->GetYaxis()->SetTitle("Counts");
 
 
+  hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",30,0,30);
+  hNVertex->GetXaxis()->SetTitle("N Primary Vertices");
+  hNVertex->GetYaxis()->SetTitle("Counts");
 
   hMPCLink=fs->make<TH1F>("MPCLink","Stub MPC Link Number",5,-1,4);
   hMPCLink->GetXaxis()->SetTitle("MPC Link");

@@ -57,8 +57,8 @@ L1TMuonTextDumper::L1TMuonTextDumper(const PSet& p) {
 void L1TMuonTextDumper::produce(edm::Event& ev, 
 				const edm::EventSetup& es) {
 			       
- 		
-  cout<<"Start TextDumper Producer::::: event = "<<ev.id().event()<<"\n\n";
+  
+  if (doDebug) cout<<"Start TextDumper Producer::::: event = "<<ev.id().event()<<"\n\n";
   
   fprintf (write,"12345\n"); //<-- part of printing text file to send verilog code, not needed if George's package is included
   
@@ -87,7 +87,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     double pt = GenMuon.pt(), eta = GenMuon.eta(), phi = GenMuon.phi(), mass = GenMuon.mass();
     int charge = GenMuon.charge();
 	
-    cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
+    if (doDebug) cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
   	
     if((fabs(eta) > 1.2) && (fabs(eta) <= 2.4) && (pt >= 5))
     //      gpir = true;
@@ -119,7 +119,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   
   
   if(etaindex != -99)
-    cout<<"\neta index = "<<etaindex<<"\n";//
+    if (doDebug) cout<<"\neta index = "<<etaindex<<"\n";//
   
   //////////////////////////////////////////////
   ///////// Get Trigger Primitives /////////////  Retrieve TriggerPrimitives from the event record
@@ -139,10 +139,10 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       tester.push_back(tpref);
       
       if(tp->subsystem() == TriggerPrimitive::kGEM){
-	cout<<"GEM trigger prim found station:"<<tp->detId<GEMDetId>().station()<<endl;
+	if (doDebug) cout<<"GEM trigger prim found station:"<<tp->detId<GEMDetId>().station()<<endl;
       }
       if(tp->subsystem() == TriggerPrimitive::kCSC){
-	cout<<"CSC trigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
+	if (doDebug) cout<<"CSC trigger prim found station:"<<tp->detId<CSCDetId>().station()<<endl;
 		
 	if((tp->detId<CSCDetId>().station() == 4) && (fabs(GeneratorMuon.eta()) < 1.7)){
 		
@@ -162,8 +162,8 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	  
 	if(tp->detId<CSCDetId>().triggerSector() == 1){
 		
-	  cout<<"there are sector 1 csc hits\n\n";
-	  cout<<"strip = "<<tp->getCSCData().strip<<endl;
+	  if (doDebug) cout<<"there are sector 1 csc hits\n\n";
+	  if (doDebug) cout<<"strip = "<<tp->getCSCData().strip<<endl;
 	  striph->Fill(tp->getCSCData().strip);
 	}
       }
@@ -184,14 +184,14 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////// TP Conversion //////////////////////  Output is vector of Converted Hits
     //////////////////////////////////////////////////////
 
-    cout<<"TP Conversion" << endl;
+    if (doDebug) cout<<"TP Conversion" << endl;
 
     vector<ConvertedHit> ConvHits = PrimConv(tester,SectIndex);
     CHits[SectIndex] = ConvHits;
     
-    cout << "SectIndex " << SectIndex  << endl;
+    if (doDebug) cout << "SectIndex " << SectIndex  << endl;
     for(vector<ConvertedHit>::iterator i=ConvHits.begin();i!=ConvHits.end();i++){
-      cout<<"TP ConvertedHit: subsystem " << i->TP()->subsystem()
+      if (doDebug) cout<<"TP ConvertedHit: subsystem " << i->TP()->subsystem()
 	  << ", Station " << i->Station()
 	  << ", Id " << i->Id()
 	//	  << ", chamber " << i->TP()->chamber()
@@ -233,14 +233,14 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////////////////////////////////////////////////////  past from the central BX, this analyzes a total of 5 BX's.
     //////////////////////////////////////////////////////
  
-    cout<<"\nBX Grouper" << endl;
+    if (doDebug) cout<<"\nBX Grouper" << endl;
     vector<vector<ConvertedHit>> GroupedHits = GroupBX(ConvHits);
  
     int nBX = 0;
     for(vector<vector<ConvertedHit>>::iterator j=GroupedHits.begin();j!=GroupedHits.end();j++){
-      cout<<"\nBX Grouper nBX = " << nBX++ << endl;
+      if (doDebug) cout<<"\nBX Grouper nBX = " << nBX++ << endl;
       for(vector<ConvertedHit>::iterator i=j->begin();i!=j->end();i++){
-	cout<<"BX GroupedHits: subsystem " << i->TP()->subsystem()
+	if (doDebug) cout<<"BX GroupedHits: subsystem " << i->TP()->subsystem()
 	    << ", Station " << i->Station()
 	    << ", Id " << i->Id()
 	  //	  << ", chamber " << i->TP()->chamber()
@@ -260,15 +260,15 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ////////// Creat Zones for pattern Recognition /////////  The output of this module not only contains the zones but also the 
     ////////////////////////////////////////////////////////  reference back to the TriggerPrimitives that went into making them.
 	
-    cout<<"\nCreat Zones for pattern Recognition" << endl;
+    if (doDebug) cout<<"\nCreat Zones for pattern Recognition" << endl;
     vector<ZonesOutput> Zout = Zones(GroupedHits);
 
     int nZones = 0;
     for(vector<ZonesOutput>::iterator j=Zout.begin();j!=Zout.end();j++){
       vector<ConvertedHit> k = j->convertedhits;
-      cout<<"\nnZones = " << nZones++ << endl;
+      if (doDebug) cout<<"\nnZones = " << nZones++ << endl;
       for(vector<ConvertedHit>::iterator i=k.begin();i!=k.end();i++){
-	cout<<"ZonesOutput: subsystem " << i->TP()->subsystem()
+	if (doDebug) cout<<"ZonesOutput: subsystem " << i->TP()->subsystem()
 	    << ", Station " << i->Station()
 	    << ", Id " << i->Id()
 	  //	  << ", chamber " << i->TP()->chamber()
@@ -291,17 +291,17 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////////////////////////////  same hits. This is where the BX analysis ends; Only 1 list of found patterns is given to the next module.
   
 
-    cout<<"\n Pattern Recognition" << endl;
+    if (doDebug) cout<<"\n Pattern Recognition" << endl;
     vector<PatternOutput> Pout = Patterns(Zout);
   
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
  
-    cout << "test PatternOutput " << endl;
+    if (doDebug) cout << "test PatternOutput " << endl;
     PrintQuality(Test.detected);
  
     vector<ConvertedHit> PatHits = Test.hits;
     for(vector<ConvertedHit>::iterator i=PatHits.begin();i!=PatHits.end();i++){
-      cout<<"Pattern Recognition: subsystem " << i->TP()->subsystem()
+      if (doDebug) cout<<"Pattern Recognition: subsystem " << i->TP()->subsystem()
 	  << ", Station " << i->Station()
 	  << ", Id " << i->Id()
 	//	  << ", chamber " << i->TP()->chamber()
@@ -321,12 +321,12 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////Sector Sorting/////////// Sorts through the patterns found in each zone and selects the best three per zone to send to the next module.
     ///////Finding 3 Best Pattern// 
     ///////////////////////////////
-    cout<<"\nSector Sorting" << endl;
+    if (doDebug) cout<<"\nSector Sorting" << endl;
     SortingOutput Sout = SortSect(Test);
 	
     vector<ConvertedHit> SoutHits = Sout.Hits();
     for(vector<ConvertedHit>::iterator i=SoutHits.begin();i!=SoutHits.end();i++){
-      cout<<"SortingOutput: subsystem " << i->TP()->subsystem()
+      if (doDebug) cout<<"SortingOutput: subsystem " << i->TP()->subsystem()
 	  << ", Station " << i->Station()
 	  << ", Id " << i->Id()
 	//	  << ", chamber " << i->TP()->chamber()
@@ -346,7 +346,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     ///////// Match ph patterns ////// Loops over each sorted pattern and then loops over all possible triggerprimitives which could have made the pattern
     ////// to segment inputs ///////// and matches the associated full precision triggerprimitives to the detected pattern. 
     //////////////////////////////////   
-    cout<<"Match ph patterns" << endl;
+    if (doDebug) cout<<"Match ph patterns" << endl;
     MatchingOutput Mout = PhiMatching(Sout);
     MO[SectIndex] = Mout;
 
@@ -354,7 +354,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //////// Calculate delta //////// Once we have matched the hits we calculate the delta phi and theta between all 
     ////////    ph and th    //////// stations present. 
     /////////////////////////////////
-    cout<<"Calculate delta" << endl;
+    if (doDebug) cout<<"Calculate delta" << endl;
     vector<vector<DeltaOutput>> Dout = CalcDeltas(Mout);////
  
 
@@ -362,7 +362,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     /////// Sorts and gives /////////  Loops over all of the found tracks(looking across zones) and selects the best three per sector. 
     ////// Best 3 tracks/sector /////  Here ghost busting is done to delete tracks which are comprised of the same associated stubs. 
     /////////////////////////////////  
-    cout<<"Sorts BestTracks" << endl;
+    if (doDebug) cout<<"Sorts BestTracks" << endl;
     vector<BTrack> Bout = BestTracks(Dout);
     PTracks[SectIndex] = Bout;
    
@@ -374,7 +374,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //// Ghost Cancellation between ////not done correct
   //////////   sectors     ///////////
   ////////////////////////////////////
-  cout<<"Ghost Cancellation" << endl;
+  if (doDebug) cout<<"Ghost Cancellation" << endl;
  
   for(int i1=0;i1<36;i1++){
  
@@ -395,7 +395,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 		
       int sh_seg = 0;
 		
-      cout<<"\nComparing adjacent sectors\n";
+      if (doDebug) cout<<"\nComparing adjacent sectors\n";
 
       for(int sta=0;sta<4;sta++){//the part which is done incorrectly
 		
@@ -430,7 +430,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Sorting through all sectors ////
   ///   to find 4 best muons      ////
   ////////////////////////////////////
-  cout<<"Sorting through all sectors" << endl;
+  if (doDebug) cout<<"Sorting through all sectors" << endl;
   BTrack FourBest[4];
   vector<BTrack> PTemp[12] = PTracks;
   int windex[4] = {-1,-1,-1,-1};
@@ -461,7 +461,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   /// Make Internal track if ////////
   /////// tracks are found //////////
   ///////////////////////////////////
-  cout<<"Make Internal track" << endl;
+  if (doDebug) cout<<"Make Internal track" << endl;
 
   //  bool epir = false;
   
@@ -479,10 +479,10 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       tempTrack.rank = FourBest[fbest].winner.Rank();
       tempTrack.deltas = FourBest[fbest].deltas;
 		
-      cout<<"Make Internal track: no. " << fbest << endl;
+      if (doDebug) cout<<"Make Internal track: no. " << fbest << endl;
       for(vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
 	if(A->Phi() != -999){
-	  cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
+	  if (doDebug) cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
 	      << ", Station " << A->Station()
 	      << ", Id " << A->Id()
 	    //	  << ", chamber " << A->TP()->chamber()
@@ -497,7 +497,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	      << endl;
 	  
 	  tempTrack.addStub(A->TP());
-	  cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
+	  if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
 	}
 			
       }
@@ -518,17 +518,17 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //  edm::ParameterSet ptLUTset = p.getParameter<edm::ParameterSet>("PTLUT");
   CSCTFPtLUT* ptLUT_ = new CSCTFPtLUT(LUTparam, scales.product(),ptScale.product());
    
-  cout << "ptLUT_ " << ptLUT_ << endl;
-  cout << "FoundTracks->size() " << FoundTracks->size() << endl;
+  if (doDebug) cout << "ptLUT_ " << ptLUT_ << endl;
+  if (doDebug) cout << "FoundTracks->size() " << FoundTracks->size() << endl;
   //  for (auto foundTrack : FoundTracks){
 
   auto stub = FoundTracks->begin();
   auto stend = FoundTracks->end();
   for( ; stub != stend; ++stub ) {
 
-    // cout << "foundTrack->phiValue() " << stub->phiValue() << endl;
-    // cout << "foundTrack->etaValue() " << stub->etaValue() << endl;
-    // cout << "foundTrack->ptValue() " << stub->ptValue() << endl;
+    // if (doDebug) cout << "foundTrack->phiValue() " << stub->phiValue() << endl;
+    // if (doDebug) cout << "foundTrack->etaValue() " << stub->etaValue() << endl;
+    // if (doDebug) cout << "foundTrack->ptValue() " << stub->ptValue() << endl;
 
     // ptadd address;
     // address.delta_phi_12 = delta_phi_12;
@@ -593,7 +593,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   // 	  case(2):contribution |= 4;break;
   // 	  case(3):contribution |= 2;break;
   // 	  case(4):contribution |= 1;break;
-  // 	  default:cout<<"Station is out of range\n";
+  // 	  default:if (doDebug) cout<<"Station is out of range\n";
   // 	  }
   // 	}
   //     }
@@ -607,17 +607,17 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   // 	detectorinefficiency = true;
 		
   //     if(contribution == 6){//had stations 2&3 but no track
-  // 	cout<<"Stations 2 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	if (doDebug) cout<<"Stations 2 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
   // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
   //     }
 		
   //     if(contribution == 11){//had stations 1&3&4 but no track
-  // 	cout<<"Stations 1 & 3 & 4\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	if (doDebug) cout<<"Stations 1 & 3 & 4\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
   // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
   //     }
 		
   //     if(contribution == 10){//had stations 1&3 but no track
-  // 	cout<<"Stations 1 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
+  // 	if (doDebug) cout<<"Stations 1 & 3\nevent = "<<ev.id().event()<<"\nSectIndex = "<<
   // 	  ((tester[0]->detId<CSCDetId>().endcap()) - 1)*6 + (tester[0]->detId<CSCDetId>().triggerSector()) - 1<<"\n\n";
   //     }
 		
@@ -747,7 +747,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   // 		else
   // 		  st12errors->Fill(6);
 								
-  // 		cout<<"\n!thwindow\n";
+  // 		if (doDebug) cout<<"\n!thwindow\n";
   // 	      }
   // 	      //else if(thwindow){
 						
@@ -762,10 +762,10 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 		
   //     if((contribution > 4) && (contribution != 8)){
 		
-  // 	cout<<"\nMISSED\n";
+  // 	if (doDebug) cout<<"\nMISSED\n";
 			
   // 	if(contribution == 12)
-  // 	  cout<<"ONLY STATIONS 1 AND 2 : (\nevent = "<<ev.id().event()<<"\n\n";
+  // 	  if (doDebug) cout<<"ONLY STATIONS 1 AND 2 : (\nevent = "<<ev.id().event()<<"\n\n";
 		
   // 	MissVsEta->Fill(GeneratorMuon.eta());
   // 	MissVsPhi->Fill(GeneratorMuon.phi());
@@ -782,48 +782,48 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 
   // if(gpir && (FoundTracks->size() == 1)){
   
-  //   // cout<<"\nFOUND ONE MUON-------------Sector "<<windex[0]/3<<"\n";
+  //   // if (doDebug) cout<<"\nFOUND ONE MUON-------------Sector "<<windex[0]/3<<"\n";
 	
   //   // int ecap = 0;
 	
   //   // vector<ConvertedHit> ahits = FourBest[0].AHits;
 	
-  //   // cout<<"ahits.size() = "<<ahits.size()<<endl;
-  //   // cout<<"ahits[0].Phi() "<< ahits[0].Phi() << endl;
-  //   // cout<<"ahits[1].Phi() "<< ahits[1].Phi() << endl;
-  //   // cout<<"ahits[2].Phi() "<< ahits[2].Phi() << endl;
-  //   // cout<<"ahits[3].Phi() "<< ahits[3].Phi() << endl;
+  //   // if (doDebug) cout<<"ahits.size() = "<<ahits.size()<<endl;
+  //   // if (doDebug) cout<<"ahits[0].Phi() "<< ahits[0].Phi() << endl;
+  //   // if (doDebug) cout<<"ahits[1].Phi() "<< ahits[1].Phi() << endl;
+  //   // if (doDebug) cout<<"ahits[2].Phi() "<< ahits[2].Phi() << endl;
+  //   // if (doDebug) cout<<"ahits[3].Phi() "<< ahits[3].Phi() << endl;
 	
   //   // if(FourBest[0].AHits[0].Phi() != -999){
   //   //   if(FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap()){
   //   // 	ecap = FourBest[0].AHits[0].TP()->detId<CSCDetId>().endcap();
-  //   // 	cout<<"\n1\n";}
+  //   // 	if (doDebug) cout<<"\n1\n";}
   //   // }
   //   // else if(FourBest[0].AHits[1].Phi() != -999){
   //   //   if(FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap()){
   //   // 	ecap = FourBest[0].AHits[1].TP()->detId<CSCDetId>().endcap();
-  //   // 	cout<<"\n2\n";}
+  //   // 	if (doDebug) cout<<"\n2\n";}
   //   // }
   //   // else if(FourBest[0].AHits[2].Phi() != -999){
   //   //   if(FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap()){
   //   // 	ecap = FourBest[0].AHits[2].TP()->detId<CSCDetId>().endcap();
-  //   // 	cout<<"\n3\n";}
+  //   // 	if (doDebug) cout<<"\n3\n";}
   //   // }
   //   // else if(FourBest[0].AHits[3].Phi() != -999){
   //   //   if(FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap()){
   //   // 	ecap = FourBest[0].AHits[3].TP()->detId<CSCDetId>().endcap();
-  //   // 	cout<<"\n4\n";}
+  //   // 	if (doDebug) cout<<"\n4\n";}
   //   // }
 		
-  //   // cout<<"ecap "<< ecap << endl;
+  //   // if (doDebug) cout<<"ecap "<< ecap << endl;
 
-  //   cout<<"\n5\n";
+  //   if (doDebug) cout<<"\n5\n";
 	
   //   int cont = 0, numTP = 0;
   //   for(vector<TriggerPrimitiveRef>::iterator C1 = tester.begin();C1 != tester.end();C1++){
 			
   //     int stat = 0;
-  //     cout<<"\n2\n";
+  //     if (doDebug) cout<<"\n2\n";
       
   //     if ((*C1)->subsystem() == TriggerPrimitive::kCSC){
   // 	if((*C1)->detId<CSCDetId>().endcap()){
@@ -831,7 +831,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   // 	  numTP++;
   // 	}
   //     }
-  //     cout<<"\n3\n";
+  //     if (doDebug) cout<<"\n3\n";
 		
   //     switch(stat){
 			
@@ -840,7 +840,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //     case(2):cont |= 4;break;
   //     case(3):cont |= 2;break;
   //     case(4):cont |= 1;break;
-  //     default:cout<<"Station is out of range\n";
+  //     default:if (doDebug) cout<<"Station is out of range\n";
 			
   //     }
   //   }
@@ -871,29 +871,29 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   //   secdiff->Fill(fabs(sectors[0] - sectors[1]));
 	
   //   if(fabs(sectors[0] - sectors[1]) == 0)
-  //     cout<<"\nTWO IN SAME SECTOR\n";
+  //     if (doDebug) cout<<"\nTWO IN SAME SECTOR\n";
 	
-  //   cout<<"\nTWO MUONS FOUND------- Sectors: "<<sectors[0]<<" and "<<sectors[1]<<"\n";
+  //   if (doDebug) cout<<"\nTWO MUONS FOUND------- Sectors: "<<sectors[0]<<" and "<<sectors[1]<<"\n";
 	
   
   // }
   
   // if(gpir && (FoundTracks->size() == 3)){
   
-  //   cout<<"\nFOUND THREE MUONS---------- Sectors: "<<windex[0]/3<<", "<<windex[1]/3<<" and "<<windex[2]/3<<"\n";
+  //   if (doDebug) cout<<"\nFOUND THREE MUONS---------- Sectors: "<<windex[0]/3<<", "<<windex[1]/3<<" and "<<windex[2]/3<<"\n";
   // }
 
   
-  //  cout<<"Begin Put function\n\n";
+  //  if (doDebug) cout<<"Begin Put function\n\n";
   ev.put( FoundTracks, "DataITC");
-  cout<<"End TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
+  if (doDebug) cout<<"End TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
 
 }//analyzer
 
 void L1TMuonTextDumper::beginJob()
 {
-
-  //cout<<"Begin TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
+  doDebug = false;
+  //if (doDebug) cout<<"Begin TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
   ///////////////////////////
   ////// Histogram //////////
   ////// Declaration ////////
@@ -953,15 +953,15 @@ void L1TMuonTextDumper::endJob()
   fclose (tptest);
   TFileDirectory dir = histofile->mkdir("1");
 	
-  cout<<"\n\n\nfpire = ";
+  if (doDebug) cout<<"\n\n\nfpire = ";
   for(int i=0;i<24;i++)
-    cout<<fpire[i]<<"   ";
+    if (doDebug) cout<<fpire[i]<<"   ";
 	
-  cout<<"\ngpire = ";
+  if (doDebug) cout<<"\ngpire = ";
   for(int ii=0;ii<24;ii++)
-    cout<<gpire[ii]<<"   ";
+    if (doDebug) cout<<gpire[ii]<<"   ";
 		
-  cout<<"\nTHE END"<<endl;
+  if (doDebug) cout<<"\nTHE END"<<endl;
 	
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
