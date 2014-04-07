@@ -71,6 +71,7 @@ private:
 
   TH1F* h_nStubinTrack;
   TH1F* h_nStubinTrackWithGEM;
+  TH1F* h_nStubQuality;
 
   TH1F* hNVertex;
 
@@ -254,6 +255,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       nstubs++;
       if ((*csc).second.first->getGEMDPhi() > -99)
 	hasGEM = true;
+
+      h_nStubQuality->Fill(lctdigi->getQuality());
     }
     h_nStubinTrack->Fill(nstubs);
     if (hasGEM)
@@ -523,6 +526,10 @@ L1TAnalyser::beginJob()
   h_nStubinTrackWithGEM=fs->make<TH1F>("nStubinTrackWithGEM","N Stubs in Track",10,0,10);
   h_nStubinTrackWithGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_nStubinTrackWithGEM->GetYaxis()->SetTitle("Counts");
+
+  h_nStubQuality=fs->make<TH1F>("nStubQuality","Stub Quality",20,0,20);
+  h_nStubQuality->GetXaxis()->SetTitle("Stub Quality");
+  h_nStubQuality->GetYaxis()->SetTitle("Counts");
 
   h_GEMDPhi=fs->make<TH1F>("GemDPhi","GEM-SCS dPhi in station 1",100,-0.1,0.1);
   h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
