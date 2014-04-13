@@ -83,6 +83,12 @@ private:
   TH2F* h_TFnStubvsPTAdd;
   TH2F* h_TFnStubvsPTAddGEM;
 
+  TH2F* h_TFnStubvsQualityPacked;
+  TH2F* h_TFnStubvsQualityPackedGEM;
+
+  TH2F* h_TFPTpackedvsPTAdd;
+  TH2F* h_TFPTpackedvsPTAddGEM;
+
   TH1F* h_noTFnStub;
   TH1F* h_noTFnStubGEM;
 
@@ -254,6 +260,19 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // 	 << ", ptLUTAddress " << l1track.ptLUTAddress()
     // 	 << endl;
     // //      l1track.Print();
+
+    unsigned int quality_packed;
+    unsigned int rank=l1track.rank();
+    unsigned int pt_packed;
+    unsigned m_ptAddress = l1track.ptLUTAddress();
+
+    l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
+    cout << "l1track.decodeRank = "
+     	 << ", rank " << rank
+     	 << ", pt_packed " << pt_packed
+     	 << ", quality_packed " << quality_packed
+     	 << endl;
+
     int nstubs=0;
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
@@ -293,11 +312,30 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_TFStubQuality->Fill(lctdigi->getQuality());
     }
 
+    cout << "m_ptAddress = " << m_ptAddress
+	 << ", deltaPhi12 " << l1track.deltaPhi12()
+	 << ", deltaPhi23 " << l1track.deltaPhi23()
+	 << ", addressEta " << l1track.addressEta()
+	 << ", mode " << l1track.mode()
+	 << ", sign " << l1track.sign()
+	 << endl;
+    cout << "nstubs = " << nstubs
+	 << ", me1Tbin = " << l1track.me1Tbin()
+	 << ", me2Tbin = " << l1track.me2Tbin()
+	 << ", me3Tbin = " << l1track.me3Tbin()
+	 << ", me4Tbin = " << l1track.me4Tbin()
+	 << ", mb1Tbin = " << l1track.mb1Tbin()
+	 << endl;
+
     h_TFnStubinTrack->Fill(nstubs);
-    h_TFnStubvsPTAdd->Fill(nstubs,l1track.ptLUTAddress());
+    h_TFnStubvsPTAdd->Fill(nstubs,m_ptAddress);
+    h_TFnStubvsQualityPacked->Fill(nstubs,quality_packed);
+    h_TFPTpackedvsPTAdd->Fill(pt_packed,m_ptAddress);
     if (hasGEM){
       h_TFnStubinTrackGEM->Fill(nstubs);
-      h_TFnStubvsPTAddGEM->Fill(nstubs,l1track.ptLUTAddress());
+      h_TFnStubvsPTAddGEM->Fill(nstubs,m_ptAddress);
+      h_TFnStubvsQualityPackedGEM->Fill(nstubs,quality_packed);
+      h_TFPTpackedvsPTAddGEM->Fill(pt_packed,m_ptAddress);
     }
   }
 
@@ -618,6 +656,22 @@ L1TAnalyser::beginJob()
   h_TFnStubvsPTAddGEM=fs->make<TH2F>("TFnStubvsPTAddGEM","N Stubs in Track Vs Pt address",6,0,6,100,0,4500000);
   h_TFnStubvsPTAddGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
+
+  h_TFnStubvsQualityPacked=fs->make<TH2F>("TFnStubvsQualityPacked","N Stubs in Track vs Quality",6,0,6,5,0,5);
+  h_TFnStubvsQualityPacked->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubvsQualityPacked->GetYaxis()->SetTitle("Quality");
+
+  h_TFnStubvsQualityPackedGEM=fs->make<TH2F>("TFnStubvsQualityPackedGEM","N Stubs in Track Vs Quality",6,0,6,5,0,5);
+  h_TFnStubvsQualityPackedGEM->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubvsQualityPackedGEM->GetYaxis()->SetTitle("Quality");
+
+  h_TFPTpackedvsPTAdd=fs->make<TH2F>("TFPTpackedvsPTAdd","Pt packed Vs Pt address",30,0,30,100,0,4500000);
+  h_TFPTpackedvsPTAdd->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsPTAdd->GetYaxis()->SetTitle("Pt address");
+
+  h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",30,0,30,100,0,4500000);
+  h_TFPTpackedvsPTAddGEM->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
 
   h_noTFnStub=fs->make<TH1F>("noTFnStub","no track, No. Stubs",6,0,6);
   h_noTFnStub->GetXaxis()->SetTitle("No. Stubs");
