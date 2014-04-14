@@ -99,6 +99,9 @@ private:
   TH1F* h_noTFnStub;
   TH1F* h_noTFnStubGEM;
 
+  TH1F* h_noTFQ3nStub;
+  TH1F* h_noTFQ3nStubGEM;
+
   TH1F* hNVertex;
 
   TH1F* hMPCLink;
@@ -245,6 +248,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   bool hasTrkFwd = false;
   bool hasTrkBwd = false;
+  bool hasQ3TrkFwd = false;
+  bool hasQ3TrkBwd = false;
   // bool hasTrkFwdGE11 = false;
   // bool hasTrkBwdGE11 = false;
 
@@ -290,12 +295,16 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if ((*csc).first.endcap() == 1){
 	h_nStation->Fill((*csc).first.station());
 	hasTrkFwd = true;
+	if (quality_packed >= 3)
+	  hasQ3TrkFwd = true;
 	// if ((*csc).first.station() == 1)
 	//   hasTrkFwdGE11 = true;
       }
       if ((*csc).first.endcap() == 2){
 	h_nStation->Fill(-((*csc).first.station()));
 	hasTrkBwd = true;
+	if (quality_packed >= 3)
+	  hasQ3TrkBwd = true;
 	// if ((*csc).first.station() == 1)
 	//   hasTrkBwdGE11 = true;
       }
@@ -388,6 +397,16 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_noTFnStub->Fill(nBwdStubs);
     if (hasBwdGE11)
       h_noTFnStubGEM->Fill(nBwdStubs);
+  }
+  if (!hasQ3TrkFwd){
+    h_noTFQ3nStub->Fill(nFwdStubs);
+    if (hasFwdGE11)
+      h_noTFQ3nStubGEM->Fill(nFwdStubs);
+  }
+  if (!hasQ3TrkBwd){
+    h_noTFQ3nStub->Fill(nBwdStubs);
+    if (hasBwdGE11)
+      h_noTFQ3nStubGEM->Fill(nBwdStubs);
   }
 
   nVertex=0;
@@ -715,6 +734,14 @@ L1TAnalyser::beginJob()
   h_noTFnStubGEM=fs->make<TH1F>("noTFnStubGEM","no track, No. Stubs",6,0,6);
   h_noTFnStubGEM->GetXaxis()->SetTitle("No. Stubs");
   h_noTFnStubGEM->GetYaxis()->SetTitle("Counts");
+
+  h_noTFQ3nStub=fs->make<TH1F>("noTFQ3nStub","no Q3 track, No. Stubs",6,0,6);
+  h_noTFQ3nStub->GetXaxis()->SetTitle("No. Stubs");
+  h_noTFQ3nStub->GetYaxis()->SetTitle("Counts");
+
+  h_noTFQ3nStubGEM=fs->make<TH1F>("noTFQ3nStubGEM","no Q3 track, No. Stubs",6,0,6);
+  h_noTFQ3nStubGEM->GetXaxis()->SetTitle("No. Stubs");
+  h_noTFQ3nStubGEM->GetYaxis()->SetTitle("Counts");
 
   h_GEMDPhi=fs->make<TH1F>("GemDPhi","GEM-SCS dPhi in station 1",100,-0.1,0.1);
   h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
