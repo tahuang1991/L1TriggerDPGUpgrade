@@ -89,6 +89,13 @@ private:
   TH2F* h_TFPTpackedvsPTAdd;
   TH2F* h_TFPTpackedvsPTAddGEM;
 
+  TH2F* h_TFPTpackedvsdPhi12;
+  TH2F* h_TFPTpackedvsdPhi23;
+
+  TH2F* h_TFPTpackedvsdPhi12GEM;
+  TH2F* h_TFPTpackedvsdPhi23GEM;
+  TH2F* h_TFPTpackedvsGEMdPhi;
+
   TH1F* h_noTFnStub;
   TH1F* h_noTFnStubGEM;
 
@@ -275,6 +282,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     int nstubs=0;
     bool hasGEM = false;
+    float GEMdPhi = -99;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
       auto lctdigi = (*csc).second.first;
       h_GEMDPhi->Fill((*csc).second.first->getGEMDPhi());
@@ -307,6 +315,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       nstubs++;
       if ((*csc).second.first->getGEMDPhi() > -99){
 	hasGEM = true;
+	GEMdPhi = (*csc).second.first->getGEMDPhi();
 	h_TFStubQualityGEM->Fill(lctdigi->getQuality());
       }
       h_TFStubQuality->Fill(lctdigi->getQuality());
@@ -331,11 +340,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_TFnStubvsPTAdd->Fill(nstubs,m_ptAddress);
     h_TFnStubvsQualityPacked->Fill(nstubs,quality_packed);
     h_TFPTpackedvsPTAdd->Fill(pt_packed,m_ptAddress);
+    h_TFPTpackedvsdPhi12->Fill(pt_packed,l1track.deltaPhi12());
+    h_TFPTpackedvsdPhi23->Fill(pt_packed,l1track.deltaPhi23());
+
     if (hasGEM){
       h_TFnStubinTrackGEM->Fill(nstubs);
       h_TFnStubvsPTAddGEM->Fill(nstubs,m_ptAddress);
       h_TFnStubvsQualityPackedGEM->Fill(nstubs,quality_packed);
       h_TFPTpackedvsPTAddGEM->Fill(pt_packed,m_ptAddress);
+      h_TFPTpackedvsdPhi12GEM->Fill(pt_packed,l1track.deltaPhi12());
+      h_TFPTpackedvsdPhi23GEM->Fill(pt_packed,l1track.deltaPhi23());
+      h_TFPTpackedvsGEMdPhi->Fill(pt_packed,GEMdPhi);
     }
   }
 
@@ -672,6 +687,26 @@ L1TAnalyser::beginJob()
   h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",30,0,30,100,0,4500000);
   h_TFPTpackedvsPTAddGEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
+
+  h_TFPTpackedvsdPhi12=fs->make<TH2F>("TFPTpackedvsdPhi12","Pt packed Vs dPhi12",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi12->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsdPhi12->GetYaxis()->SetTitle("dPhi12");
+
+  h_TFPTpackedvsdPhi23=fs->make<TH2F>("TFPTpackedvsdPhi23","Pt packed Vs dPhi23",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi23->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsdPhi23->GetYaxis()->SetTitle("dPhi23");
+
+  h_TFPTpackedvsdPhi12GEM=fs->make<TH2F>("TFPTpackedvsdPhi12GEM","Pt packed Vs dPhi12",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi12GEM->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsdPhi12GEM->GetYaxis()->SetTitle("dPhi12");
+
+  h_TFPTpackedvsdPhi23GEM=fs->make<TH2F>("TFPTpackedvsdPhi23GEM","Pt packed Vs dPhi23",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi23GEM->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsdPhi23GEM->GetYaxis()->SetTitle("dPhi23");
+
+  h_TFPTpackedvsGEMdPhi=fs->make<TH2F>("TFPTpackedvsGEMdPhi","Pt packed Vs GEMdPhi",30,0,30,-0.5,0.5,200);
+  h_TFPTpackedvsGEMdPhi->GetXaxis()->SetTitle("Pt packed");
+  h_TFPTpackedvsGEMdPhi->GetYaxis()->SetTitle("GEMdPhi");
 
   h_noTFnStub=fs->make<TH1F>("noTFnStub","no track, No. Stubs",6,0,6);
   h_noTFnStub->GetXaxis()->SetTitle("No. Stubs");
