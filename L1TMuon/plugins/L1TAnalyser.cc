@@ -680,31 +680,31 @@ L1TAnalyser::beginJob()
   h_TFnStubvsQualityPackedGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubvsQualityPackedGEM->GetYaxis()->SetTitle("Quality");
 
-  h_TFPTpackedvsPTAdd=fs->make<TH2F>("TFPTpackedvsPTAdd","Pt packed Vs Pt address",30,0,30,100,0,4500000);
+  h_TFPTpackedvsPTAdd=fs->make<TH2F>("TFPTpackedvsPTAdd","Pt packed Vs Pt address",40,0,40,100,0,4500000);
   h_TFPTpackedvsPTAdd->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsPTAdd->GetYaxis()->SetTitle("Pt address");
 
-  h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",30,0,30,100,0,4500000);
+  h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",40,0,40,100,0,4500000);
   h_TFPTpackedvsPTAddGEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
 
-  h_TFPTpackedvsdPhi12=fs->make<TH2F>("TFPTpackedvsdPhi12","Pt packed Vs dPhi12",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi12=fs->make<TH2F>("TFPTpackedvsdPhi12","Pt packed Vs dPhi12",40,0,40,200,0,300);
   h_TFPTpackedvsdPhi12->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi12->GetYaxis()->SetTitle("dPhi12");
 
-  h_TFPTpackedvsdPhi23=fs->make<TH2F>("TFPTpackedvsdPhi23","Pt packed Vs dPhi23",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi23=fs->make<TH2F>("TFPTpackedvsdPhi23","Pt packed Vs dPhi23",40,0,40,200,0,20);
   h_TFPTpackedvsdPhi23->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi23->GetYaxis()->SetTitle("dPhi23");
 
-  h_TFPTpackedvsdPhi12GEM=fs->make<TH2F>("TFPTpackedvsdPhi12GEM","Pt packed Vs dPhi12",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi12GEM=fs->make<TH2F>("TFPTpackedvsdPhi12GEM","Pt packed Vs dPhi12",40,0,40,200,0,300);
   h_TFPTpackedvsdPhi12GEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi12GEM->GetYaxis()->SetTitle("dPhi12");
 
-  h_TFPTpackedvsdPhi23GEM=fs->make<TH2F>("TFPTpackedvsdPhi23GEM","Pt packed Vs dPhi23",30,0,30,200,0,200);
+  h_TFPTpackedvsdPhi23GEM=fs->make<TH2F>("TFPTpackedvsdPhi23GEM","Pt packed Vs dPhi23",40,0,40,200,0,20);
   h_TFPTpackedvsdPhi23GEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi23GEM->GetYaxis()->SetTitle("dPhi23");
 
-  h_TFPTpackedvsGEMdPhi=fs->make<TH2F>("TFPTpackedvsGEMdPhi","Pt packed Vs GEMdPhi",30,0,30,-0.5,0.5,200);
+  h_TFPTpackedvsGEMdPhi=fs->make<TH2F>("TFPTpackedvsGEMdPhi","Pt packed Vs GEMdPhi",40,0,40,200,-0.5,0.5);
   h_TFPTpackedvsGEMdPhi->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsGEMdPhi->GetYaxis()->SetTitle("GEMdPhi");
 
@@ -725,7 +725,7 @@ L1TAnalyser::beginJob()
   h_nStation->GetYaxis()->SetTitle("Counts");
 
 
-  hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",30,0,30);
+  hNVertex=fs->make<TH1F>("NVertex","N Primary Vertices",40,0,40);
   hNVertex->GetXaxis()->SetTitle("N Primary Vertices");
   hNVertex->GetYaxis()->SetTitle("Counts");
 
