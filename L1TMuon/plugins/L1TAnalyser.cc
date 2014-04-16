@@ -341,11 +341,11 @@ L1TAnalyser::beginJob()
   h_TFnStubinTrackGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubinTrackGEM->GetYaxis()->SetTitle("Counts");
 
-  h_TFnStubvsPTAdd=fs->make<TH2F>("TFnStubvsPTAdd","N Stubs in Track Vs Pt address",6,0,6,100,0,4500000);
+  h_TFnStubvsPTAdd=fs->make<TH2F>("TFnStubvsPTAdd","N Stubs in Track Vs Pt address",6,0,6,500,0,4500000);
   h_TFnStubvsPTAdd->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubvsPTAdd->GetYaxis()->SetTitle("Pt address");
 
-  h_TFnStubvsPTAddGEM=fs->make<TH2F>("TFnStubvsPTAddGEM","N Stubs in Track Vs Pt address",6,0,6,100,0,4500000);
+  h_TFnStubvsPTAddGEM=fs->make<TH2F>("TFnStubvsPTAddGEM","N Stubs in Track Vs Pt address",6,0,6,500,0,4500000);
   h_TFnStubvsPTAddGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
 
@@ -357,11 +357,11 @@ L1TAnalyser::beginJob()
   h_TFnStubvsQualityPackedGEM->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubvsQualityPackedGEM->GetYaxis()->SetTitle("Quality");
 
-  h_TFPTpackedvsPTAdd=fs->make<TH2F>("TFPTpackedvsPTAdd","Pt packed Vs Pt address",40,0,40,100,0,4500000);
+  h_TFPTpackedvsPTAdd=fs->make<TH2F>("TFPTpackedvsPTAdd","Pt packed Vs Pt address",40,0,40,500,0,4500000);
   h_TFPTpackedvsPTAdd->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsPTAdd->GetYaxis()->SetTitle("Pt address");
 
-  h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",40,0,40,100,0,4500000);
+  h_TFPTpackedvsPTAddGEM=fs->make<TH2F>("TFPTpackedvsPTAddGEM","Pt packed Vs Pt address",40,0,40,500,0,4500000);
   h_TFPTpackedvsPTAddGEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsPTAddGEM->GetYaxis()->SetTitle("Pt address");
 
