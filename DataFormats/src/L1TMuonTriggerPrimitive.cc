@@ -5,7 +5,7 @@
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhDigi.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
 #include "DataFormats/RPCDigi/interface/RPCDigiL1Link.h"
-#include "DataFormats/GEMDigi/interface/GEMDigi.h"
+#include "DataFormats/GEMDigi/interface/GEMCSCPadDigi.h"
 #include "DataFormats/HcalDigi/interface/HcalTriggerPrimitiveDigi.h"
 
 // detector ID types
@@ -129,11 +129,11 @@ TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
 
 //constructor from GEM data
 TriggerPrimitive::TriggerPrimitive(const GEMDetId& detid,
-				   const GEMDigi& digi):
+				   const GEMCSCPadDigi& digi):
   _id(detid),
   _subsystem(TriggerPrimitive::kGEM) {
   calculateGEMGlobalSector(detid,_globalsector,_subsector);
-  _gem.strip  = digi.strip();
+  _gem.pad  = digi.pad();
   _gem.bx   = digi.bx();
   //  std::cout <<"TriggerPrimitive gem.strip " << _gem.strip << " gem.bx " << _gem.bx << std::endl;
   }

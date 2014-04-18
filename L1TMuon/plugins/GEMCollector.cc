@@ -1,5 +1,5 @@
 #include "L1TriggerDPGUpgrade/L1TMuon/interface/GEMCollector.h"
-#include "DataFormats/GEMDigi/interface/GEMDigiCollection.h"
+#include "DataFormats/GEMDigi/interface/GEMCSCPadDigiCollection.h"
 #include "DataFormats/MuonDetId/interface/GEMDetId.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -15,7 +15,7 @@ GEMCollector::GEMCollector( const edm::ParameterSet& ps ):
 void GEMCollector::extractPrimitives(const edm::Event& ev, 
 				     const edm::EventSetup& es, 
 				     std::vector<TriggerPrimitive>& out) const {
-  edm::Handle<GEMDigiCollection> gemDigis;  
+  edm::Handle<GEMCSCPadDigiCollection> gemDigis;  
   ev.getByLabel(_src,gemDigis);    
 
   auto chamber = gemDigis->begin();
