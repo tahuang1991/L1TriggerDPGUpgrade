@@ -42,6 +42,7 @@ namespace L1TMuon{
 
     double calculateGlobalEta(const TriggerPrimitive&) const;
     double calculateGlobalPhi(const TriggerPrimitive&) const;
+    double calculateGlobalZ(const TriggerPrimitive&) const ;
     double calculateBendAngle(const TriggerPrimitive&) const;    
 
     void checkAndUpdateGeometry(const edm::EventSetup&);
@@ -59,17 +60,20 @@ namespace L1TMuon{
     GlobalPoint getRPCSpecificPoint(const TriggerPrimitive&) const;
     double calcRPCSpecificEta(const TriggerPrimitive&) const;
     double calcRPCSpecificPhi(const TriggerPrimitive&) const;
+    double calcRPCSpecificZ(const TriggerPrimitive&) const;
     double calcRPCSpecificBend(const TriggerPrimitive&) const;
 
     GlobalPoint getCSCSpecificPoint(const TriggerPrimitive&) const;
     double calcCSCSpecificEta(const TriggerPrimitive&) const;
     double calcCSCSpecificPhi(const TriggerPrimitive&) const;
+    double calcCSCSpecificZ(const TriggerPrimitive&) const;
     double calcCSCSpecificBend(const TriggerPrimitive&) const;
     bool isCSCCounterClockwise(const std::unique_ptr<const CSCLayer>&) const;
 
     GlobalPoint calcDTSpecificPoint(const TriggerPrimitive&) const;
     double calcDTSpecificEta(const TriggerPrimitive&) const;
     double calcDTSpecificPhi(const TriggerPrimitive&) const;
+    double calcDTSpecificZ(const TriggerPrimitive&) const;
     double calcDTSpecificBend(const TriggerPrimitive&) const;
 
     GlobalPoint getGEMSpecificPoint(const TriggerPrimitive&) const;

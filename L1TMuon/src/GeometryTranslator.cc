@@ -82,6 +82,24 @@ GeometryTranslator::calculateGlobalPhi(const TriggerPrimitive& tp) const {
 }
 
 double 
+GeometryTranslator::calculateGlobalZ(const TriggerPrimitive& tp) const {
+  switch(tp.subsystem()) {
+  case TriggerPrimitive::kDT:
+    return calcDTSpecificZ(tp);
+    break;
+  case TriggerPrimitive::kCSC:
+    return calcCSCSpecificZ(tp);
+    break;
+  case TriggerPrimitive::kRPC:
+    return calcRPCSpecificZ(tp);
+    break;
+  default:
+    return std::nan("Invalid TP type!");
+    break;
+  }
+}
+
+double 
 GeometryTranslator::calculateBendAngle(const TriggerPrimitive& tp) const {
   switch(tp.subsystem()) {
   case TriggerPrimitive::kDT:
@@ -148,6 +166,11 @@ GeometryTranslator::calcRPCSpecificEta(const TriggerPrimitive& tp) const {
 double 
 GeometryTranslator::calcRPCSpecificPhi(const TriggerPrimitive& tp) const {  
   return getRPCSpecificPoint(tp).phi();
+}
+
+double 
+GeometryTranslator::calcRPCSpecificZ(const TriggerPrimitive& tp) const {  
+  return getRPCSpecificPoint(tp).z();
 }
 
 // this function actually does nothing since RPC
@@ -236,6 +259,11 @@ GeometryTranslator::calcCSCSpecificPhi(const TriggerPrimitive& tp) const {
 }
 
 double 
+GeometryTranslator::calcCSCSpecificZ(const TriggerPrimitive& tp) const {  
+  return getCSCSpecificPoint(tp).z();
+}
+
+double 
 GeometryTranslator::calcCSCSpecificBend(const TriggerPrimitive& tp) const {  
   return 0.0;
 }
@@ -286,6 +314,11 @@ GeometryTranslator::calcDTSpecificEta(const TriggerPrimitive& tp) const {
 double 
 GeometryTranslator::calcDTSpecificPhi(const TriggerPrimitive& tp) const {
   return calcDTSpecificPoint(tp).phi();
+}
+
+double 
+GeometryTranslator::calcDTSpecificZ(const TriggerPrimitive& tp) const {
+  return calcDTSpecificPoint(tp).z();
 }
 
 // we have the bend except for station 3
