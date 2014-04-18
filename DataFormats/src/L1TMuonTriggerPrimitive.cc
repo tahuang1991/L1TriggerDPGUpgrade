@@ -43,7 +43,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
   _dt.qualityCode = digi_phi.code();
   _dt.Ts2TagCode = digi_phi.Ts2Tag();
   _dt.BxCntCode = digi_phi.BxCnt();
-}
+  }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambThDigi& digi_th,
@@ -66,7 +66,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
   _dt.qualityCode = -1;
   _dt.Ts2TagCode = -1;
   _dt.BxCntCode = -1;
-}
+  }
 
 TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
 				   const L1MuDTChambPhDigi& digi_phi,
@@ -90,7 +90,7 @@ TriggerPrimitive::TriggerPrimitive(const DTChamberId& detid,
   _dt.qualityCode = digi_phi.code();
   _dt.Ts2TagCode = digi_phi.Ts2Tag();
   _dt.BxCntCode = digi_phi.BxCnt();    
-}
+  }
 
 //constructor from CSC data
 TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
@@ -112,7 +112,7 @@ TriggerPrimitive::TriggerPrimitive(const CSCDetId& detid,
   _csc.cscID   = digi.getCSCID();
   //_csc.gemBX   = digi.getGEMBX();
   _csc.gemDPhi = digi.getGEMDPhi();
-}
+  }
 
 // constructor from RPC data
 TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
@@ -125,7 +125,7 @@ TriggerPrimitive::TriggerPrimitive(const RPCDetId& detid,
   _rpc.strip = strip;
   _rpc.layer = layer;
   _rpc.bx = bx;
-}
+  }
 
 //constructor from GEM data
 TriggerPrimitive::TriggerPrimitive(const GEMDetId& detid,
@@ -135,8 +135,8 @@ TriggerPrimitive::TriggerPrimitive(const GEMDetId& detid,
   calculateGEMGlobalSector(detid,_globalsector,_subsector);
   _gem.strip  = digi.strip();
   _gem.bx   = digi.bx();
-  std::cout <<"TriggerPrimitive gem.strip " << _gem.strip << " gem.bx " << _gem.bx << std::endl;
-}
+  //  std::cout <<"TriggerPrimitive gem.strip " << _gem.strip << " gem.bx " << _gem.bx << std::endl;
+  }
 
 // constructor from HCAL data
 TriggerPrimitive::TriggerPrimitive(const HcalTrigTowerDetId& detid,
@@ -147,7 +147,7 @@ TriggerPrimitive::TriggerPrimitive(const HcalTrigTowerDetId& detid,
   _hcal.size = digi_hcal.size();
   _hcal.SOI_fineGrain = digi_hcal.SOI_fineGrain();
   _hcal.SOI_compressedEt = digi_hcal.SOI_compressedEt();
-}
+  }
 
 TriggerPrimitive::TriggerPrimitive(const TriggerPrimitive& tp):
   _dt(tp._dt),
@@ -331,8 +331,8 @@ void TriggerPrimitive::calculateGEMGlobalSector(const GEMDetId& chid,
 }
 
 void TriggerPrimitive::calculateHCALGlobalSector(const HcalTrigTowerDetId& chid,
-						unsigned& global_sector, 
-						unsigned& subsector ) {
+						 unsigned& global_sector, 
+						 unsigned& subsector ) {
 }
 
 void TriggerPrimitive::print(std::ostream& out) const {

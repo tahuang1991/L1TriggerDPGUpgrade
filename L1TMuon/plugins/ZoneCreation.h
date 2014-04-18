@@ -25,7 +25,7 @@ ZonesOutput zonemaker(std::vector<ConvertedHit> ConvHits){
       }	
     }
 			
-    std::cout<<"\n\nst: "<<h->Station()<<" - wire: "<<h->Wire()<<" - strip: "<<h->Strip()<<" - zzhit = "<<h->Zhit()<<" ";
+    //    std::cout<<"\n\nst: "<<h->Station()<<" - wire: "<<h->Wire()<<" - strip: "<<h->Strip()<<" - zzhit = "<<h->Zhit()<<" ";
 			
   }
 		

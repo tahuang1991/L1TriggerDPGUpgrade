@@ -24,14 +24,14 @@ void PhiMemoryImage::CopyFromBuffer(PhiMemoryImage::value_ptr rhs, int offset){
 
 //void SetBuff(int chunk, int value){
 
-	//_buffer[chunk] = value;
+//_buffer[chunk] = value;
 //}
 
 
 void PhiMemoryImage::SetBit( int station, int bitNumber ,bool bitValue ){
 
   //std::cout<<"bitnumber = "<<bitNumber<<std::endl;
- //  std::cout<<"station = "<<station<<std::endl;
+  //  std::cout<<"station = "<<station<<std::endl;
   
   PhiMemoryImage::value_type tmp = 1;//64 bit word
   int size = sizeof (PhiMemoryImage::value_type) * 8;//64
@@ -46,7 +46,7 @@ void PhiMemoryImage::SetBit( int station, int bitNumber ,bool bitValue ){
   
   
   // std::cout<<"bitnumber = "<<bitNumber<<std::endl;
-   // std::cout<<"station = "<<station<<std::endl;
+  // std::cout<<"station = "<<station<<std::endl;
  
   int chunkNumber = station*2 + (bitNumber-1) / size;
   int bitOffset   = bitNumber % size;
@@ -94,7 +94,7 @@ bool PhiMemoryImage::GetBit( int station, int bitNumber) const {
   // std::cout << "chunkNumber: " << chunkNumber << "bitOffset:" 
   //     	    << bitOffset << "tmp: " << tmp << std::endl;
   //std::cout<<"buffer["<<chunkNumber<<"] = "<<_buffer[chunkNumber]<<std::endl;
- // std::cout<<"buffer["<<chunkNumber + 1<<"] = "<<_buffer[chunkNumber+1]<<std::endl;
+  // std::cout<<"buffer["<<chunkNumber + 1<<"] = "<<_buffer[chunkNumber+1]<<std::endl;
 
   return ((_buffer[chunkNumber] & tmp) != 0);
 
@@ -154,10 +154,8 @@ void PhiMemoryImage::Print(){
 
     for (int j = size; j > 0; j--){
 
-      if ((j%(sizeof(PhiMemoryImage::value_type)*8)) == 0)
-	std::cout << std::endl;
+      if ((j%(sizeof(PhiMemoryImage::value_type)*8)) == 0)	std::cout << std::endl;
     
-      
       if ((j%8)==0) std::cout << " ";
       if(GetBit(i,j)) std::cout << "1";
       else std::cout << "0";
@@ -170,10 +168,10 @@ void PhiMemoryImage::Print(){
 
 void PhiMemoryImage::printbuff(){
 
-	for(int i=0;i<PhiMemoryImage::TOTAL_UNITS;i++){
-		std::cout<<"buffer["<<i<<"] = "<<_buffer[i]<<std::endl;
-	}
-	std::cout<<std::endl;
+  for(int i=0;i<PhiMemoryImage::TOTAL_UNITS;i++){
+    std::cout<<"buffer["<<i<<"] = "<<_buffer[i]<<std::endl;
+  }
+  std::cout<<std::endl;
 }
 
 

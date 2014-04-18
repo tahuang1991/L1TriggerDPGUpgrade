@@ -4,123 +4,115 @@
 //////
 //////
 //////
-
 #include "EmulatorClasses.h"
 #include "PhiMemoryImage.h"
 
-
 MatchingOutput PhiMatching(SortingOutput Sout){
-
-
-
-	std::vector<ConvertedHit> Thits = Sout.Hits();
-	std::vector<std::vector<Winner>> Winners = Sout.Winners();
-	std::vector<int> segment (4,0);
+  std::vector<ConvertedHit> Thits = Sout.Hits();
+  std::vector<std::vector<Winner>> Winners = Sout.Winners();
+  std::vector<int> segment (4,0);
 	
-	/////////////////////////////////////////
-	//// Set Null Ph and Th outputs /////////
-	/////////////////////////////////////////
-	ConvertedHit tt; tt.SetNull();
-	std::vector<ConvertedHit> p (4,tt);std::vector<std::vector<ConvertedHit>> pp (3,p);
-	PhOutput ph_output (4,pp);
+  /////////////////////////////////////////
+  //// Set Null Ph and Th outputs /////////
+  /////////////////////////////////////////
+  ConvertedHit tt; tt.SetNull();
+  std::vector<ConvertedHit> p (4,tt);std::vector<std::vector<ConvertedHit>> pp (3,p);
+  PhOutput ph_output (4,pp);
 					
 	
-	std::vector<ConvertedHit> q (2,tt);
-	std::vector<std::vector<ConvertedHit>> qq (4,q);std::vector<std::vector<std::vector<ConvertedHit>>> qqq (3,qq);
-	ThOutput th_output (4,qqq);
-	/////////////////////////////////////////
-	/////////////////////////////////////////
-	/////////////////////////////////////////
+  std::vector<ConvertedHit> q (2,tt);
+  std::vector<std::vector<ConvertedHit>> qq (4,q);std::vector<std::vector<std::vector<ConvertedHit>>> qqq (3,qq);
+  ThOutput th_output (4,qqq);
+  /////////////////////////////////////////
+  /////////////////////////////////////////
+  /////////////////////////////////////////
 
-
+  for(int z=0;z<4;z++){//zone loop
 	
-	for(int z=0;z<4;z++){//zone loop
-	
-		for(int w=0;w<3;w++){//winner loop
+    for(int w=0;w<3;w++){//winner loop
 			
-			if(Winners[z][w].Rank()){//is there a winner present?	
+      if(Winners[z][w].Rank()){//is there a winner present?	
 			
-				std::cout<<"Winner position-"<<Winners[z][w].Strip()<<". Zone = "<<z<<std::endl;			
+	//	std::cout<<"Winner position-"<<Winners[z][w].Strip()<<". Zone = "<<z<<std::endl;			
 				
-				for(std::vector<ConvertedHit>::iterator i = Thits.begin();i != Thits.end();i++){//Possible associated hits
+	for(std::vector<ConvertedHit>::iterator i = Thits.begin();i != Thits.end();i++){//Possible associated hits
 				
-					//int id = i->Id();
+	  //int id = i->Id();
 					
-					std::cout<<"strip = "<<i->Strip()<<", keywire = "<<i->Wire()<<" and zhit-"<<i->Zhit()<<std::endl;
+	  //	  std::cout<<"strip = "<<i->Strip()<<", keywire = "<<i->Wire()<<" and zhit-"<<i->Zhit()<<std::endl;
 					
-					bool inzone = 0;///Is the converted hit in the zone we're looking at now?
-					for(std::vector<int>::iterator znc = i->ZoneContribution().begin();znc != i->ZoneContribution().end();znc++){
-						if((*znc) == z)
-							inzone = 1;//yes
-					}
+	  bool inzone = 0;///Is the converted hit in the zone we're looking at now?
+	  for(std::vector<int>::iterator znc = i->ZoneContribution().begin();znc != i->ZoneContribution().end();znc++){
+	    if((*znc) == z)
+	      inzone = 1;//yes
+	  }
 					
-					////////////////////////////////////////////////////////////////////////////////////////////
-					/////////////////// Setting the matched hits based on phi //////////////////////////////////
-					////////////////////////////////////////////////////////////////////////////////////////////
-					int setstation = i->Station() - 1;
-					//bool one = ((z == 3) && (i->Station() > 1));                //Zone 3 is handled differently so we
-					//bool two = ((z == 3) && (i->Station() == 1) && (id > 3));   //have this conditions here
-					bool setphi = 0;
-					//if(one || two)
-					//	setstation++;
+	  ////////////////////////////////////////////////////////////////////////////////////////////
+	  /////////////////// Setting the matched hits based on phi //////////////////////////////////
+	  ////////////////////////////////////////////////////////////////////////////////////////////
+	  int setstation = i->Station() - 1;
+	  //bool one = ((z == 3) && (i->Station() > 1));                //Zone 3 is handled differently so we
+	  //bool two = ((z == 3) && (i->Station() == 1) && (id > 3));   //have this conditions here
+	  bool setphi = 0;
+	  //if(one || two)
+	  //	setstation++;
 					
-					if(inzone)
-						std::cout<<"setstation = "<<setstation<<std::endl;
+	  //	  if(inzone) std::cout<<"setstation = "<<setstation<<std::endl;
 					
-					if((fabs((Winners[z][w].Strip()) - i->Zhit()) < 15) && inzone){//is close to winner keystrip and in same zone?
+	  if((fabs((Winners[z][w].Strip()) - i->Zhit()) < 15) && inzone){//is close to winner keystrip and in same zone?
 					
-						if(ph_output[z][w][setstation].Phi() == -999){//has this already been set? no
+	    if(ph_output[z][w][setstation].Phi() == -999){//has this already been set? no
 						
-							std::cout<<"hasn't been set"<<std::endl;
+	      //	      std::cout<<"hasn't been set"<<std::endl;
 							
-							ph_output[z][w][setstation] = (*i);
+	      ph_output[z][w][setstation] = (*i);
 							
-							std::cout<<"set with strip-"<<i->Strip()<<", and wire-"<<i->Wire()<<std::endl;
-							setphi = true;
-						}
-						else{//if yes, find absolute difference between zhit of each hit and keystrip
+	      //	      std::cout<<"set with strip-"<<i->Strip()<<", and wire-"<<i->Wire()<<std::endl;
+	      setphi = true;
+	    }
+	    else{//if yes, find absolute difference between zhit of each hit and keystrip
 						
-							std::cout<<"has already been set"<<std::endl;
+	      //	      std::cout<<"has already been set"<<std::endl;
 						
-							int d1 = fabs(ph_output[z][w][setstation].Zhit() - Winners[z][w].Strip());
-							int d2 = fabs(i->Zhit() - Winners[z][w].Strip());
+	      int d1 = fabs(ph_output[z][w][setstation].Zhit() - Winners[z][w].Strip());
+	      int d2 = fabs(i->Zhit() - Winners[z][w].Strip());
 							
-							if(d2 < d1){//if new hit is closer then replace phi
+	      if(d2 < d1){//if new hit is closer then replace phi
 							
-								std::cout<<"this is closer strip-"<<i->Strip()<<", and wire-"<<i->Wire()<<std::endl;
+		//		std::cout<<"this is closer strip-"<<i->Strip()<<", and wire-"<<i->Wire()<<std::endl;
 								
-								ph_output[z][w][setstation] = (*i);
+		ph_output[z][w][setstation] = (*i);
 								
-								setphi = true;
+		setphi = true;
 							
-							}
+	      }
 							
-						}
+	    }
 						
 						
-						/////////////////////////////////////////////////////////////////////////////////////
-						/////////////  Setting matched theta values; Take both of two from same chamber /////
-						/////////////////////////////////////////////////////////////////////////////////////
+	    /////////////////////////////////////////////////////////////////////////////////////
+	    /////////////  Setting matched theta values; Take both of two from same chamber /////
+	    /////////////////////////////////////////////////////////////////////////////////////
 					
-						if(setphi)//only set if phi was also set
-							th_output[z][w][setstation][0] = (*i);
+	    if(setphi)//only set if phi was also set
+	      th_output[z][w][setstation][0] = (*i);
 							
-						if((th_output[z][w][setstation][0].Theta() != -999) && (th_output[z][w][setstation][0].Id() == i->Id()))//if same chamber take as well
-							th_output[z][w][setstation][1] = (*i);
+	    if((th_output[z][w][setstation][0].Theta() != -999) && (th_output[z][w][setstation][0].Id() == i->Id()))//if same chamber take as well
+	      th_output[z][w][setstation][1] = (*i);
 						
 					
-					}
-				}
-				
-				
-			}
-
-		}
+	  }
 	}
+				
+				
+      }
 
-	MatchingOutput output;
-	output.SetValues(th_output,ph_output,Thits,Winners,segment);
+    }
+  }
+
+  MatchingOutput output;
+  output.SetValues(th_output,ph_output,Thits,Winners,segment);
 	
-	return output;
+  return output;
 }
 

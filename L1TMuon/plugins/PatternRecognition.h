@@ -36,8 +36,6 @@ PatternOutput DetectPatterns(ZonesOutput Eout){
 	
 	
   for(int zone=0;zone<4;zone++){
-	
-		
   
     for(int b=0;b<128;b++){//loop over stips of detector zones
   	
@@ -107,8 +105,7 @@ PatternOutput DetectPatterns(ZonesOutput Eout){
 	
       int qr = ranka_t[zone][k-1], ql = ranka_t[zone][k+1], qc = ranka_t[zone][k];
 			
-      if(qc)
-	std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
+      //      if(qc) std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
 		
       if(k==0){qr=0;}
       if(k==127){ql=0;}
