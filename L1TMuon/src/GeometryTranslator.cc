@@ -372,6 +372,11 @@ GeometryTranslator::calcHCALSpecificPhi(const TriggerPrimitive& tp) const {
   return getHCALSpecificPoint(tp).phi();
 }
 
+double 
+GeometryTranslator::calcHCALSpecificZ(const TriggerPrimitive& tp) const {
+  return getHCALSpecificPoint(tp).z();
+}
+
 // this function actually does nothing since HCAL
 // hits are point-like objects
 double 
@@ -399,6 +404,11 @@ GeometryTranslator::calcGEMSpecificEta(const TriggerPrimitive& tp) const {
 double 
 GeometryTranslator::calcGEMSpecificPhi(const TriggerPrimitive& tp) const {  
   return getGEMSpecificPoint(tp).phi();
+}
+
+double 
+GeometryTranslator::calcGEMSpecificZ(const TriggerPrimitive& tp) const {
+  return getGEMSpecificPoint(tp).z();
 }
 
 double 

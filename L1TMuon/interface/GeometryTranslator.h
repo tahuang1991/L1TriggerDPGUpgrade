@@ -79,11 +79,13 @@ namespace L1TMuon{
     GlobalPoint getGEMSpecificPoint(const TriggerPrimitive&) const;
     double calcGEMSpecificEta(const TriggerPrimitive&) const;
     double calcGEMSpecificPhi(const TriggerPrimitive&) const;
+    double calcGEMSpecificZ(const TriggerPrimitive&) const;
     double calcGEMSpecificBend(const TriggerPrimitive&) const;
 
     GlobalPoint getHCALSpecificPoint(const TriggerPrimitive&) const;
     double calcHCALSpecificEta(const TriggerPrimitive&) const;
     double calcHCALSpecificPhi(const TriggerPrimitive&) const;
+    double calcHCALSpecificZ(const TriggerPrimitive&) const;
     double calcHCALSpecificBend(const TriggerPrimitive&) const;
   };
 }
