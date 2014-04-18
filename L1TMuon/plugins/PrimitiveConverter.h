@@ -68,8 +68,9 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     }
     if(C3->subsystem() == TriggerPrimitive::kGEM){
       GEMDetId Det = C3->detId<GEMDetId>();
-      station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().keywire; //sector = Det.triggerSector(); 
-      strip = C3->getGEMData().strip; 
+      // need to fix how GEM primitive is converted
+      station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getGEMData().pad; //sector = Det.triggerSector(); 
+      strip = C3->getGEMData().pad; 
       pattern = C3->getPattern(); quality = C3->getGEMData().quality; 
       endcap = Det.region();
       if (Det.region() == -1) endcap = 2;

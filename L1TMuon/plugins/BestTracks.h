@@ -70,8 +70,8 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 	//phi[zone][winner][relst] = phi[zone][winner][station];
 	//id[zone][winner][relst] = id[zone][winner][station];
 				
-	//	if(phi[zone][winner][relst] != -999)
-	//std::cout<<"st:"<<relst<<"::real phi = "<<phi[zone][winner][relst]<<" and id = "<<id[zone][winner][relst]<<std::endl;
+	if(phi[zone][winner][relst] != -999)
+	  std::cout<<"st:"<<relst<<"::real phi = "<<phi[zone][winner][relst]<<" and id = "<<id[zone][winner][relst]<<std::endl;
 				
       }
     }

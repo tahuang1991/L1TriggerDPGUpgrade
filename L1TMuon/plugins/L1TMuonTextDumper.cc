@@ -890,7 +890,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 
 void L1TMuonTextDumper::beginJob()
 {
-  doDebug = false;
+  doDebug = true;
   //if (doDebug) cout<<"Begin TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
   ///////////////////////////
   ////// Histogram //////////
