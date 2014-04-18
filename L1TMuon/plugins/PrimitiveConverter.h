@@ -60,11 +60,11 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       station = Det.station(); chamber = Det.chamber(); ring = Det.ring(); wire = C3->getCSCData().keywire; sector = Det.triggerSector(); strip = C3->getCSCData().strip; 
       pattern = C3->getPattern(); Id = C3->Id(); quality = C3->getCSCData().quality; BX = C3->getCSCData().bx; endcap = Det.endcap();
 
-      if (station==1){
-	std::cout << "CSC-gemDPhi "<< C3->getCSCData().gemDPhi
-		  << ", quality "<< quality
-		  << std::endl;
-      }
+      /* if (station==1){ */
+      /* 	std::cout << "CSC-gemDPhi "<< C3->getCSCData().gemDPhi */
+      /* 		  << ", quality "<< quality */
+      /* 		  << std::endl; */
+      /* } */
     }
     if(C3->subsystem() == TriggerPrimitive::kGEM){
       GEMDetId Det = C3->detId<GEMDetId>();
@@ -103,8 +103,8 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
     if(ring == 4){Id += 9;}
     //if(endcap == 1 && sector == 1)//
     if(SectIndex ==  (endcap - 1)*6 + sector - 1){
-      std::cout<<"SECTOR "<<SectIndex<<std::endl;
-      std::cout<<"RING = "<<ring<<std::endl;
+      /* std::cout<<"SECTOR "<<SectIndex<<std::endl; */
+      /* std::cout<<"RING = "<<ring<<std::endl; */
 	
       /////////////////////////////////////
       //////// define/set variables////////
@@ -164,8 +164,8 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	  sub = 2;
 		
       }
-      if(sub)
-	std::cout<<"sub = "<<sub<<std::endl;
+      /* if(sub) */
+      /* 	std::cout<<"sub = "<<sub<<std::endl; */
 
       ////////////////////////////
       /// Define look-up index ///
@@ -265,16 +265,16 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 	  idl += 9;
 		
 	th_tmp = St1ThLUT[sub-1][SectIndex][idl -1][wire];
-	std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
+	//std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
       }
       else{
 	th_tmp = ThLUT[station-2][SectIndex][Id-1][wire];
-	std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
+	//std::cout<<"th_tmpr = "<<th_tmp<<std::endl;
       }
 	
       //th = th_tmp + Thinit[LUTi];
       th = th_tmp + ThInit[SectIndex][LUTi];
-      std::cout<<"ThInit = "<<ThInit[SectIndex][LUTi]<<std::endl;
+      //std::cout<<"ThInit = "<<ThInit[SectIndex][LUTi]<<std::endl;
 	
       if(station == 1 && (ring == 1 || ring == 4) /*&& endcap == 1*/){
 	
@@ -282,11 +282,11 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 		
 	if(Id > 3){
 	  th_corr = THCORR[sub-1][SectIndex][Id-10][index];
-	  std::cout<<"th_corr = "<<th_corr<<std::endl;
+	  //std::cout<<"th_corr = "<<th_corr<<std::endl;
 	}
 	else{
 	  th_corr = THCORR[sub-1][SectIndex][Id-1][index];
-	  std::cout<<"th_corr = "<<th_corr<<std::endl;
+	  //std::cout<<"th_corr = "<<th_corr<<std::endl;
 	}
 		
 		
@@ -368,7 +368,7 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
       /////////   Converted TP's around code   //////////////
       ///////////////////////////////////////////////////////
 	
-      std::cout<<"Phi = "<<fph<<" and Theta = "<<th<<std::endl;
+      //std::cout<<"Phi = "<<fph<<" and Theta = "<<th<<std::endl;
 	
       ConvertedHit Hit;
 
@@ -379,18 +379,18 @@ std::vector<ConvertedHit> PrimConv(std::vector<TriggerPrimitiveRef> TriggPrim, i
 
       if(Hit.Theta() != -999){//if theta is valid
 	ConvHits.push_back(Hit);
-	std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
-	std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
-	std::cout<<"In Zones: ";
-	for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){
-	  std::cout<<" "<<*in<<" ";
-	}
+	//std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
+	//std::cout<<"strip = "<<strip<<", wire = "<<wire<<" and zhit = "<<zhit<<std::endl;
+	//std::cout<<"In Zones: ";
+	/* for(std::vector<int>::iterator in = zonecontribution.begin();in!=zonecontribution.end();in++){ */
+	/*   std::cout<<" "<<*in<<" "; */
+	/* } */
       }
       
     }//if sector 1 && endcap 1
   }
   
-  std::cout<<"PrimitiveConverter::return ConvHits"<<std::endl;
+  //std::cout<<"PrimitiveConverter::return ConvHits"<<std::endl;
   return ConvHits;
 }
 
