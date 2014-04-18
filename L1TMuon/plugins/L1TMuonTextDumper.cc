@@ -464,7 +464,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   if (doDebug) cout<<"Make Internal track" << endl;
 
   //  bool epir = false;
-  
+  doDebug = true;
   for(int fbest=0;fbest<4;fbest++){
   
     if(FourBest[fbest].phi){
@@ -482,7 +482,8 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       if (doDebug) cout<<"Make Internal track: no. " << fbest << endl;
       for(vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
 	if(A->Phi() != -999){
-	  if (doDebug) cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
+	  if (doDebug){
+	    cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
 			   << ", Station " << A->Station()
 			   << ", Id " << A->Id()
 			 //	  << ", chamber " << A->TP()->chamber()
@@ -495,7 +496,10 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 			   << ", Phi " << A->Phi()
 			   << ", Theta " << A->Theta()
 			   << endl;
-	  
+	    if (A->TP()->subsystem() == 1)
+	      cout << " GEMdPhi " << A->TP()->getCSCData().gemDPhi << endl;
+	  }
+
 	  tempTrack.addStub(A->TP());
 	  if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
 	}			
@@ -503,7 +507,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       FoundTracks->push_back(tempTrack);
     }
   }
-  
+  doDebug = false;
   ///////////////////////////////////////////////
   //// Pt assignment //
   ///////////////////////////////////////////////
@@ -890,7 +894,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 
 void L1TMuonTextDumper::beginJob()
 {
-  doDebug = true;
+  doDebug = false;
   //if (doDebug) cout<<"Begin TextDump Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
   ///////////////////////////
   ////// Histogram //////////
