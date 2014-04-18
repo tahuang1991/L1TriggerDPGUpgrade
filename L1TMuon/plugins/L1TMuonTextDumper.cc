@@ -501,7 +501,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
 	  }
 
 	  tempTrack.addStub(A->TP());
-	  if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
+	  // if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
 	}			
       }
       FoundTracks->push_back(tempTrack);
