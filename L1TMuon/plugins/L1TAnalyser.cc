@@ -174,18 +174,18 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // 	 << ", ptLUTAddress " << l1track.ptLUTAddress()
     // 	 << endl;
     // //      l1track.Print();
-
+    
     unsigned int quality_packed;
     unsigned int rank=l1track.rank();
     unsigned int pt_packed;
     unsigned m_ptAddress = l1track.ptLUTAddress();
 
     l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
-    cout << "l1track.decodeRank = "
-     	 << ", rank " << rank
-     	 << ", pt_packed " << pt_packed
-     	 << ", quality_packed " << quality_packed
-     	 << endl;
+    // cout << "l1track.decodeRank = "
+    //  	 << ", rank " << rank
+    //  	 << ", pt_packed " << pt_packed
+    //  	 << ", quality_packed " << quality_packed
+    //  	 << endl;
 
     int nstubs=0;
     bool hasGEM = false;
@@ -232,20 +232,20 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_TFStubQuality->Fill(lctdigi->getQuality());
     }
 
-    cout << "m_ptAddress = " << m_ptAddress
-	 << ", deltaPhi12 " << l1track.deltaPhi12()
-	 << ", deltaPhi23 " << l1track.deltaPhi23()
-	 << ", addressEta " << l1track.addressEta()
-	 << ", mode " << l1track.mode()
-	 << ", sign " << l1track.sign()
-	 << endl;
-    cout << "nstubs = " << nstubs
-	 << ", me1Tbin = " << l1track.me1Tbin()
-	 << ", me2Tbin = " << l1track.me2Tbin()
-	 << ", me3Tbin = " << l1track.me3Tbin()
-	 << ", me4Tbin = " << l1track.me4Tbin()
-	 << ", mb1Tbin = " << l1track.mb1Tbin()
-	 << endl;
+    // cout << "m_ptAddress = " << m_ptAddress
+    // 	 << ", deltaPhi12 " << l1track.deltaPhi12()
+    // 	 << ", deltaPhi23 " << l1track.deltaPhi23()
+    // 	 << ", addressEta " << l1track.addressEta()
+    // 	 << ", mode " << l1track.mode()
+    // 	 << ", sign " << l1track.sign()
+    // 	 << endl;
+    // cout << "nstubs = " << nstubs
+    // 	 << ", me1Tbin = " << l1track.me1Tbin()
+    // 	 << ", me2Tbin = " << l1track.me2Tbin()
+    // 	 << ", me3Tbin = " << l1track.me3Tbin()
+    // 	 << ", me4Tbin = " << l1track.me4Tbin()
+    // 	 << ", mb1Tbin = " << l1track.mb1Tbin()
+    // 	 << endl;
 
     h_TFnStubinTrack->Fill(nstubs);
     h_TFnStubvsPTAdd->Fill(nstubs,m_ptAddress);
