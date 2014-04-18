@@ -91,6 +91,9 @@ private:
   TH2F* h_TFPTpackedvsdPhi12;
   TH2F* h_TFPTpackedvsdPhi23;
 
+  TH2F* h_TFPTAddvsdPhi12;
+  TH2F* h_TFPTAddvsdPhi23;
+
   TH2F* h_TFPTpackedvsdPhi12GEM;
   TH2F* h_TFPTpackedvsdPhi23GEM;
   TH2F* h_TFPTpackedvsGEMdPhi;
@@ -253,6 +256,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_TFPTpackedvsPTAdd->Fill(pt_packed,m_ptAddress);
     h_TFPTpackedvsdPhi12->Fill(pt_packed,l1track.deltaPhi12());
     h_TFPTpackedvsdPhi23->Fill(pt_packed,l1track.deltaPhi23());
+    h_TFPTAddvsdPhi12->Fill(m_ptAddress,l1track.deltaPhi12());
+    h_TFPTAddvsdPhi23->Fill(m_ptAddress,l1track.deltaPhi23());
 
     if (hasGEM){
       h_TFnStubinTrackGEM->Fill(nstubs);
@@ -373,6 +378,14 @@ L1TAnalyser::beginJob()
   h_TFPTpackedvsdPhi23->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi23->GetYaxis()->SetTitle("dPhi23");
 
+  h_TFPTAddvsdPhi12=fs->make<TH2F>("TFPTAddvsdPhi12","Pt Add Vs dPhi12",500,0,4500000,200,0,300);
+  h_TFPTAddvsdPhi12->GetXaxis()->SetTitle("Pt Add");
+  h_TFPTAddvsdPhi12->GetYaxis()->SetTitle("dPhi12");
+
+  h_TFPTAddvsdPhi23=fs->make<TH2F>("TFPTAddvsdPhi23","Pt Add Vs dPhi23",500,0,4500000,200,0,20);
+  h_TFPTAddvsdPhi23->GetXaxis()->SetTitle("Pt Add");
+  h_TFPTAddvsdPhi23->GetYaxis()->SetTitle("dPhi23");
+
   h_TFPTpackedvsdPhi12GEM=fs->make<TH2F>("TFPTpackedvsdPhi12GEM","Pt packed Vs dPhi12",40,0,40,200,0,300);
   h_TFPTpackedvsdPhi12GEM->GetXaxis()->SetTitle("Pt packed");
   h_TFPTpackedvsdPhi12GEM->GetYaxis()->SetTitle("dPhi12");
@@ -405,8 +418,8 @@ L1TAnalyser::beginJob()
   h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
   h_GEMDPhi->GetYaxis()->SetTitle("Counts");
 
-  h_nStation=fs->make<TH1F>("nStation","Number of station",11,-5,6);
-  h_nStation->GetXaxis()->SetTitle("Station mumber");
+  h_nStation=fs->make<TH1F>("nStation","stations in track",11,-5,6);
+  h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
 }
 
