@@ -218,6 +218,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
   }
+  if (ptFwd == 0) 
+    return;
   h_truth_pt->Fill(ptFwd);
   h_truth_pt->Fill(ptBwd);
   h_truth_eta->Fill(etaFwd);
