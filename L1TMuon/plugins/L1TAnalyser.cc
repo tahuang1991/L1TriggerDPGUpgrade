@@ -120,6 +120,14 @@ private:
   TH1F* h_L1CSCTrack_Q3_eta;
   TH1F* h_L1CSCTrack_Q3_phi;
 
+  TH1F* h_L1CSCTrack_20_pt;
+  TH1F* h_L1CSCTrack_20_eta;
+  TH1F* h_L1CSCTrack_20_phi;
+
+  TH1F* h_L1CSCTrack_20Q3_pt;
+  TH1F* h_L1CSCTrack_20Q3_eta;
+  TH1F* h_L1CSCTrack_20Q3_phi;
+
   TH1F* h_truth_phi_fwd;
   TH1F* h_truth_phi_bwd;
   TH1F* h_L1CSCTrack_Q3_phi_fwd;
@@ -191,6 +199,12 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //Setup Stuff//////
   ///////////////////
   //  edm::RefProd<CSCTrackCollection> csctfProd = ev.getRefBeforePut<CSCTrackCollection>("input");  
+  const float ptscale[33] = { 
+  	-1.,   0.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,
+    4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
+    16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
+    50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
+
   edm::Handle<L1CSCTrackCollection> l1csctracks;
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
@@ -253,6 +267,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   bool hasTrkFwd = false;
   bool hasTrkBwd = false;
+  bool hasTrkFwd20 = false;
+  bool hasTrkBwd20 = false;
   bool hasQ3TrkFwd = false;
   bool hasQ3TrkBwd = false;
   bool hasTrkFwdME1 = false;
@@ -285,19 +301,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	h_nStation->Fill((*csc).first.station());
 	hasTrkFwd = true;
 	nTrkStubsFwd++;
-	if (quality_packed >= 3)
-	  hasQ3TrkFwd = true;
-	if ((*csc).first.station() == 1)
-	  hasTrkFwdME1 = true;
+	if (quality_packed >= 3) hasQ3TrkFwd = true;
+	if ((*csc).first.station() == 1) hasTrkFwdME1 = true;
+	if (ptscale[pt_packed] >= 20) hasTrkFwd20 = true;
       }
       if ((*csc).first.endcap() == 2){
 	h_nStation->Fill(-((*csc).first.station()));
 	hasTrkBwd = true;
 	nTrkStubsBwd++;
-	if (quality_packed >= 3)
-	  hasQ3TrkBwd = true;
-	if ((*csc).first.station() == 1)
-	  hasTrkBwdME1 = true;
+	if (quality_packed >= 3) hasQ3TrkBwd = true;
+	if ((*csc).first.station() == 1) hasTrkBwdME1 = true;
+	if (ptscale[pt_packed] >= 20) hasTrkBwd20 = true;
       }
 
       // if ((*csc).first.station() == 1){
@@ -454,7 +468,27 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_L1CSCTrack_Q3_phi->Fill(phiBwd);
     h_L1CSCTrack_Q3_phi_bwd->Fill(phiBwd);
   }
-
+  if (hasTrkFwd20){
+    h_L1CSCTrack_20_pt->Fill(ptFwd);
+    h_L1CSCTrack_20_eta->Fill(etaFwd);
+    h_L1CSCTrack_20_phi->Fill(phiFwd);
+    if (hasQ3TrkFwd){
+      h_L1CSCTrack_20Q3_pt->Fill(ptFwd);
+      h_L1CSCTrack_20Q3_eta->Fill(etaFwd);
+      h_L1CSCTrack_20Q3_phi->Fill(phiFwd);
+    }
+  }
+  if (hasTrkBwd20){
+    h_L1CSCTrack_20_pt->Fill(ptBwd);
+    h_L1CSCTrack_20_eta->Fill(etaBwd);
+    h_L1CSCTrack_20_phi->Fill(phiBwd);
+    if (hasQ3TrkBwd){
+      h_L1CSCTrack_20Q3_pt->Fill(ptBwd);
+      h_L1CSCTrack_20Q3_eta->Fill(etaBwd);
+      h_L1CSCTrack_20Q3_phi->Fill(phiBwd);
+    }
+  }
+  
 
   bool hasL1TrkFwd = false;
   bool hasL1TrkBwd = false;
@@ -680,6 +714,26 @@ L1TAnalyser::beginJob()
   h_L1CSCTrack_Q3_phi->GetXaxis()->SetTitle("phi");
   h_L1CSCTrack_Q3_phi->GetYaxis()->SetTitle("Counts");
 
+  h_L1CSCTrack_20_pt=fs->make<TH1F>("L1CSCTrack_20_pt","pt",20,0,50);
+  h_L1CSCTrack_20_pt->GetXaxis()->SetTitle("pt [GeV]");
+  h_L1CSCTrack_20_pt->GetYaxis()->SetTitle("Counts");
+  h_L1CSCTrack_20_eta=fs->make<TH1F>("L1CSCTrack_20_eta","eta",200,-3,3);
+  h_L1CSCTrack_20_eta->GetXaxis()->SetTitle("eta");
+  h_L1CSCTrack_20_eta->GetYaxis()->SetTitle("Counts");
+  h_L1CSCTrack_20_phi=fs->make<TH1F>("L1CSCTrack_20_phi","phi",100,-3.5,3.5);
+  h_L1CSCTrack_20_phi->GetXaxis()->SetTitle("phi");
+  h_L1CSCTrack_20_phi->GetYaxis()->SetTitle("Counts");
+
+  h_L1CSCTrack_20Q3_pt=fs->make<TH1F>("L1CSCTrack_20Q3_pt","pt",20,0,50);
+  h_L1CSCTrack_20Q3_pt->GetXaxis()->SetTitle("pt [GeV]");
+  h_L1CSCTrack_20Q3_pt->GetYaxis()->SetTitle("Counts");
+  h_L1CSCTrack_20Q3_eta=fs->make<TH1F>("L1CSCTrack_20Q3_eta","eta",200,-3,3);
+  h_L1CSCTrack_20Q3_eta->GetXaxis()->SetTitle("eta");
+  h_L1CSCTrack_20Q3_eta->GetYaxis()->SetTitle("Counts");
+  h_L1CSCTrack_20Q3_phi=fs->make<TH1F>("L1CSCTrack_20Q3_phi","phi",100,-3.5,3.5);
+  h_L1CSCTrack_20Q3_phi->GetXaxis()->SetTitle("phi");
+  h_L1CSCTrack_20Q3_phi->GetYaxis()->SetTitle("Counts");
+
   h_truth_phi_fwd=fs->make<TH1F>("truth_phi_fwd","phi",100,-3.5,3.5);
   h_truth_phi_fwd->GetXaxis()->SetTitle("phi");
   h_truth_phi_fwd->GetYaxis()->SetTitle("Counts");
@@ -784,6 +838,20 @@ void L1TAnalyser::endJob()
   h_L1CSCTrack_Q3_pt->Divide(h_truth_pt);
   h_L1CSCTrack_Q3_eta->Divide(h_truth_eta);
   h_L1CSCTrack_Q3_phi->Divide(h_truth_phi);
+
+  h_L1CSCTrack_20_pt->Sumw2();
+  h_L1CSCTrack_20_eta->Sumw2();
+  h_L1CSCTrack_20_phi->Sumw2();
+  h_L1CSCTrack_20_pt->Divide(h_truth_pt);
+  h_L1CSCTrack_20_eta->Divide(h_truth_eta);
+  h_L1CSCTrack_20_phi->Divide(h_truth_phi);
+
+  h_L1CSCTrack_20Q3_pt->Sumw2();
+  h_L1CSCTrack_20Q3_eta->Sumw2();
+  h_L1CSCTrack_20Q3_phi->Sumw2();
+  h_L1CSCTrack_20Q3_pt->Divide(h_truth_pt);
+  h_L1CSCTrack_20Q3_eta->Divide(h_truth_eta);
+  h_L1CSCTrack_20Q3_phi->Divide(h_truth_phi);
 
   h_truth_phi_fwd->Sumw2();
   h_truth_phi_bwd->Sumw2();
