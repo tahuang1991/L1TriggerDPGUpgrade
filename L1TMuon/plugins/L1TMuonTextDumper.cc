@@ -464,7 +464,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   if (doDebug) cout<<"Make Internal track" << endl;
 
   //  bool epir = false;
-  doDebug = true;
+  //  doDebug = true;
   for(int fbest=0;fbest<4;fbest++){
   
     if(FourBest[fbest].phi){
@@ -507,7 +507,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       FoundTracks->push_back(tempTrack);
     }
   }
-  doDebug = false;
+  //  doDebug = false;
   ///////////////////////////////////////////////
   //// Pt assignment //
   ///////////////////////////////////////////////
