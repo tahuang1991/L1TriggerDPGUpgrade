@@ -297,7 +297,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
  
     if (doDebug) cout << "test PatternOutput " << endl;
-    PrintQuality(Test.detected);
+    if (doDebug) PrintQuality(Test.detected);
  
     vector<ConvertedHit> PatHits = Test.hits;
     for(vector<ConvertedHit>::iterator i=PatHits.begin();i!=PatHits.end();i++){
