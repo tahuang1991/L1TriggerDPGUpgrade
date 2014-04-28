@@ -48,7 +48,7 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  void intializeTree(TriggerTrack trk);
+  void intializeTree();
 
   // ----------member data ---------------------------
 
@@ -57,10 +57,23 @@ private:
   edm::InputTag vertexColTag;	
   edm::Service<TFileService> fs;
   
-  TTree* l1tmuon;
+  TTree* l1muon;
 
+  unsigned int event;
   int mc_n;
   vector<float> mc_pt, mc_eta, mc_phi, mc_type;
 
+  int l1csctrk_n;
+  vector<float> l1csctrk_pt, l1csctrk_eta, l1csctrk_phi, l1csctrk_GEMdPhi;
+  vector<unsigned int> l1csctrk_quality_packed, l1csctrk_rank, l1csctrk_ptLUTAddress;
+  vector<unsigned int> l1csctrk_pt_packed, l1csctrk_eta_packed, l1csctrk_phi_packed;
+  vector<int> l1csctrk_nstubs;
+  vector<bool> l1csctrk_hasGEM, l1csctrk_hasME1, l1csctrk_hasME2, l1csctrk_hasME3, l1csctrk_hasME4;
+
+  int l1tm_n;
+  vector<float> l1tm_pt, l1tm_eta, l1tm_phi, l1tm_GEMdPhi;
+  vector<int> l1tm_nstubs, l1tm_rank;
+  vector<bool> l1tm_hasGEM, l1tm_hasME1, l1tm_hasME2, l1tm_hasME3, l1tm_hasME4;
+  
 };
 
