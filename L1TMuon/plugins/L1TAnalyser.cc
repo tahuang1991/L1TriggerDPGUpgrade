@@ -1061,9 +1061,9 @@ void L1TAnalyser::endJob()
   h_truth_eta->Sumw2();
   h_truth_phi->Sumw2();
 
-  h_truth_pt->SetBit(TH1::kIsAverage)
-  h_truth_eta->SetBit(TH1::kIsAverage)
-  h_truth_phi->SetBit(TH1::kIsAverage)
+  h_truth_pt->SetBit(TH1::kIsAverage);
+  h_truth_eta->SetBit(TH1::kIsAverage);
+  h_truth_phi->SetBit(TH1::kIsAverage);
 
   h_L1CSCTrack__pt->Sumw2();
   h_L1CSCTrack__eta->Sumw2();
@@ -1071,7 +1071,7 @@ void L1TAnalyser::endJob()
   h_L1CSCTrack__pt->Divide(h_truth_pt);
   h_L1CSCTrack__eta->Divide(h_truth_eta);
   h_L1CSCTrack__phi->Divide(h_truth_phi);
-
+  
   h_L1TMtracks__pt->Sumw2();
   h_L1TMtracks__eta->Sumw2();
   h_L1TMtracks__phi->Sumw2();
