@@ -530,12 +530,12 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_L1CSCTrack_3StubsME1_eta->Fill(etaBwd);
     h_L1CSCTrack_3StubsME1_phi->Fill(phiBwd);
   }
-  if (nTrkStubsFwd>2){
+  if (nTrkStubsFwd>1){
     h_L1CSCTrack_2Stubs_pt->Fill(ptFwd);
     h_L1CSCTrack_2Stubs_eta->Fill(etaFwd);
     h_L1CSCTrack_2Stubs_phi->Fill(phiFwd);
   }
-  if (nTrkStubsBwd>2){
+  if (nTrkStubsBwd>1){
     h_L1CSCTrack_2Stubs_pt->Fill(ptBwd);
     h_L1CSCTrack_2Stubs_eta->Fill(etaBwd);
     h_L1CSCTrack_2Stubs_phi->Fill(phiBwd);
@@ -702,22 +702,22 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_L1TMtracks_3StubsME1_phi->Fill(phiBwd);
   }
 
-  if (nL1TrkStubsFwd>2){
+  if (nL1TrkStubsFwd>1){
     h_L1TMtracks_2Stubs_pt->Fill(ptFwd);
     h_L1TMtracks_2Stubs_eta->Fill(etaFwd);
     h_L1TMtracks_2Stubs_phi->Fill(phiFwd);
   }
-  if (nL1TrkStubsBwd>2){
+  if (nL1TrkStubsBwd>1){
     h_L1TMtracks_2Stubs_pt->Fill(ptBwd);
     h_L1TMtracks_2Stubs_eta->Fill(etaBwd);
     h_L1TMtracks_2Stubs_phi->Fill(phiBwd);
   }
-  if (hasL1TrkFwdME1 && nL1TrkStubsFwd>2){
+  if (hasL1TrkFwdME1 && nL1TrkStubsFwd>1){
     h_L1TMtracks_2StubsME1_pt->Fill(ptFwd);
     h_L1TMtracks_2StubsME1_eta->Fill(etaFwd);
     h_L1TMtracks_2StubsME1_phi->Fill(phiFwd);
   }
-  if (hasL1TrkBwdME1 && nL1TrkStubsBwd>2){
+  if (hasL1TrkBwdME1 && nL1TrkStubsBwd>1){
     h_L1TMtracks_2StubsME1_pt->Fill(ptBwd);
     h_L1TMtracks_2StubsME1_eta->Fill(etaBwd);
     h_L1TMtracks_2StubsME1_phi->Fill(phiBwd);
@@ -1060,6 +1060,10 @@ void L1TAnalyser::endJob()
   h_truth_pt->Sumw2();
   h_truth_eta->Sumw2();
   h_truth_phi->Sumw2();
+
+  h_truth_pt->SetBit(TH1::kIsAverage)
+  h_truth_eta->SetBit(TH1::kIsAverage)
+  h_truth_phi->SetBit(TH1::kIsAverage)
 
   h_L1CSCTrack__pt->Sumw2();
   h_L1CSCTrack__eta->Sumw2();
