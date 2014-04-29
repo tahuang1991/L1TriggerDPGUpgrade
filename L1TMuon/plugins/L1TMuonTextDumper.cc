@@ -60,7 +60,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   
   if (doDebug) cout<<"Start TextDumper Producer::::: event = "<<ev.id().event()<<"\n\n";
   
-  fprintf (write,"12345\n"); //<-- part of printing text file to send verilog code, not needed if George's package is included
+  //  fprintf (write,"12345\n"); //<-- part of printing text file to send verilog code, not needed if George's package is included
   
   
   auto_ptr<L1TMuon::InternalTrackCollection> FoundTracks (new L1TMuon::InternalTrackCollection);
@@ -90,30 +90,30 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     if (doDebug) cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
   	
     if((fabs(eta) > 1.2) && (fabs(eta) <= 2.4) && (pt >= 5))
-    //      gpir = true;
-    // if(eta > 0)
-    //   endcap1 = true;
+      //      gpir = true;
+      // if(eta > 0)
+      //   endcap1 = true;
 	
-    // if(eta < 0)
-    //   endcap2 = true;
+      // if(eta < 0)
+      //   endcap2 = true;
 	
-    for(int y=0;y<24;y++){
+      for(int y=0;y<24;y++){
 	
-      double low = -2.4;
-      int mult = y;
-      if(y > 11){
-	low = 1.2;
-	mult = y - 12;
-      }
+	double low = -2.4;
+	int mult = y;
+	if(y > 11){
+	  low = 1.2;
+	  mult = y - 12;
+	}
 			
 	
-      double el = low + 0.1*mult;
-      double eh = low + 0.1*(mult + 1);
+	double el = low + 0.1*mult;
+	double eh = low + 0.1*(mult + 1);
 		
-      if(eta >= el && eta < eh)
-	etaindex = y;
+	if(eta >= el && eta < eh)
+	  etaindex = y;
 	
-    }
+      }
 		
   }
   
@@ -192,18 +192,18 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     if (doDebug) cout << "SectIndex " << SectIndex  << endl;
     for(vector<ConvertedHit>::iterator i=ConvHits.begin();i!=ConvHits.end();i++){
       if (doDebug) cout<<"TP ConvertedHit: subsystem " << i->TP()->subsystem()
-	  << ", Station " << i->Station()
-	  << ", Id " << i->Id()
-	//	  << ", chamber " << i->TP()->chamber()
-	//	  << ", ring " << i->TP()->ring()
-	  << ", strip " << i->Strip()
-	  << ", BX " << i->BX()
-	  << ", wire " << i->Wire()
-	  << ", pattern " << i->Pattern()
-	  << ", quality " << i->Quality()
-	  << ", Phi " << i->Phi()
-	  << ", Theta " << i->Theta()
-	  << endl;
+		       << ", Station " << i->Station()
+		       << ", Id " << i->Id()
+		     //	  << ", chamber " << i->TP()->chamber()
+		     //	  << ", ring " << i->TP()->ring()
+		       << ", strip " << i->Strip()
+		       << ", BX " << i->BX()
+		       << ", wire " << i->Wire()
+		       << ", pattern " << i->Pattern()
+		       << ", quality " << i->Quality()
+		       << ", Phi " << i->Phi()
+		       << ", Theta " << i->Theta()
+		       << endl;
       if(i->TP()->subsystem() == TriggerPrimitive::kCSC){	
 	if(i->TP()->detId<CSCDetId>().ring() == 4)
 	  ME1gangnedtest->Fill(i->Phi());
@@ -217,10 +217,10 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     //   for(vector<ConvertedHit>::iterator h = ConvHits.begin();h != ConvHits.end();h++){
       
 
-      // if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
-      // fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
-      // fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
-      // fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
+    // if((h->Id()) > 9){h->SetId(h->Id() - 9);h->SetStrip(h->Strip() + 128);}	
+    // fprintf (write,"0	1	1 	%d	%d\n",h->Sub(),h->Station());
+    // fprintf (write,"1	%d	%d 	%d\n",h->Quality(),h->Pattern(),h->Wire());
+    // fprintf (write,"%d	0	%d\n",h->Id(),h->Strip());	
     //  }
     ////////////////////////////////print values for input into Alex's emulator code/////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,18 +241,18 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       if (doDebug) cout<<"\nBX Grouper nBX = " << nBX++ << endl;
       for(vector<ConvertedHit>::iterator i=j->begin();i!=j->end();i++){
 	if (doDebug) cout<<"BX GroupedHits: subsystem " << i->TP()->subsystem()
-	    << ", Station " << i->Station()
-	    << ", Id " << i->Id()
-	  //	  << ", chamber " << i->TP()->chamber()
-	  //	  << ", ring " << i->TP()->ring()
-	    << ", strip " << i->Strip()
-	    << ", BX " << i->BX()
-	    << ", wire " << i->Wire()
-	    << ", pattern " << i->Pattern()
-	    << ", quality " << i->Quality()
-	    << ", Phi " << i->Phi()
-	    << ", Theta " << i->Theta()
-	    << endl;
+			 << ", Station " << i->Station()
+			 << ", Id " << i->Id()
+		       //	  << ", chamber " << i->TP()->chamber()
+		       //	  << ", ring " << i->TP()->ring()
+			 << ", strip " << i->Strip()
+			 << ", BX " << i->BX()
+			 << ", wire " << i->Wire()
+			 << ", pattern " << i->Pattern()
+			 << ", quality " << i->Quality()
+			 << ", Phi " << i->Phi()
+			 << ", Theta " << i->Theta()
+			 << endl;
       }
     }
  
@@ -269,18 +269,18 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       if (doDebug) cout<<"\nnZones = " << nZones++ << endl;
       for(vector<ConvertedHit>::iterator i=k.begin();i!=k.end();i++){
 	if (doDebug) cout<<"ZonesOutput: subsystem " << i->TP()->subsystem()
-	    << ", Station " << i->Station()
-	    << ", Id " << i->Id()
-	  //	  << ", chamber " << i->TP()->chamber()
-	  //	  << ", ring " << i->TP()->ring()
-	    << ", strip " << i->Strip()
-	    << ", BX " << i->BX()
-	    << ", wire " << i->Wire()
-	    << ", pattern " << i->Pattern()
-	    << ", quality " << i->Quality()
-	    << ", Phi " << i->Phi()
-	    << ", Theta " << i->Theta()
-	    << endl;
+			 << ", Station " << i->Station()
+			 << ", Id " << i->Id()
+		       //	  << ", chamber " << i->TP()->chamber()
+		       //	  << ", ring " << i->TP()->ring()
+			 << ", strip " << i->Strip()
+			 << ", BX " << i->BX()
+			 << ", wire " << i->Wire()
+			 << ", pattern " << i->Pattern()
+			 << ", quality " << i->Quality()
+			 << ", Phi " << i->Phi()
+			 << ", Theta " << i->Theta()
+			 << endl;
       }
     }
 
@@ -297,23 +297,23 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     PatternOutput Test = DeleteDuplicatePatterns(Pout);
  
     if (doDebug) cout << "test PatternOutput " << endl;
-    PrintQuality(Test.detected);
+    if (doDebug) PrintQuality(Test.detected);
  
     vector<ConvertedHit> PatHits = Test.hits;
     for(vector<ConvertedHit>::iterator i=PatHits.begin();i!=PatHits.end();i++){
       if (doDebug) cout<<"Pattern Recognition: subsystem " << i->TP()->subsystem()
-	  << ", Station " << i->Station()
-	  << ", Id " << i->Id()
-	//	  << ", chamber " << i->TP()->chamber()
-	//	  << ", ring " << i->TP()->ring()
-	  << ", strip " << i->Strip()
-	  << ", BX " << i->BX()
-	  << ", wire " << i->Wire()
-	  << ", pattern " << i->Pattern()
-	  << ", quality " << i->Quality()
-	  << ", Phi " << i->Phi()
-	  << ", Theta " << i->Theta()
-	  << endl;
+		       << ", Station " << i->Station()
+		       << ", Id " << i->Id()
+		     //	  << ", chamber " << i->TP()->chamber()
+		     //	  << ", ring " << i->TP()->ring()
+		       << ", strip " << i->Strip()
+		       << ", BX " << i->BX()
+		       << ", wire " << i->Wire()
+		       << ", pattern " << i->Pattern()
+		       << ", quality " << i->Quality()
+		       << ", Phi " << i->Phi()
+		       << ", Theta " << i->Theta()
+		       << endl;
     }
       
 
@@ -327,18 +327,18 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
     vector<ConvertedHit> SoutHits = Sout.Hits();
     for(vector<ConvertedHit>::iterator i=SoutHits.begin();i!=SoutHits.end();i++){
       if (doDebug) cout<<"SortingOutput: subsystem " << i->TP()->subsystem()
-	  << ", Station " << i->Station()
-	  << ", Id " << i->Id()
-	//	  << ", chamber " << i->TP()->chamber()
-	//	  << ", ring " << i->TP()->ring()
-	  << ", strip " << i->Strip()
-	  << ", BX " << i->BX()
-	  << ", wire " << i->Wire()
-	  << ", pattern " << i->Pattern()
-	  << ", quality " << i->Quality()
-	  << ", Phi " << i->Phi()
-	  << ", Theta " << i->Theta()
-	  << endl;
+		       << ", Station " << i->Station()
+		       << ", Id " << i->Id()
+		     //	  << ", chamber " << i->TP()->chamber()
+		     //	  << ", ring " << i->TP()->ring()
+		       << ", strip " << i->Strip()
+		       << ", BX " << i->BX()
+		       << ", wire " << i->Wire()
+		       << ", pattern " << i->Pattern()
+		       << ", quality " << i->Quality()
+		       << ", Phi " << i->Phi()
+		       << ", Theta " << i->Theta()
+		       << endl;
     }
 
  
@@ -464,7 +464,7 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
   if (doDebug) cout<<"Make Internal track" << endl;
 
   //  bool epir = false;
-  
+  //  doDebug = true;
   for(int fbest=0;fbest<4;fbest++){
   
     if(FourBest[fbest].phi){
@@ -482,30 +482,32 @@ void L1TMuonTextDumper::produce(edm::Event& ev,
       if (doDebug) cout<<"Make Internal track: no. " << fbest << endl;
       for(vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
 	if(A->Phi() != -999){
-	  if (doDebug) cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
-	      << ", Station " << A->Station()
-	      << ", Id " << A->Id()
-	    //	  << ", chamber " << A->TP()->chamber()
-	    //	  << ", ring " << A->TP()->ring()
-	      << ", strip " << A->Strip()
-	      << ", BX " << A->BX()
-	      << ", wire " << A->Wire()
-	      << ", pattern " << A->Pattern()
-	      << ", quality " << A->Quality()
-	      << ", Phi " << A->Phi()
-	      << ", Theta " << A->Theta()
-	      << endl;
-	  
+	  if (doDebug){
+	    cout<<"Make Internal track: subsystem " << A->TP()->subsystem()
+			   << ", Station " << A->Station()
+			   << ", Id " << A->Id()
+			 //	  << ", chamber " << A->TP()->chamber()
+			 //	  << ", ring " << A->TP()->ring()
+			   << ", strip " << A->Strip()
+			   << ", BX " << A->BX()
+			   << ", wire " << A->Wire()
+			   << ", pattern " << A->Pattern()
+			   << ", quality " << A->Quality()
+			   << ", Phi " << A->Phi()
+			   << ", Theta " << A->Theta()
+			   << endl;
+	    if (A->TP()->subsystem() == 1)
+	      cout << " GEMdPhi " << A->TP()->getCSCData().gemDPhi << endl;
+	  }
+
 	  tempTrack.addStub(A->TP());
-	  if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
-	}
-			
+	  // if (doDebug) cout<<"Internal track Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<endl;
+	}			
       }
-		
       FoundTracks->push_back(tempTrack);
     }
   }
-  
+  //  doDebug = false;
   ///////////////////////////////////////////////
   //// Pt assignment //
   ///////////////////////////////////////////////
@@ -909,9 +911,9 @@ void L1TMuonTextDumper::beginJob()
   ///////////////////////////
 	
 	
-  write = fopen ("zone0.txt","w");
-  dphi = fopen("dphi1.txt","w");
-  tptest = fopen("dth.txt","w");
+  //  write = fopen ("zone0.txt","w");
+  //  dphi = fopen("dphi1.txt","w");
+  //  tptest = fopen("dth.txt","w");
 	
   h_GE11 = dir1.make<TH1F>("GE11","GE11",10,0,10);h_GE11->SetFillColor(2);
   striph = dir1.make<TH1F>("striph","TP strip distribution",250,0,250);striph->SetFillColor(2);
@@ -948,9 +950,9 @@ void L1TMuonTextDumper::beginJob()
 void L1TMuonTextDumper::endJob()
 {
 
-  fclose (write);
-  fclose (dphi);
-  fclose (tptest);
+  //  fclose (write);
+  //  fclose (dphi);
+  //  fclose (tptest);
   TFileDirectory dir = histofile->mkdir("1");
 	
   if (doDebug) cout<<"\n\n\nfpire = ";

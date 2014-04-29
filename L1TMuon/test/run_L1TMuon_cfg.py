@@ -18,23 +18,12 @@ process.load('L1TriggerDPGUpgrade.L1TMuon.L1RPCTFTrackConverter_cfi')
 process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 
-
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(21000)
-)
-
-#infile = ['file:unganged2.root']
-infile = ['file:pm13poseta.root']
+infile = ['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
 #['file:SingleMuFlatPt_5GeVto200GeV_GEN_SIM_DIGI_L1.root']
 #['file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root']
-
-
-
-infile.append('file:pm13negeta.root')
-
-
+#infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1.root')
 #infile.append('file:SingleMuFlatPt_plusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
 #infile.append('file:SingleMuFlatPt_minusEta_1GeVto200GeV_GEN_SIM_DIGI_L1_2.root')
 

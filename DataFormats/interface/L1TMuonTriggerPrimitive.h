@@ -25,7 +25,7 @@
 #include "DataFormats/DetId/interface/DetId.h"
 
 // GEM digi types
-class GEMDigi;
+class GEMCSCPadDigi;
 class GEMDetId;
 
 // DT digi types
@@ -111,13 +111,13 @@ namespace L1TMuon {
     };
  
     struct GEMData {
-    GEMData() : trknmb(0), valid(0), quality(0), keywire(0), strip(0),
+    GEMData() : trknmb(0), valid(0), quality(0), pad(0), strip(0),
 	pattern(0), bend(0), bx(0), mpclink(0), bx0(0), syncErr(0),
 	gemID(0) {}
       uint16_t trknmb;
       uint16_t valid;
       uint16_t quality;
-      uint16_t keywire;
+      uint16_t pad;
       uint16_t strip;
       uint16_t pattern;
       uint16_t bend;
@@ -163,7 +163,7 @@ namespace L1TMuon {
     
     //GEM
     TriggerPrimitive(const GEMDetId&,
-		     const GEMDigi&);
+		     const GEMCSCPadDigi&);
 
     //HCAL
     TriggerPrimitive(const HcalTrigTowerDetId& detid,
