@@ -79,6 +79,11 @@ private:
   int singleSectorNum;
   string outTreeFileName;
 
+  double min_pt;
+  double max_pt;
+  double min_aEta;
+  double max_aEta;
+
   TH1F* h_GEMDPhi;
   TH1F* h_nStation;  
 
@@ -180,6 +185,12 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
   outTreeFileName= iConfig.getUntrackedParameter<string>("outTreeFileName");
   haveRECO = iConfig.getUntrackedParameter<bool>("haveRECO");
   singleSectorNum = iConfig.getUntrackedParameter<int>("singleSectorNum");
+
+  min_pt = iConfig.getUntrackedParameter<double>("minPt");
+  max_pt = iConfig.getUntrackedParameter<double>("maxPt");
+  min_aEta = iConfig.getUntrackedParameter<double>("minEta");
+  max_aEta = iConfig.getUntrackedParameter<double>("maxEta");
+
 }
 L1TAnalyser::~L1TAnalyser()
 {
@@ -213,11 +224,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::SimTrackContainer> BaseSimTracks;
   iEvent.getByLabel("g4SimHits",BaseSimTracks);
 
-  float min_pt = 2;
-  float max_pt = 100;
-  float min_aEta = 0.9;
-  float max_aEta = 2.4;
-  //float max_aEta = 1.8;
   float minDRMatch = 0.5;
 
   edm::SimTrackContainer::const_iterator BaseSimTrk;
