@@ -120,48 +120,44 @@ private:
   TH1F* h_noTFQ3nStub;
   TH1F* h_noTFQ3nStubGEM;
 
-  TH1F* h_truth_pt;
+  TH1F* h_truth_pt_me1;
+  TH1F* h_truth_pt_me2;
   TH1F* h_truth_eta;
   TH1F* h_truth_phi;
   TH1F* h_truth_30_eta;
   TH1F* h_truth_30_phi;
 
-  TH1F* h_L1CSCTrack__pt;
-  TH1F* h_L1CSCTrack__eta;
-  TH1F* h_L1CSCTrack__phi;
-  TH1F* h_L1CSCTrack_ME1_pt;
-  TH1F* h_L1CSCTrack_ME1_eta;
-  TH1F* h_L1CSCTrack_ME1_phi;
-  TH1F* h_L1CSCTrack_20_pt;
-  TH1F* h_L1CSCTrack_20_eta;
-  TH1F* h_L1CSCTrack_20_phi;
-  TH1F* h_L1CSCTrack_20ME1_pt;
-  TH1F* h_L1CSCTrack_20ME1_eta;
-  TH1F* h_L1CSCTrack_20ME1_phi;
-
-  TH1F* h_L1CSCTrack_2Stubs_pt;
+  TH1F* h_L1CSCTrack_2Stubs_pt_me1;
+  TH1F* h_L1CSCTrack_2Stubs_pt_me2;
   TH1F* h_L1CSCTrack_2Stubs_eta;
   TH1F* h_L1CSCTrack_2Stubs_phi;
-  TH1F* h_L1CSCTrack_2StubsME1_pt;
+  TH1F* h_L1CSCTrack_2StubsME1_pt_me1;
+  TH1F* h_L1CSCTrack_2StubsME1_pt_me2;
   TH1F* h_L1CSCTrack_2StubsME1_eta;
   TH1F* h_L1CSCTrack_2StubsME1_phi;
-  TH1F* h_L1CSCTrack_2Stubs20_pt;
+  TH1F* h_L1CSCTrack_2Stubs20_pt_me1;
+  TH1F* h_L1CSCTrack_2Stubs20_pt_me2;
   TH1F* h_L1CSCTrack_2Stubs20_eta;
   TH1F* h_L1CSCTrack_2Stubs20_phi;
-  TH1F* h_L1CSCTrack_2Stubs20ME1_pt;
+  TH1F* h_L1CSCTrack_2Stubs20ME1_pt_me1;
+  TH1F* h_L1CSCTrack_2Stubs20ME1_pt_me2;
   TH1F* h_L1CSCTrack_2Stubs20ME1_eta;
   TH1F* h_L1CSCTrack_2Stubs20ME1_phi;
 
-  TH1F* h_L1CSCTrack_3Stubs_pt;
+  TH1F* h_L1CSCTrack_3Stubs_pt_me1;
+  TH1F* h_L1CSCTrack_3Stubs_pt_me2;
   TH1F* h_L1CSCTrack_3Stubs_eta;
   TH1F* h_L1CSCTrack_3Stubs_phi;
-  TH1F* h_L1CSCTrack_3StubsME1_pt;
+  TH1F* h_L1CSCTrack_3StubsME1_pt_me1;
+  TH1F* h_L1CSCTrack_3StubsME1_pt_me2;
   TH1F* h_L1CSCTrack_3StubsME1_eta;
   TH1F* h_L1CSCTrack_3StubsME1_phi;
-  TH1F* h_L1CSCTrack_3Stubs20_pt;
+  TH1F* h_L1CSCTrack_3Stubs20_pt_me1;
+  TH1F* h_L1CSCTrack_3Stubs20_pt_me2;
   TH1F* h_L1CSCTrack_3Stubs20_eta;
   TH1F* h_L1CSCTrack_3Stubs20_phi;
-  TH1F* h_L1CSCTrack_3Stubs20ME1_pt;
+  TH1F* h_L1CSCTrack_3Stubs20ME1_pt_me1;
+  TH1F* h_L1CSCTrack_3Stubs20ME1_pt_me2;
   TH1F* h_L1CSCTrack_3Stubs20ME1_eta;
   TH1F* h_L1CSCTrack_3Stubs20ME1_phi;
 };
@@ -186,10 +182,10 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
   haveRECO = iConfig.getUntrackedParameter<bool>("haveRECO");
   singleSectorNum = iConfig.getUntrackedParameter<int>("singleSectorNum");
 
-  min_pt = iConfig.getUntrackedParameter<double>("minPt");
-  max_pt = iConfig.getUntrackedParameter<double>("maxPt");
-  min_aEta = iConfig.getUntrackedParameter<double>("minEta");
-  max_aEta = iConfig.getUntrackedParameter<double>("maxEta");
+  min_pt = iConfig.getUntrackedParameter<double>("minPt", 5);
+  max_pt = iConfig.getUntrackedParameter<double>("maxPt", 100);
+  min_aEta = iConfig.getUntrackedParameter<double>("minEta", 1.6);
+  max_aEta = iConfig.getUntrackedParameter<double>("maxEta", 2.4);
 
 }
 L1TAnalyser::~L1TAnalyser()
@@ -234,7 +230,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) and 
 	(fabs(BaseSimTrk->momentum().eta()) <= max_aEta) ){
 
-      TLorentzVector truemuon; truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
+      TLorentzVector truemuon; 
+      truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
       TLorentzVector l1muon;      
       int nstubs=0;
       float tempDRMatch = 10;
@@ -271,7 +268,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
 	for(; csc!=tmp_trk->second.end(); csc++){
 	  if ((*csc).first.station()==1) temphasME1 = true;
-
 	  tempnstubs++;
 	}
 
@@ -288,7 +284,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       float trueEta = fabs(truemuon.Eta());
-      h_truth_pt->Fill(truemuon.Pt());
+      if (trueEta < 2.1) h_truth_pt_me1->Fill(truemuon.Pt());
+      else h_truth_pt_me2->Fill(truemuon.Pt());
       h_truth_eta->Fill(trueEta);
       h_truth_phi->Fill(truemuon.Phi());
       if (truemuon.Pt() > 30){
@@ -296,42 +293,25 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	h_truth_30_phi->Fill(truemuon.Phi());
       }
 
-      if (nstubs){
-	h_L1CSCTrack__pt->Fill(truemuon.Pt());
-	h_L1CSCTrack__eta->Fill(trueEta);
-	h_L1CSCTrack__phi->Fill(truemuon.Phi());
-	if (hasME1){
-	  h_L1CSCTrack_ME1_pt->Fill(truemuon.Pt());
-	  h_L1CSCTrack_ME1_eta->Fill(trueEta);
-	  h_L1CSCTrack_ME1_phi->Fill(truemuon.Phi());
-	}
-	if (l1muon.Pt() >= 20){
-	  h_L1CSCTrack_20_pt->Fill(truemuon.Pt());
-	  if (truemuon.Pt() > 30) h_L1CSCTrack_20_eta->Fill(trueEta);
-	  if (truemuon.Pt() > 30) h_L1CSCTrack_20_phi->Fill(truemuon.Phi());
-	  if (hasME1){
-	    h_L1CSCTrack_20ME1_pt->Fill(truemuon.Pt());
-	    if (truemuon.Pt() > 30) h_L1CSCTrack_20ME1_eta->Fill(trueEta);
-	    if (truemuon.Pt() > 30) h_L1CSCTrack_20ME1_phi->Fill(truemuon.Phi());
-	  }
-	}
-      }
-
       if (nstubs > 1){
-	h_L1CSCTrack_2Stubs_pt->Fill(truemuon.Pt());
+	if (trueEta < 2.1) h_L1CSCTrack_2Stubs_pt_me1->Fill(truemuon.Pt());
+	else h_L1CSCTrack_2Stubs_pt_me2->Fill(truemuon.Pt());
 	h_L1CSCTrack_2Stubs_eta->Fill(trueEta);
 	h_L1CSCTrack_2Stubs_phi->Fill(truemuon.Phi());
 	if (hasME1){
-	  h_L1CSCTrack_2StubsME1_pt->Fill(truemuon.Pt());
+	  if (trueEta < 2.1) h_L1CSCTrack_2StubsME1_pt_me1->Fill(truemuon.Pt());
+	  else h_L1CSCTrack_2StubsME1_pt_me2->Fill(truemuon.Pt());
 	  h_L1CSCTrack_2StubsME1_eta->Fill(trueEta);
 	  h_L1CSCTrack_2StubsME1_phi->Fill(truemuon.Phi());
 	}
 	if (l1muon.Pt() >= 20){
-	  h_L1CSCTrack_2Stubs20_pt->Fill(truemuon.Pt());
+	  if (trueEta < 2.1) h_L1CSCTrack_2Stubs20_pt_me1->Fill(truemuon.Pt());
+	  else h_L1CSCTrack_2Stubs20_pt_me2->Fill(truemuon.Pt());
 	  if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20_eta->Fill(trueEta);
 	  if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20_phi->Fill(truemuon.Phi());
 	  if (hasME1){
-	    h_L1CSCTrack_2Stubs20ME1_pt->Fill(truemuon.Pt());
+	    if (trueEta < 2.1) h_L1CSCTrack_2Stubs20ME1_pt_me1->Fill(truemuon.Pt());
+	    else h_L1CSCTrack_2Stubs20ME1_pt_me2->Fill(truemuon.Pt());
 	    if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20ME1_eta->Fill(trueEta);
 	    if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20ME1_phi->Fill(truemuon.Phi());
 	  }
@@ -339,25 +319,30 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       if (nstubs > 2){
-	h_L1CSCTrack_3Stubs_pt->Fill(truemuon.Pt());
+	if (trueEta < 2.1) h_L1CSCTrack_3Stubs_pt_me1->Fill(truemuon.Pt());
+	else h_L1CSCTrack_3Stubs_pt_me2->Fill(truemuon.Pt());
 	h_L1CSCTrack_3Stubs_eta->Fill(trueEta);
 	h_L1CSCTrack_3Stubs_phi->Fill(truemuon.Phi());
 	if (hasME1){
-	  h_L1CSCTrack_3StubsME1_pt->Fill(truemuon.Pt());
+	  if (trueEta < 2.1) h_L1CSCTrack_3StubsME1_pt_me1->Fill(truemuon.Pt());
+	  else h_L1CSCTrack_3StubsME1_pt_me2->Fill(truemuon.Pt());
 	  h_L1CSCTrack_3StubsME1_eta->Fill(trueEta);
 	  h_L1CSCTrack_3StubsME1_phi->Fill(truemuon.Phi());
 	}
 	if (l1muon.Pt() >= 20){
-	  h_L1CSCTrack_3Stubs20_pt->Fill(truemuon.Pt());
+	  if (trueEta < 2.1) h_L1CSCTrack_3Stubs20_pt_me1->Fill(truemuon.Pt());
+	  else h_L1CSCTrack_3Stubs20_pt_me2->Fill(truemuon.Pt());
 	  if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20_eta->Fill(trueEta);
 	  if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20_phi->Fill(truemuon.Phi());
 	  if (hasME1){
-	    h_L1CSCTrack_3Stubs20ME1_pt->Fill(truemuon.Pt());
+	    if (trueEta < 2.1) h_L1CSCTrack_3Stubs20ME1_pt_me1->Fill(truemuon.Pt());
+	    else h_L1CSCTrack_3Stubs20ME1_pt_me2->Fill(truemuon.Pt());
 	    if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20ME1_eta->Fill(trueEta);
 	    if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20ME1_phi->Fill(truemuon.Phi());
 	  }
 	}
       }
+
     }
   }
   
@@ -519,137 +504,125 @@ L1TAnalyser::beginJob()
   h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
 
-  h_truth_pt=fs->make<TH1F>("truth_pt","",20,0,50);
-  h_truth_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_truth_pt->GetYaxis()->SetTitle("Efficiency");
-  h_truth_eta=fs->make<TH1F>("truth_eta","",35,1.5,2.2);
+  h_truth_pt_me1=fs->make<TH1F>("truth_pt_me1","",20,0,50);
+  h_truth_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_truth_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_truth_pt_me2=fs->make<TH1F>("truth_pt_me2","",20,0,50);
+  h_truth_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_truth_pt_me2->GetYaxis()->SetTitle("Efficiency");
+
+  h_truth_eta=fs->make<TH1F>("truth_eta","",50,1.5,2.5);
   h_truth_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_truth_eta->GetYaxis()->SetTitle("Efficiency");
   h_truth_phi=fs->make<TH1F>("truth_phi","",70,-3.5,3.5);
   h_truth_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_truth_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_truth_30_eta=fs->make<TH1F>("truth_30_eta","",35,1.5,2.2);
+  h_truth_30_eta=fs->make<TH1F>("truth_30_eta","",50,1.5,2.5);
   h_truth_30_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_truth_30_eta->GetYaxis()->SetTitle("Efficiency");
   h_truth_30_phi=fs->make<TH1F>("truth_30_phi","",70,-3.5,3.5);
   h_truth_30_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_truth_30_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack__pt=fs->make<TH1F>("L1CSCTrack__pt","",20,0,50);
-  h_L1CSCTrack__pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack__pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack__eta=fs->make<TH1F>("L1CSCTrack__eta","",35,1.5,2.2);
-  h_L1CSCTrack__eta->GetXaxis()->SetTitle("sim muon #eta");
-  h_L1CSCTrack__eta->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack__phi=fs->make<TH1F>("L1CSCTrack__phi","",70,-3.5,3.5);
-  h_L1CSCTrack__phi->GetXaxis()->SetTitle("sim muon #phi");
-  h_L1CSCTrack__phi->GetYaxis()->SetTitle("Efficiency");
-
-  h_L1CSCTrack_ME1_pt=fs->make<TH1F>("L1CSCTrack_ME1_pt","",20,0,50);
-  h_L1CSCTrack_ME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_ME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_ME1_eta=fs->make<TH1F>("L1CSCTrack_ME1_eta","",35,1.5,2.2);
-  h_L1CSCTrack_ME1_eta->GetXaxis()->SetTitle("sim muon #eta");
-  h_L1CSCTrack_ME1_eta->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_ME1_phi=fs->make<TH1F>("L1CSCTrack_ME1_phi","",70,-3.5,3.5);
-  h_L1CSCTrack_ME1_phi->GetXaxis()->SetTitle("sim muon #phi");
-  h_L1CSCTrack_ME1_phi->GetYaxis()->SetTitle("Efficiency");
-
-  h_L1CSCTrack_20_pt=fs->make<TH1F>("L1CSCTrack_20_pt","",20,0,50);
-  h_L1CSCTrack_20_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_20_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_20_eta=fs->make<TH1F>("L1CSCTrack_20_eta","",35,1.5,2.2);
-  h_L1CSCTrack_20_eta->GetXaxis()->SetTitle("sim muon #eta");
-  h_L1CSCTrack_20_eta->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_20_phi=fs->make<TH1F>("L1CSCTrack_20_phi","",70,-3.5,3.5);
-  h_L1CSCTrack_20_phi->GetXaxis()->SetTitle("sim muon #phi");
-  h_L1CSCTrack_20_phi->GetYaxis()->SetTitle("Efficiency");
-
-  h_L1CSCTrack_20ME1_pt=fs->make<TH1F>("L1CSCTrack_20ME1_pt","",20,0,50);
-  h_L1CSCTrack_20ME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_20ME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_20ME1_eta=fs->make<TH1F>("L1CSCTrack_20ME1_eta","",35,1.5,2.2);
-  h_L1CSCTrack_20ME1_eta->GetXaxis()->SetTitle("sim muon #eta");
-  h_L1CSCTrack_20ME1_eta->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_20ME1_phi=fs->make<TH1F>("L1CSCTrack_20ME1_phi","",70,-3.5,3.5);
-  h_L1CSCTrack_20ME1_phi->GetXaxis()->SetTitle("sim muon #phi");
-  h_L1CSCTrack_20ME1_phi->GetYaxis()->SetTitle("Efficiency");
-
-  h_L1CSCTrack_2Stubs_pt=fs->make<TH1F>("L1CSCTrack_2Stubs_pt","",20,0,50);
-  h_L1CSCTrack_2Stubs_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_2Stubs_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_2Stubs_eta=fs->make<TH1F>("L1CSCTrack_2Stubs_eta","",35,1.5,2.2);
+  h_L1CSCTrack_2Stubs_pt_me1=fs->make<TH1F>("L1CSCTrack_2Stubs_pt_me1","",20,0,50);
+  h_L1CSCTrack_2Stubs_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs_pt_me2=fs->make<TH1F>("L1CSCTrack_2Stubs_pt_me2","",20,0,50);
+  h_L1CSCTrack_2Stubs_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs_eta=fs->make<TH1F>("L1CSCTrack_2Stubs_eta","",50,1.5,2.5);
   h_L1CSCTrack_2Stubs_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_2Stubs_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_2Stubs_phi=fs->make<TH1F>("L1CSCTrack_2Stubs_phi","",70,-3.5,3.5);
   h_L1CSCTrack_2Stubs_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_2Stubs_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_2StubsME1_pt=fs->make<TH1F>("L1CSCTrack_2StubsME1_pt","",20,0,50);
-  h_L1CSCTrack_2StubsME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_2StubsME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_2StubsME1_eta=fs->make<TH1F>("L1CSCTrack_2StubsME1_eta","",35,1.5,2.2);
+  h_L1CSCTrack_2StubsME1_pt_me1=fs->make<TH1F>("L1CSCTrack_2StubsME1_pt_me1","",20,0,50);
+  h_L1CSCTrack_2StubsME1_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2StubsME1_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2StubsME1_pt_me2=fs->make<TH1F>("L1CSCTrack_2StubsME1_pt_me2","",20,0,50);
+  h_L1CSCTrack_2StubsME1_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2StubsME1_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2StubsME1_eta=fs->make<TH1F>("L1CSCTrack_2StubsME1_eta","",50,1.5,2.5);
   h_L1CSCTrack_2StubsME1_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_2StubsME1_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_2StubsME1_phi=fs->make<TH1F>("L1CSCTrack_2StubsME1_phi","",70,-3.5,3.5);
   h_L1CSCTrack_2StubsME1_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_2StubsME1_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_2Stubs20_pt=fs->make<TH1F>("L1CSCTrack_2Stubs20_pt","",20,0,50);
-  h_L1CSCTrack_2Stubs20_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_2Stubs20_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_2Stubs20_eta=fs->make<TH1F>("L1CSCTrack_2Stubs20_eta","",35,1.5,2.2);
+  h_L1CSCTrack_2Stubs20_pt_me1=fs->make<TH1F>("L1CSCTrack_2Stubs20_pt_me1","",20,0,50);
+  h_L1CSCTrack_2Stubs20_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs20_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs20_pt_me2=fs->make<TH1F>("L1CSCTrack_2Stubs20_pt_me2","",20,0,50);
+  h_L1CSCTrack_2Stubs20_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs20_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs20_eta=fs->make<TH1F>("L1CSCTrack_2Stubs20_eta","",50,1.5,2.5);
   h_L1CSCTrack_2Stubs20_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_2Stubs20_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_2Stubs20_phi=fs->make<TH1F>("L1CSCTrack_2Stubs20_phi","",70,-3.5,3.5);
   h_L1CSCTrack_2Stubs20_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_2Stubs20_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_2Stubs20ME1_pt=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_pt","",20,0,50);
-  h_L1CSCTrack_2Stubs20ME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_2Stubs20ME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_2Stubs20ME1_eta=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_eta","",35,1.5,2.2);
+  h_L1CSCTrack_2Stubs20ME1_pt_me1=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_pt_me1","",20,0,50);
+  h_L1CSCTrack_2Stubs20ME1_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs20ME1_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs20ME1_pt_me2=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_pt_me2","",20,0,50);
+  h_L1CSCTrack_2Stubs20ME1_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_2Stubs20ME1_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_2Stubs20ME1_eta=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_eta","",50,1.5,2.5);
   h_L1CSCTrack_2Stubs20ME1_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_2Stubs20ME1_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_2Stubs20ME1_phi=fs->make<TH1F>("L1CSCTrack_2Stubs20ME1_phi","",70,-3.5,3.5);
   h_L1CSCTrack_2Stubs20ME1_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_2Stubs20ME1_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_3Stubs_pt=fs->make<TH1F>("L1CSCTrack_3Stubs_pt","",20,0,50);
-  h_L1CSCTrack_3Stubs_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_3Stubs_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_3Stubs_eta=fs->make<TH1F>("L1CSCTrack_3Stubs_eta","",35,1.5,2.2);
+  h_L1CSCTrack_3Stubs_pt_me1=fs->make<TH1F>("L1CSCTrack_3Stubs_pt_me1","",20,0,50);
+  h_L1CSCTrack_3Stubs_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs_pt_me2=fs->make<TH1F>("L1CSCTrack_3Stubs_pt_me2","",20,0,50);
+  h_L1CSCTrack_3Stubs_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs_eta=fs->make<TH1F>("L1CSCTrack_3Stubs_eta","",50,1.5,2.5);
   h_L1CSCTrack_3Stubs_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_3Stubs_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_3Stubs_phi=fs->make<TH1F>("L1CSCTrack_3Stubs_phi","",70,-3.5,3.5);
   h_L1CSCTrack_3Stubs_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_3Stubs_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_3StubsME1_pt=fs->make<TH1F>("L1CSCTrack_3StubsME1_pt","",20,0,50);
-  h_L1CSCTrack_3StubsME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_3StubsME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_3StubsME1_eta=fs->make<TH1F>("L1CSCTrack_3StubsME1_eta","",35,1.5,2.2);
+  h_L1CSCTrack_3StubsME1_pt_me1=fs->make<TH1F>("L1CSCTrack_3StubsME1_pt_me1","",20,0,50);
+  h_L1CSCTrack_3StubsME1_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3StubsME1_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3StubsME1_pt_me2=fs->make<TH1F>("L1CSCTrack_3StubsME1_pt_me2","",20,0,50);
+  h_L1CSCTrack_3StubsME1_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3StubsME1_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3StubsME1_eta=fs->make<TH1F>("L1CSCTrack_3StubsME1_eta","",50,1.5,2.5);
   h_L1CSCTrack_3StubsME1_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_3StubsME1_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_3StubsME1_phi=fs->make<TH1F>("L1CSCTrack_3StubsME1_phi","",70,-3.5,3.5);
   h_L1CSCTrack_3StubsME1_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_3StubsME1_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_3Stubs20_pt=fs->make<TH1F>("L1CSCTrack_3Stubs20_pt","",20,0,50);
-  h_L1CSCTrack_3Stubs20_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_3Stubs20_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_3Stubs20_eta=fs->make<TH1F>("L1CSCTrack_3Stubs20_eta","",35,1.5,2.2);
+  h_L1CSCTrack_3Stubs20_pt_me1=fs->make<TH1F>("L1CSCTrack_3Stubs20_pt_me1","",20,0,50);
+  h_L1CSCTrack_3Stubs20_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs20_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs20_pt_me2=fs->make<TH1F>("L1CSCTrack_3Stubs20_pt_me2","",20,0,50);
+  h_L1CSCTrack_3Stubs20_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs20_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs20_eta=fs->make<TH1F>("L1CSCTrack_3Stubs20_eta","",50,1.5,2.5);
   h_L1CSCTrack_3Stubs20_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_3Stubs20_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_3Stubs20_phi=fs->make<TH1F>("L1CSCTrack_3Stubs20_phi","",70,-3.5,3.5);
   h_L1CSCTrack_3Stubs20_phi->GetXaxis()->SetTitle("sim muon #phi");
   h_L1CSCTrack_3Stubs20_phi->GetYaxis()->SetTitle("Efficiency");
 
-  h_L1CSCTrack_3Stubs20ME1_pt=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_pt","",20,0,50);
-  h_L1CSCTrack_3Stubs20ME1_pt->GetXaxis()->SetTitle("sim muon p_T [GeV]");
-  h_L1CSCTrack_3Stubs20ME1_pt->GetYaxis()->SetTitle("Efficiency");
-  h_L1CSCTrack_3Stubs20ME1_eta=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_eta","",35,1.5,2.2);
+  h_L1CSCTrack_3Stubs20ME1_pt_me1=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_pt_me1","",20,0,50);
+  h_L1CSCTrack_3Stubs20ME1_pt_me1->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs20ME1_pt_me1->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs20ME1_pt_me2=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_pt_me2","",20,0,50);
+  h_L1CSCTrack_3Stubs20ME1_pt_me2->GetXaxis()->SetTitle("sim muon p_T [GeV]");
+  h_L1CSCTrack_3Stubs20ME1_pt_me2->GetYaxis()->SetTitle("Efficiency");
+  h_L1CSCTrack_3Stubs20ME1_eta=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_eta","",50,1.5,2.5);
   h_L1CSCTrack_3Stubs20ME1_eta->GetXaxis()->SetTitle("sim muon #eta");
   h_L1CSCTrack_3Stubs20ME1_eta->GetYaxis()->SetTitle("Efficiency");
   h_L1CSCTrack_3Stubs20ME1_phi=fs->make<TH1F>("L1CSCTrack_3Stubs20ME1_phi","",70,-3.5,3.5);
@@ -662,63 +635,46 @@ L1TAnalyser::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void L1TAnalyser::endJob() 
 {
-  h_truth_pt->Sumw2();
+  h_truth_pt_me1->Sumw2();
+  h_truth_pt_me2->Sumw2();
   h_truth_eta->Sumw2();
   h_truth_phi->Sumw2();
   h_truth_30_eta->Sumw2();
   h_truth_30_phi->Sumw2();
 
-  h_L1CSCTrack__pt->Sumw2();
-  h_L1CSCTrack__eta->Sumw2();
-  h_L1CSCTrack__phi->Sumw2();
-  h_L1CSCTrack_ME1_pt->Sumw2();
-  h_L1CSCTrack_ME1_eta->Sumw2();
-  h_L1CSCTrack_ME1_phi->Sumw2();
-  h_L1CSCTrack_20_pt->Sumw2();
-  h_L1CSCTrack_20_eta->Sumw2();
-  h_L1CSCTrack_20_phi->Sumw2();
-  h_L1CSCTrack_20ME1_pt->Sumw2();
-  h_L1CSCTrack_20ME1_eta->Sumw2();
-  h_L1CSCTrack_20ME1_phi->Sumw2();
-
-  h_L1CSCTrack_2Stubs_pt->Sumw2();
+  h_L1CSCTrack_2Stubs_pt_me1->Sumw2();
+  h_L1CSCTrack_2Stubs_pt_me2->Sumw2();
   h_L1CSCTrack_2Stubs_eta->Sumw2();
   h_L1CSCTrack_2Stubs_phi->Sumw2();
-  h_L1CSCTrack_2StubsME1_pt->Sumw2();
+  h_L1CSCTrack_2StubsME1_pt_me1->Sumw2();
+  h_L1CSCTrack_2StubsME1_pt_me2->Sumw2();
   h_L1CSCTrack_2StubsME1_eta->Sumw2();
   h_L1CSCTrack_2StubsME1_phi->Sumw2();
-  h_L1CSCTrack_2Stubs20_pt->Sumw2();
+  h_L1CSCTrack_2Stubs20_pt_me1->Sumw2();
+  h_L1CSCTrack_2Stubs20_pt_me2->Sumw2();
   h_L1CSCTrack_2Stubs20_eta->Sumw2();
   h_L1CSCTrack_2Stubs20_phi->Sumw2();
-  h_L1CSCTrack_2Stubs20ME1_pt->Sumw2();
+  h_L1CSCTrack_2Stubs20ME1_pt_me1->Sumw2();
+  h_L1CSCTrack_2Stubs20ME1_pt_me2->Sumw2();
   h_L1CSCTrack_2Stubs20ME1_eta->Sumw2();
   h_L1CSCTrack_2Stubs20ME1_phi->Sumw2();
 
-  h_L1CSCTrack_3Stubs_pt->Sumw2();
+  h_L1CSCTrack_3Stubs_pt_me1->Sumw2();
+  h_L1CSCTrack_3Stubs_pt_me2->Sumw2();
   h_L1CSCTrack_3Stubs_eta->Sumw2();
   h_L1CSCTrack_3Stubs_phi->Sumw2();
-  h_L1CSCTrack_3StubsME1_pt->Sumw2();
+  h_L1CSCTrack_3StubsME1_pt_me1->Sumw2();
+  h_L1CSCTrack_3StubsME1_pt_me2->Sumw2();
   h_L1CSCTrack_3StubsME1_eta->Sumw2();
   h_L1CSCTrack_3StubsME1_phi->Sumw2();
-  h_L1CSCTrack_3Stubs20_pt->Sumw2();
+  h_L1CSCTrack_3Stubs20_pt_me1->Sumw2();
+  h_L1CSCTrack_3Stubs20_pt_me2->Sumw2();
   h_L1CSCTrack_3Stubs20_eta->Sumw2();
   h_L1CSCTrack_3Stubs20_phi->Sumw2();
-  h_L1CSCTrack_3Stubs20ME1_pt->Sumw2();
+  h_L1CSCTrack_3Stubs20ME1_pt_me1->Sumw2();
+  h_L1CSCTrack_3Stubs20ME1_pt_me2->Sumw2();
   h_L1CSCTrack_3Stubs20ME1_eta->Sumw2();
   h_L1CSCTrack_3Stubs20ME1_phi->Sumw2();
-
-  // TGraphAsymmErrors *h_L1CSCTrack__pt;  h_L1CSCTrack__pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__pt");  h_L1CSCTrack__pt->BayesDivide(h_L1CSCTrack__pt, h_truth_pt);
-  // TGraphAsymmErrors *h_L1CSCTrack__eta;  h_L1CSCTrack__eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__eta");  h_L1CSCTrack__eta->BayesDivide(h_L1CSCTrack__eta, h_truth_eta);
-  // TGraphAsymmErrors *h_L1CSCTrack__phi;  h_L1CSCTrack__phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__phi");  h_L1CSCTrack__phi->BayesDivide(h_L1CSCTrack__phi, h_truth_phi);
-  // TGraphAsymmErrors *h_L1CSCTrack_ME1_pt;  h_L1CSCTrack_ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_pt");  h_L1CSCTrack_ME1_pt->BayesDivide(h_L1CSCTrack_ME1_pt, h_truth_pt);
-  // TGraphAsymmErrors *h_L1CSCTrack_ME1_eta;  h_L1CSCTrack_ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_eta");  h_L1CSCTrack_ME1_eta->BayesDivide(h_L1CSCTrack_ME1_eta, h_truth_eta);
-  // TGraphAsymmErrors *h_L1CSCTrack_ME1_phi;  h_L1CSCTrack_ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_phi");  h_L1CSCTrack_ME1_phi->BayesDivide(h_L1CSCTrack_ME1_phi, h_truth_phi);
-  // TGraphAsymmErrors *h_L1CSCTrack_20_pt;  h_L1CSCTrack_20_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_pt");  h_L1CSCTrack_20_pt->BayesDivide(h_L1CSCTrack_20_pt, h_truth_pt);
-  // TGraphAsymmErrors *h_L1CSCTrack_20_eta;  h_L1CSCTrack_20_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_eta");  h_L1CSCTrack_20_eta->BayesDivide(h_L1CSCTrack_20_eta, h_truth_30_eta);
-  // TGraphAsymmErrors *h_L1CSCTrack_20_phi;  h_L1CSCTrack_20_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_phi");  h_L1CSCTrack_20_phi->BayesDivide(h_L1CSCTrack_20_phi, h_truth_30_phi);
-  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_pt;  h_L1CSCTrack_20ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_pt");  h_L1CSCTrack_20ME1_pt->BayesDivide(h_L1CSCTrack_20ME1_pt, h_truth_pt);
-  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_eta;  h_L1CSCTrack_20ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_eta");  h_L1CSCTrack_20ME1_eta->BayesDivide(h_L1CSCTrack_20ME1_eta, h_truth_30_eta);
-  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_phi;  h_L1CSCTrack_20ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_phi");  h_L1CSCTrack_20ME1_phi->BayesDivide(h_L1CSCTrack_20ME1_phi, h_truth_30_phi);
 
   // TGraphAsymmErrors *h_L1CSCTrack_2Stubs_pt;  h_L1CSCTrack_2Stubs_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs_pt");  h_L1CSCTrack_2Stubs_pt->BayesDivide(h_L1CSCTrack_2Stubs_pt, h_truth_pt);
   // TGraphAsymmErrors *h_L1CSCTrack_2Stubs_eta;  h_L1CSCTrack_2Stubs_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs_eta");  h_L1CSCTrack_2Stubs_eta->BayesDivide(h_L1CSCTrack_2Stubs_eta, h_truth_eta);
@@ -746,42 +702,37 @@ void L1TAnalyser::endJob()
   // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20ME1_eta;  h_L1CSCTrack_3Stubs20ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20ME1_eta");  h_L1CSCTrack_3Stubs20ME1_eta->BayesDivide(h_L1CSCTrack_3Stubs20ME1_eta, h_truth_30_eta);
   // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20ME1_phi;  h_L1CSCTrack_3Stubs20ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20ME1_phi");  h_L1CSCTrack_3Stubs20ME1_phi->BayesDivide(h_L1CSCTrack_3Stubs20ME1_phi, h_truth_30_phi);
 
-  h_L1CSCTrack__pt->Divide(h_L1CSCTrack__pt, h_truth_pt,1.0,1.0,"B");
-  h_L1CSCTrack__eta->Divide(h_L1CSCTrack__eta, h_truth_eta,1.0,1.0,"B");
-  h_L1CSCTrack__phi->Divide(h_L1CSCTrack__phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_ME1_pt->Divide(h_L1CSCTrack_ME1_pt, h_truth_pt,1.0,1.0,"B");
-  h_L1CSCTrack_ME1_eta->Divide(h_L1CSCTrack_ME1_eta, h_truth_eta,1.0,1.0,"B");
-  h_L1CSCTrack_ME1_phi->Divide(h_L1CSCTrack_ME1_phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_20_pt->Divide(h_L1CSCTrack_20_pt, h_truth_pt,1.0,1.0,"B");
-  h_L1CSCTrack_20_eta->Divide(h_L1CSCTrack_20_eta, h_truth_30_eta,1.0,1.0,"B");
-  h_L1CSCTrack_20_phi->Divide(h_L1CSCTrack_20_phi, h_truth_30_phi,1.0,1.0,"B");
-  h_L1CSCTrack_20ME1_pt->Divide(h_L1CSCTrack_20ME1_pt, h_truth_pt,1.0,1.0,"B");
-  h_L1CSCTrack_20ME1_eta->Divide(h_L1CSCTrack_20ME1_eta, h_truth_30_eta,1.0,1.0,"B");
-  h_L1CSCTrack_20ME1_phi->Divide(h_L1CSCTrack_20ME1_phi, h_truth_30_phi,1.0,1.0,"B");
-
-  h_L1CSCTrack_2Stubs_pt->Divide(h_L1CSCTrack_2Stubs_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs_pt_me1->Divide(h_L1CSCTrack_2Stubs_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs_pt_me2->Divide(h_L1CSCTrack_2Stubs_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs_eta->Divide(h_L1CSCTrack_2Stubs_eta, h_truth_eta,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs_phi->Divide(h_L1CSCTrack_2Stubs_phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_2StubsME1_pt->Divide(h_L1CSCTrack_2StubsME1_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_2StubsME1_pt_me1->Divide(h_L1CSCTrack_2StubsME1_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_2StubsME1_pt_me2->Divide(h_L1CSCTrack_2StubsME1_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_2StubsME1_eta->Divide(h_L1CSCTrack_2StubsME1_eta, h_truth_eta,1.0,1.0,"B");
   h_L1CSCTrack_2StubsME1_phi->Divide(h_L1CSCTrack_2StubsME1_phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_2Stubs20_pt->Divide(h_L1CSCTrack_2Stubs20_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs20_pt_me1->Divide(h_L1CSCTrack_2Stubs20_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs20_pt_me2->Divide(h_L1CSCTrack_2Stubs20_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs20_eta->Divide(h_L1CSCTrack_2Stubs20_eta, h_truth_30_eta,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs20_phi->Divide(h_L1CSCTrack_2Stubs20_phi, h_truth_30_phi,1.0,1.0,"B");
-  h_L1CSCTrack_2Stubs20ME1_pt->Divide(h_L1CSCTrack_2Stubs20ME1_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs20ME1_pt_me1->Divide(h_L1CSCTrack_2Stubs20ME1_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_2Stubs20ME1_pt_me2->Divide(h_L1CSCTrack_2Stubs20ME1_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs20ME1_eta->Divide(h_L1CSCTrack_2Stubs20ME1_eta, h_truth_30_eta,1.0,1.0,"B");
   h_L1CSCTrack_2Stubs20ME1_phi->Divide(h_L1CSCTrack_2Stubs20ME1_phi, h_truth_30_phi,1.0,1.0,"B");
 
-  h_L1CSCTrack_3Stubs_pt->Divide(h_L1CSCTrack_3Stubs_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs_pt_me1->Divide(h_L1CSCTrack_3Stubs_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs_pt_me2->Divide(h_L1CSCTrack_3Stubs_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs_eta->Divide(h_L1CSCTrack_3Stubs_eta, h_truth_eta,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs_phi->Divide(h_L1CSCTrack_3Stubs_phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_3StubsME1_pt->Divide(h_L1CSCTrack_3StubsME1_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_3StubsME1_pt_me1->Divide(h_L1CSCTrack_3StubsME1_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_3StubsME1_pt_me2->Divide(h_L1CSCTrack_3StubsME1_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_3StubsME1_eta->Divide(h_L1CSCTrack_3StubsME1_eta, h_truth_eta,1.0,1.0,"B");
   h_L1CSCTrack_3StubsME1_phi->Divide(h_L1CSCTrack_3StubsME1_phi, h_truth_phi,1.0,1.0,"B");
-  h_L1CSCTrack_3Stubs20_pt->Divide(h_L1CSCTrack_3Stubs20_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs20_pt_me1->Divide(h_L1CSCTrack_3Stubs20_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs20_pt_me2->Divide(h_L1CSCTrack_3Stubs20_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs20_eta->Divide(h_L1CSCTrack_3Stubs20_eta, h_truth_30_eta,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs20_phi->Divide(h_L1CSCTrack_3Stubs20_phi, h_truth_30_phi,1.0,1.0,"B");
-  h_L1CSCTrack_3Stubs20ME1_pt->Divide(h_L1CSCTrack_3Stubs20ME1_pt, h_truth_pt,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs20ME1_pt_me1->Divide(h_L1CSCTrack_3Stubs20ME1_pt_me1, h_truth_pt_me1,1.0,1.0,"B");
+  h_L1CSCTrack_3Stubs20ME1_pt_me2->Divide(h_L1CSCTrack_3Stubs20ME1_pt_me2, h_truth_pt_me2,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs20ME1_eta->Divide(h_L1CSCTrack_3Stubs20ME1_eta, h_truth_30_eta,1.0,1.0,"B");
   h_L1CSCTrack_3Stubs20ME1_phi->Divide(h_L1CSCTrack_3Stubs20ME1_phi, h_truth_30_phi,1.0,1.0,"B");
 
