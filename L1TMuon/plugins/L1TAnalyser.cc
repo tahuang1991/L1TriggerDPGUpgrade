@@ -294,20 +294,19 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	h_L1CSCTrack__pt->Fill(truemuon.Pt());
 	h_L1CSCTrack__eta->Fill(trueEta);
 	h_L1CSCTrack__phi->Fill(truemuon.Phi());
-
 	if (hasME1){
 	  h_L1CSCTrack_ME1_pt->Fill(truemuon.Pt());
 	  h_L1CSCTrack_ME1_eta->Fill(trueEta);
 	  h_L1CSCTrack_ME1_phi->Fill(truemuon.Phi());
 	}
-	if (l1muon.Pt() > 20){
+	if (l1muon.Pt() >= 20){
 	  h_L1CSCTrack_20_pt->Fill(truemuon.Pt());
-	  h_L1CSCTrack_20_eta->Fill(trueEta);
-	  h_L1CSCTrack_20_phi->Fill(truemuon.Phi());
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_20_eta->Fill(trueEta);
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_20_phi->Fill(truemuon.Phi());
 	  if (hasME1){
 	    h_L1CSCTrack_20ME1_pt->Fill(truemuon.Pt());
-	    h_L1CSCTrack_20ME1_eta->Fill(trueEta);
-	    h_L1CSCTrack_20ME1_phi->Fill(truemuon.Phi());
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_20ME1_eta->Fill(trueEta);
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_20ME1_phi->Fill(truemuon.Phi());
 	  }
 	}
       }
@@ -316,20 +315,19 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	h_L1CSCTrack_2Stubs_pt->Fill(truemuon.Pt());
 	h_L1CSCTrack_2Stubs_eta->Fill(trueEta);
 	h_L1CSCTrack_2Stubs_phi->Fill(truemuon.Phi());
-
 	if (hasME1){
 	  h_L1CSCTrack_2StubsME1_pt->Fill(truemuon.Pt());
 	  h_L1CSCTrack_2StubsME1_eta->Fill(trueEta);
 	  h_L1CSCTrack_2StubsME1_phi->Fill(truemuon.Phi());
 	}
-	if (l1muon.Pt() > 20){
+	if (l1muon.Pt() >= 20){
 	  h_L1CSCTrack_2Stubs20_pt->Fill(truemuon.Pt());
-	  h_L1CSCTrack_2Stubs20_eta->Fill(trueEta);
-	  h_L1CSCTrack_2Stubs20_phi->Fill(truemuon.Phi());
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20_eta->Fill(trueEta);
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20_phi->Fill(truemuon.Phi());
 	  if (hasME1){
 	    h_L1CSCTrack_2Stubs20ME1_pt->Fill(truemuon.Pt());
-	    h_L1CSCTrack_2Stubs20ME1_eta->Fill(trueEta);
-	    h_L1CSCTrack_2Stubs20ME1_phi->Fill(truemuon.Phi());
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20ME1_eta->Fill(trueEta);
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_2Stubs20ME1_phi->Fill(truemuon.Phi());
 	  }
 	}
       }
@@ -338,20 +336,19 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	h_L1CSCTrack_3Stubs_pt->Fill(truemuon.Pt());
 	h_L1CSCTrack_3Stubs_eta->Fill(trueEta);
 	h_L1CSCTrack_3Stubs_phi->Fill(truemuon.Phi());
-
 	if (hasME1){
 	  h_L1CSCTrack_3StubsME1_pt->Fill(truemuon.Pt());
 	  h_L1CSCTrack_3StubsME1_eta->Fill(trueEta);
 	  h_L1CSCTrack_3StubsME1_phi->Fill(truemuon.Phi());
 	}
-	if (l1muon.Pt() > 20){
+	if (l1muon.Pt() >= 20){
 	  h_L1CSCTrack_3Stubs20_pt->Fill(truemuon.Pt());
-	  h_L1CSCTrack_3Stubs20_eta->Fill(trueEta);
-	  h_L1CSCTrack_3Stubs20_phi->Fill(truemuon.Phi());
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20_eta->Fill(trueEta);
+	  if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20_phi->Fill(truemuon.Phi());
 	  if (hasME1){
 	    h_L1CSCTrack_3Stubs20ME1_pt->Fill(truemuon.Pt());
-	    h_L1CSCTrack_3Stubs20ME1_eta->Fill(trueEta);
-	    h_L1CSCTrack_3Stubs20ME1_phi->Fill(truemuon.Phi());
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20ME1_eta->Fill(trueEta);
+	    if (truemuon.Pt() > 30) h_L1CSCTrack_3Stubs20ME1_phi->Fill(truemuon.Phi());
 	  }
 	}
       }
@@ -704,6 +701,44 @@ void L1TAnalyser::endJob()
   h_L1CSCTrack_3Stubs20ME1_eta->Sumw2();
   h_L1CSCTrack_3Stubs20ME1_phi->Sumw2();
 
+  // TGraphAsymmErrors *h_L1CSCTrack__pt;  h_L1CSCTrack__pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__pt");  h_L1CSCTrack__pt->BayesDivide(h_L1CSCTrack__pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack__eta;  h_L1CSCTrack__eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__eta");  h_L1CSCTrack__eta->BayesDivide(h_L1CSCTrack__eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack__phi;  h_L1CSCTrack__phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack__phi");  h_L1CSCTrack__phi->BayesDivide(h_L1CSCTrack__phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_ME1_pt;  h_L1CSCTrack_ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_pt");  h_L1CSCTrack_ME1_pt->BayesDivide(h_L1CSCTrack_ME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_ME1_eta;  h_L1CSCTrack_ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_eta");  h_L1CSCTrack_ME1_eta->BayesDivide(h_L1CSCTrack_ME1_eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_ME1_phi;  h_L1CSCTrack_ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_ME1_phi");  h_L1CSCTrack_ME1_phi->BayesDivide(h_L1CSCTrack_ME1_phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_20_pt;  h_L1CSCTrack_20_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_pt");  h_L1CSCTrack_20_pt->BayesDivide(h_L1CSCTrack_20_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_20_eta;  h_L1CSCTrack_20_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_eta");  h_L1CSCTrack_20_eta->BayesDivide(h_L1CSCTrack_20_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_20_phi;  h_L1CSCTrack_20_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20_phi");  h_L1CSCTrack_20_phi->BayesDivide(h_L1CSCTrack_20_phi, h_truth_30_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_pt;  h_L1CSCTrack_20ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_pt");  h_L1CSCTrack_20ME1_pt->BayesDivide(h_L1CSCTrack_20ME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_eta;  h_L1CSCTrack_20ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_eta");  h_L1CSCTrack_20ME1_eta->BayesDivide(h_L1CSCTrack_20ME1_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_20ME1_phi;  h_L1CSCTrack_20ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_20ME1_phi");  h_L1CSCTrack_20ME1_phi->BayesDivide(h_L1CSCTrack_20ME1_phi, h_truth_30_phi);
+
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs_pt;  h_L1CSCTrack_2Stubs_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs_pt");  h_L1CSCTrack_2Stubs_pt->BayesDivide(h_L1CSCTrack_2Stubs_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs_eta;  h_L1CSCTrack_2Stubs_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs_eta");  h_L1CSCTrack_2Stubs_eta->BayesDivide(h_L1CSCTrack_2Stubs_eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs_phi;  h_L1CSCTrack_2Stubs_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs_phi");  h_L1CSCTrack_2Stubs_phi->BayesDivide(h_L1CSCTrack_2Stubs_phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_2StubsME1_pt;  h_L1CSCTrack_2StubsME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2StubsME1_pt");  h_L1CSCTrack_2StubsME1_pt->BayesDivide(h_L1CSCTrack_2StubsME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_2StubsME1_eta;  h_L1CSCTrack_2StubsME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2StubsME1_eta");  h_L1CSCTrack_2StubsME1_eta->BayesDivide(h_L1CSCTrack_2StubsME1_eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_2StubsME1_phi;  h_L1CSCTrack_2StubsME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2StubsME1_phi");  h_L1CSCTrack_2StubsME1_phi->BayesDivide(h_L1CSCTrack_2StubsME1_phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20_pt;  h_L1CSCTrack_2Stubs20_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20_pt");  h_L1CSCTrack_2Stubs20_pt->BayesDivide(h_L1CSCTrack_2Stubs20_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20_eta;  h_L1CSCTrack_2Stubs20_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20_eta");  h_L1CSCTrack_2Stubs20_eta->BayesDivide(h_L1CSCTrack_2Stubs20_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20_phi;  h_L1CSCTrack_2Stubs20_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20_phi");  h_L1CSCTrack_2Stubs20_phi->BayesDivide(h_L1CSCTrack_2Stubs20_phi, h_truth_30_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20ME1_pt;  h_L1CSCTrack_2Stubs20ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20ME1_pt");  h_L1CSCTrack_2Stubs20ME1_pt->BayesDivide(h_L1CSCTrack_2Stubs20ME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20ME1_eta;  h_L1CSCTrack_2Stubs20ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20ME1_eta");  h_L1CSCTrack_2Stubs20ME1_eta->BayesDivide(h_L1CSCTrack_2Stubs20ME1_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_2Stubs20ME1_phi;  h_L1CSCTrack_2Stubs20ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_2Stubs20ME1_phi");  h_L1CSCTrack_2Stubs20ME1_phi->BayesDivide(h_L1CSCTrack_2Stubs20ME1_phi, h_truth_30_phi);
+
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs_pt;  h_L1CSCTrack_3Stubs_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs_pt");  h_L1CSCTrack_3Stubs_pt->BayesDivide(h_L1CSCTrack_3Stubs_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs_eta;  h_L1CSCTrack_3Stubs_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs_eta");  h_L1CSCTrack_3Stubs_eta->BayesDivide(h_L1CSCTrack_3Stubs_eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs_phi;  h_L1CSCTrack_3Stubs_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs_phi");  h_L1CSCTrack_3Stubs_phi->BayesDivide(h_L1CSCTrack_3Stubs_phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_3StubsME1_pt;  h_L1CSCTrack_3StubsME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3StubsME1_pt");  h_L1CSCTrack_3StubsME1_pt->BayesDivide(h_L1CSCTrack_3StubsME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_3StubsME1_eta;  h_L1CSCTrack_3StubsME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3StubsME1_eta");  h_L1CSCTrack_3StubsME1_eta->BayesDivide(h_L1CSCTrack_3StubsME1_eta, h_truth_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_3StubsME1_phi;  h_L1CSCTrack_3StubsME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3StubsME1_phi");  h_L1CSCTrack_3StubsME1_phi->BayesDivide(h_L1CSCTrack_3StubsME1_phi, h_truth_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20_pt;  h_L1CSCTrack_3Stubs20_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20_pt");  h_L1CSCTrack_3Stubs20_pt->BayesDivide(h_L1CSCTrack_3Stubs20_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20_eta;  h_L1CSCTrack_3Stubs20_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20_eta");  h_L1CSCTrack_3Stubs20_eta->BayesDivide(h_L1CSCTrack_3Stubs20_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20_phi;  h_L1CSCTrack_3Stubs20_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20_phi");  h_L1CSCTrack_3Stubs20_phi->BayesDivide(h_L1CSCTrack_3Stubs20_phi, h_truth_30_phi);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20ME1_pt;  h_L1CSCTrack_3Stubs20ME1_pt=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20ME1_pt");  h_L1CSCTrack_3Stubs20ME1_pt->BayesDivide(h_L1CSCTrack_3Stubs20ME1_pt, h_truth_pt);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20ME1_eta;  h_L1CSCTrack_3Stubs20ME1_eta=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20ME1_eta");  h_L1CSCTrack_3Stubs20ME1_eta->BayesDivide(h_L1CSCTrack_3Stubs20ME1_eta, h_truth_30_eta);
+  // TGraphAsymmErrors *h_L1CSCTrack_3Stubs20ME1_phi;  h_L1CSCTrack_3Stubs20ME1_phi=fs->make<TGraphAsymmErrors>("h_L1CSCTrack_3Stubs20ME1_phi");  h_L1CSCTrack_3Stubs20ME1_phi->BayesDivide(h_L1CSCTrack_3Stubs20ME1_phi, h_truth_30_phi);
 
   h_L1CSCTrack__pt->Divide(h_L1CSCTrack__pt, h_truth_pt,1.0,1.0,"B");
   h_L1CSCTrack__eta->Divide(h_L1CSCTrack__eta, h_truth_eta,1.0,1.0,"B");
@@ -745,14 +780,6 @@ void L1TAnalyser::endJob()
   h_L1CSCTrack_3Stubs20ME1_phi->Divide(h_L1CSCTrack_3Stubs20ME1_phi, h_truth_30_phi,1.0,1.0,"B");
 
 
-  TGraphAsymmErrors *g_L1CSCTrack__pt;
-  g_L1CSCTrack__pt=fs->make<TGraphAsymmErrors>();
-  g_L1CSCTrack__pt->BayesDivide(h_L1CSCTrack__pt, h_truth_pt);
-
-  TGraphAsymmErrors *g_L1CSCTrack_20_pt;
-  g_L1CSCTrack_20_pt=fs->make<TGraphAsymmErrors>();
-  g_L1CSCTrack_20_pt->BayesDivide(h_L1CSCTrack_20_pt, h_truth_pt);
-  
 }
 
 //define this as a plug-in
