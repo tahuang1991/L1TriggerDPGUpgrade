@@ -1,4 +1,3 @@
-
 // system include files
 #include <memory>
 #include <cmath>
@@ -77,6 +76,7 @@ private:
 
   TH1F* h_GEMDPhi;
   TH1F* h_nStation;  
+  TH1F* h_nStationTF;  
 
   TH1F* h_StubQuality;
   TH1F* h_StubQualityGEM;
@@ -121,6 +121,8 @@ private:
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
+
+  TH1F* h_TFnStubinTrack_phihole;
 
 };
 //
@@ -247,11 +249,15 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (int netabin = 0; netabin < netabins; netabin++){
 	if ((netabin == eta_all) ||
 	    ((netabin == eta_me1) && (trueEta > 1.6 && trueEta < 2.1)) ||
-	    ((netabin == eta_me2) && (trueEta > 2.1 && trueEta < 2.4))){
-	    
+	    ((netabin == eta_me2) && (trueEta > 2.1 && trueEta < 2.4))){	    
 	  for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	    for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	      for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
+
+		if (nptbin == 0 and netabin == 0 and nMEbin == 0 and nstubbin == 0)
+		  if (truemuon.Phi() > 0 and truemuon.Phi() < 0.4)
+		    if (trueEta < 1.75)
+		      h_TFnStubinTrack_phihole->Fill(nstubs);
 
 		h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		if ((nptbin == pt_all) ||
@@ -288,6 +294,16 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   
+  // all lcts
+  for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=lcts->begin(); csc!=lcts->end(); csc++){
+    if ((*csc).first.endcap() == 1){
+      h_nStation->Fill((*csc).first.station());
+    }
+    if ((*csc).first.endcap() == 2){
+      h_nStation->Fill(-((*csc).first.station()));
+    }
+  }
+
   // lcts used in tracks
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
   for(; tmp_trk != l1csctracks->end(); tmp_trk++){
@@ -298,7 +314,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     rank=l1track.rank();
     ptLUTAddress = l1track.ptLUTAddress();
     l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
-
     int nstubs = 0;
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
@@ -307,10 +322,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_GEMDPhi->Fill((*csc).second.first->getGEMDPhi());
 
       if ((*csc).first.endcap() == 1){
-	h_nStation->Fill((*csc).first.station());
+	h_nStationTF->Fill((*csc).first.station());
       }
       if ((*csc).first.endcap() == 2){
-	h_nStation->Fill(-((*csc).first.station()));
+	h_nStationTF->Fill(-((*csc).first.station()));
       }
       if ((*csc).second.first->getGEMDPhi() > -99){
 	hasGEM = true;
@@ -346,10 +361,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void L1TAnalyser::beginJob()
 {
 
-  TString etabinsName[] = {"etaAll", "etaME1", "etaME2"};
-  TString ptbinsName[] = {"ptAll", "pt20"};
+  TString etabinsName[] = {"", "eta1", "eta2"};
+  TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
-  TString MEbinsName[] = {"MEAll", "ME1", "ME2"};
+  TString MEbinsName[] = {"", "hasME1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
@@ -398,6 +413,10 @@ void L1TAnalyser::beginJob()
   h_TFnStubinTrack=fs->make<TH1F>("TFnStubinTrack","N Stubs in Track",6,0,6);
   h_TFnStubinTrack->GetXaxis()->SetTitle("N Stubs in Track");
   h_TFnStubinTrack->GetYaxis()->SetTitle("Counts");
+
+  h_TFnStubinTrack_phihole=fs->make<TH1F>("TFnStubinTrack_phihole","N Stubs in Track",6,0,6);
+  h_TFnStubinTrack_phihole->GetXaxis()->SetTitle("N Stubs in Track");
+  h_TFnStubinTrack_phihole->GetYaxis()->SetTitle("Counts");
 
   h_TFnStubinTrackGEM=fs->make<TH1F>("TFnStubinTrackGEM","N Stubs in Track",6,0,6);
   h_TFnStubinTrackGEM->GetXaxis()->SetTitle("N Stubs in Track");
@@ -475,7 +494,11 @@ void L1TAnalyser::beginJob()
   h_GEMDPhi->GetXaxis()->SetTitle("dPhi");
   h_GEMDPhi->GetYaxis()->SetTitle("Counts");
 
-  h_nStation=fs->make<TH1F>("nStation","stations in track",11,-5,6);
+  h_nStationTF=fs->make<TH1F>("nStationTF","stations in track",11,-5,6);
+  h_nStationTF->GetXaxis()->SetTitle("Station number");
+  h_nStationTF->GetYaxis()->SetTitle("Counts");
+
+  h_nStation=fs->make<TH1F>("nStation","LCT stations",11,-5,6);
   h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
 
