@@ -244,6 +244,14 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
 	}
       }
+      // testing for eff drop at phi~0
+      // if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75)
+      // 	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4)
+      // 	  if (nstubs > 1 && nstubs < 3)
+      // 	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
+      // 		 << ", eta = "<< BaseSimTrk->momentum().eta()
+      // 		 << ", phi = "<< BaseSimTrk->momentum().phi()
+      // 		 << endl;
 
       float trueEta = fabs(truemuon.Eta());
       for (int netabin = 0; netabin < netabins; netabin++){
