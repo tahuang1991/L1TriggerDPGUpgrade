@@ -75,8 +75,10 @@ private:
   double max_aEta;
 
   TH1F* h_GEMDPhi;
-  TH1F* h_nStation;  
-  TH1F* h_nStationTF;  
+  TH1F* h_nStation;
+  TH1F* h_nStationTF;
+  TH1F* h_nStationTFloweta;
+  TH1F* h_nStationTFlowetalowphi;  
 
   TH1F* h_StubQuality;
   TH1F* h_StubQualityGEM;
@@ -180,6 +182,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   float minDRMatch = 0.5;
 
+  bool loweta = false;
+  bool lowphi = false;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
   for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
     if ((fabs(BaseSimTrk->type()) == 13) and
@@ -245,13 +249,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
       }
       // testing for eff drop at phi~0
-      // if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75)
-      // 	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4)
-      // 	  if (nstubs > 1 && nstubs < 3)
-      // 	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
-      // 		 << ", eta = "<< BaseSimTrk->momentum().eta()
-      // 		 << ", phi = "<< BaseSimTrk->momentum().phi()
-      // 		 << endl;
+      if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
+	loweta = true;
+	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4){
+	  lowphi = true;
+	  if (nstubs > 1 && nstubs < 3)
+      	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
+      		 << ", eta = "<< BaseSimTrk->momentum().eta()
+      		 << ", phi = "<< BaseSimTrk->momentum().phi()
+      		 << endl;
+	}
+      }
 
       float trueEta = fabs(truemuon.Eta());
       for (int netabin = 0; netabin < netabins; netabin++){
@@ -331,6 +339,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if ((*csc).first.endcap() == 1){
 	h_nStationTF->Fill((*csc).first.station());
+	if (loweta){
+	  h_nStationTFloweta->Fill((*csc).first.station());
+	  if (lowphi) h_nStationTFlowetalowphi->Fill((*csc).first.station());
+	}
       }
       if ((*csc).first.endcap() == 2){
 	h_nStationTF->Fill(-((*csc).first.station()));
@@ -505,6 +517,12 @@ void L1TAnalyser::beginJob()
   h_nStationTF=fs->make<TH1F>("nStationTF","stations in track",11,-5,6);
   h_nStationTF->GetXaxis()->SetTitle("Station number");
   h_nStationTF->GetYaxis()->SetTitle("Counts");
+  h_nStationTFloweta=fs->make<TH1F>("nStationTFloweta","stations in track",11,-5,6);
+  h_nStationTFloweta->GetXaxis()->SetTitle("Station number");
+  h_nStationTFloweta->GetYaxis()->SetTitle("Counts");
+  h_nStationTFlowetalowphi=fs->make<TH1F>("nStationTFlowetalowphi","stations in track",11,-5,6);
+  h_nStationTFlowetalowphi->GetXaxis()->SetTitle("Station number");
+  h_nStationTFlowetalowphi->GetYaxis()->SetTitle("Counts");
 
   h_nStation=fs->make<TH1F>("nStation","LCT stations",11,-5,6);
   h_nStation->GetXaxis()->SetTitle("Station number");
