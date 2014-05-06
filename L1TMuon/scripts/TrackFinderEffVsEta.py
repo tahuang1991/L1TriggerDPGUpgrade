@@ -37,20 +37,20 @@ def ThreeStubsWith():
 	h2.SetLineWidth(2)
 
 	b1.Draw()
-	h1.Draw("same")
+	#h1.Draw("same")
 	h2.Draw("same")
 
 
 	legend = TLegend(0.23,0.16,0.52,0.44,"","brNDC")
 	legend.SetFillColor(ROOT.kWhite)
         legend.SetFillStyle(0)
-	legend.SetHeader("PU0")
-	legend.AddEntry(h1,"current+GE11","l")
+	legend.SetHeader("new_PU0")
+#legend.AddEntry(h1,"current+GE11","l")
 	legend.AddEntry(h2,"current+GE11+GE21","l")
 	legend.Draw("same")
 
-	c1.SaveAs("%s_PU0.pdf"%hist_name)
-	c1.SaveAs("%s_PU0.png"%hist_name)
+	c1.SaveAs("%s_new_PU0.pdf"%hist_name)
+	c1.SaveAs("%s_new_PU0.png"%hist_name)
 
 #_______________________________________________________________
 def ThreeStubsWithME1():
@@ -85,20 +85,20 @@ def ThreeStubsWithME1():
 	h2.SetLineWidth(2)
 
 	b1.Draw()
-	h1.Draw("same")
+	#h1.Draw("same")
 	h2.Draw("same")
 
 
 	legend = TLegend(0.23,0.16,0.52,0.44,"","brNDC")
 	legend.SetFillColor(ROOT.kWhite)
         legend.SetFillStyle(0)
-	legend.SetHeader("PU0")
-	legend.AddEntry(h1,"current+GE11","l")
+	legend.SetHeader("new_PU0")
+#	legend.AddEntry(h1,"current+GE11","l")
 	legend.AddEntry(h2,"current+GE11+GE21","l")
 	legend.Draw("same")
 
-	c1.SaveAs("%s_PU0.pdf"%hist_name)
-	c1.SaveAs("%s_PU0.png"%hist_name)
+	c1.SaveAs("%s_new_PU0.pdf"%hist_name)
+	c1.SaveAs("%s_new_PU0.png"%hist_name)
 
 #_______________________________________________________________
 def ThreeStubsWithME1PtCut():
@@ -133,28 +133,28 @@ def ThreeStubsWithME1PtCut():
 	h2.SetLineWidth(2)
 
 	b1.Draw()
-	h1.Draw("same")
+	#h1.Draw("same")
 	h2.Draw("same")
 
 
 	legend = TLegend(0.23,0.16,0.52,0.44,"","brNDC")
 	legend.SetFillColor(ROOT.kWhite)
         legend.SetFillStyle(0)
-	legend.SetHeader("PU0")
-	legend.AddEntry(h1,"current+GE11","l")
+	legend.SetHeader("new_PU0")
+#legend.AddEntry(h1,"current+GE11","l")
 	legend.AddEntry(h2,"current+GE11+GE21","l")
 	legend.Draw("same")
 
 
-	c1.SaveAs("%s_PU0.pdf"%hist_name)
-	c1.SaveAs("%s_PU0.png"%hist_name)
+	c1.SaveAs("%s_new_PU0.pdf"%hist_name)
+	c1.SaveAs("%s_new_PU0.png"%hist_name)
 
 #_______________________________________________________________________________
 if __name__ == "__main__":
 	
 	input_dir = "files/"
 	file_name1 = "histo_out_L1muon2023GE11.root"
-	file_name2 = "histo_out_L1muon2023GE11GE21.root"
+	file_name2 = "Ana_histo_out_L1_cust_2019NewTF.root"
 	ThreeStubsWith()
 	ThreeStubsWithME1()
 	ThreeStubsWithME1PtCut()
