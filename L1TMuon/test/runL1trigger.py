@@ -1,16 +1,47 @@
 LPC = False
-GE11 = False
-GE21 = False
-#GE11 = True
-#GE21 = True
-runevents = 10000
-#runevents = -1;
+runevents = 1000
+runevents = -1;
 #LPC = True
 
-#fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU0"
-#fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
+import os
+import FWCore.ParameterSet.Config as cms
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('python')
+options.register ('gem', 1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "gem: 1  default")
+options.register ('data', 1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "data: 1  default")
+import sys
+if len(sys.argv) > 0:
+    last = sys.argv.pop()
+    sys.argv.extend(last.split(","))
+    print sys.argv
+    
+if hasattr(sys, "argv") == True:
+	options.parseArguments()
+	gem = options.gem
+	data = options.data
+
+GE11 = False
+GE21 = False
+if gem == 1:
+    GE11 = True
+if gem == 2:
+    GE21 = True
+if data == 0:
+    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU0"
+if data == 1:
+    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
+if data == 2:
+    fileOutputName = "SingleNu_SLHC12_2023Muon_DIGI_PU140"
+    
+#
 #fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU200"
-fileOutputName = "SingleMu_SLHC12_PU0"
+#fileOutputName = "SingleMu_SLHC12_PU0"
 ## input
 #directory = '/u/user/jlee/scratch/CMSSW_6_2_0_SLHC11_PU0/'
 directory = '/u/user/jlee/scratch/'
@@ -20,7 +51,6 @@ if LPC:
     saveDir = '/eos/uscms/store/user/lpcgem/jlee/l1csctf/'
 directory = directory + fileOutputName + '/'
 
-import FWCore.ParameterSet.Config as cms
 process = cms.Process('L1')
 # import of standard configuration
 process.load('Configuration.StandardSequences.Services_cff')
@@ -34,7 +64,7 @@ process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 500
 
 from CalibMuon.CSCCalibration.CSCIndexer_cfi import CSCIndexerESProducer
 process.CSCIndexerESProducer= CSCIndexerESProducer
@@ -123,7 +153,7 @@ process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 
 process.L1TAnalyser = cms.EDAnalyzer('L1TAnalyser',
-    minPt = cms.untracked.double(10),
+    minPt = cms.untracked.double(2),
     minEta = cms.untracked.double(1.6),
     maxEta = cms.untracked.double(2.4),
 )
@@ -134,19 +164,12 @@ process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,pr
 from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
 if GE21:
     process = cust_2023Muon(process)
-#    process.simCscTriggerPrimitiveDigis.tmbSLHC.me21ILT.debugGEMDphi = cms.untracked.bool(True)
-#    process.simCscTriggerPrimitiveDigis.tmbSLHC.me21ILT.debugMatching = cms.untracked.bool(True)
-    print "runME11ILT", process.simCscTriggerPrimitiveDigis.tmbSLHC.me11ILT.runME11ILT
-    print "runME21ILT", process.simCscTriggerPrimitiveDigis.tmbSLHC.me21ILT.runME21ILT
-    print "runME21ILT doGemMatching", process.simCscTriggerPrimitiveDigis.tmbSLHC.me21ILT.doGemMatching
 elif GE11:
     process = cust_2019WithGem(process)
-    print "runME11ILT", process.simCscTriggerPrimitiveDigis.tmbSLHC.me11ILT.runME11ILT
 else:
     process = cust_2019(process)
 
-process.simCsctfTrackDigis.SectorProcessor.isCoreVerbose = cms.bool(True) 
-
+#process.simCsctfTrackDigis.SectorProcessor.isCoreVerbose = cms.bool(True) 
 print "PTLUT", process.simCsctfTrackDigis.SectorProcessor.PTLUT
 print "firmwareSP", process.simCsctfTrackDigis.SectorProcessor.firmwareSP
 print "clctNplanesHitPattern", process.simCscTriggerPrimitiveDigis.clctSLHC.clctNplanesHitPattern
