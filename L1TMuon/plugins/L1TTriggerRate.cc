@@ -53,10 +53,10 @@ using namespace std;
 using namespace edm;
 using namespace L1TMuon;
 
-class L1TAnalyser : public edm::EDAnalyzer {
+class L1TTriggerRate : public edm::EDAnalyzer {
 public:
-  explicit L1TAnalyser(const edm::ParameterSet&);
-  ~L1TAnalyser();
+  explicit L1TTriggerRate(const edm::ParameterSet&);
+  ~L1TTriggerRate();
 
 
 private:
@@ -117,9 +117,6 @@ private:
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, ME_2, nMEbins};
-  TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
-  TH1F* h_truth_eta[netabins][nptbins][nstubbins][nMEbins];
-  TH1F* h_truth_phi[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -138,7 +135,7 @@ private:
 //
 // constructors and destructor
 //
-L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
+L1TTriggerRate::L1TTriggerRate(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
   //  runSRLUTs = new csctf_analysis::RunSRLUTs();
@@ -148,7 +145,7 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
   max_aEta = iConfig.getUntrackedParameter<double>("maxEta", 2.4);
 
 }
-L1TAnalyser::~L1TAnalyser()
+L1TTriggerRate::~L1TTriggerRate()
 {
  
   // do anything here that needs to be done at desctruction time
@@ -158,8 +155,7 @@ L1TAnalyser::~L1TAnalyser()
 //
 // member functions
 // ------------ method called to for each event  ------------
-void
-L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   ///////////////////
   //Setup Stuff//////
@@ -177,138 +173,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("L1TMuonTriggerPrimitives",trigPrims);
   edm::Handle<CSCCorrelatedLCTDigiCollection> lcts;
   iEvent.getByLabel("simCscTriggerPrimitiveDigis","MPCSORTED", lcts);
-  edm::Handle<edm::SimTrackContainer> BaseSimTracks;
-  iEvent.getByLabel("g4SimHits",BaseSimTracks);
-
-  float minDRMatch = 0.5;
-
-  bool loweta = false;
-  bool lowphi = false;
-  edm::SimTrackContainer::const_iterator BaseSimTrk;
-  for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
-    if ((fabs(BaseSimTrk->type()) == 13) and
-	(BaseSimTrk->momentum().pt() >= min_pt) and
-	(BaseSimTrk->momentum().pt() <= max_pt) and
-	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) and 
-	(fabs(BaseSimTrk->momentum().eta()) <= max_aEta) ){
-
-      TLorentzVector truemuon; 
-      truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
-      TLorentzVector l1muon;      
-      int nstubs=0;
-      float tempDRMatch = 10;
-      bool hasME1=false;
-      bool hasME2=false;
-
-      L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
-      for(; tmp_trk != l1csctracks->end(); tmp_trk++){
-	float pt=0, eta=-9, phi=-9;
-	unsigned int quality_packed=0, rank=0;// ptLUTAddress=0;
-	unsigned int pt_packed=0;
-
-	auto l1track = tmp_trk->first;
-	rank=l1track.rank();
-	//ptLUTAddress = l1track.ptLUTAddress();
-	l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
-	pt = ptscale[pt_packed];
-	
-	unsigned int sector = l1track.sector();// get sector
-	edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
-	iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
-	const L1MuTriggerScales  *ts;// the trigger scales 
-	ts = scales.product();
-	unsigned gbl_phi = l1track.localPhi() + ((sector - 1)*24) + 6;
-	if(gbl_phi > 143) gbl_phi -= 143;
-	phi = ts->getPhiScale()->getLowEdge( gbl_phi&0xff );
-	unsigned eta_sign = (l1track.endcap() == 1 ? 0 : 1);
-	eta = ts->getRegionalEtaScale(2)->getCenter( ((l1track.eta_packed()) | (eta_sign<<5)) & 0x3f );
-
-	int tempnstubs = 0;
-	bool temphasME1=false;
-	bool temphasME2=false;
-
-	TLorentzVector templ1muon;
-	templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
-	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
-	for(; csc!=tmp_trk->second.end(); csc++){
-	  if ((*csc).first.station()==1) temphasME1 = true;
-	  if ((*csc).first.station()==2) temphasME2 = true;
-	  tempnstubs++;
-	}
-
-	if (truemuon.DeltaR(templ1muon) < minDRMatch){
-	  if (tempnstubs >= nstubs){
-	    if (truemuon.DeltaR(templ1muon) < tempDRMatch){
-	      nstubs = tempnstubs;
-	      tempDRMatch = truemuon.DeltaR(templ1muon);
-	      l1muon = templ1muon;
-	      hasME1 = temphasME1;
-	      hasME2 = temphasME2;
-	    }
-	  }
-	}
-      }
-      // testing for eff drop at phi~0
-      if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
-	loweta = true;
-	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4){
-	  lowphi = true;
-	  if (nstubs > 1 && nstubs < 3)
-      	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
-      		 << ", eta = "<< BaseSimTrk->momentum().eta()
-      		 << ", phi = "<< BaseSimTrk->momentum().phi()
-      		 << endl;
-	}
-      }
-
-      float trueEta = fabs(truemuon.Eta());
-      for (int netabin = 0; netabin < netabins; netabin++){
-	if ((netabin == eta_all) ||
-	    ((netabin == eta_me1) && (trueEta > 1.6 && trueEta < 2.1)) ||
-	    ((netabin == eta_me2) && (trueEta > 2.1 && trueEta < 2.4))){	    
-	  for (int nptbin = 0; nptbin < nptbins; nptbin++){
-	    for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
-	      for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
-
-		if (nptbin == 0 and netabin == 0 and nMEbin == 0 and nstubbin == 0)
-		  if (truemuon.Phi() > 0 and truemuon.Phi() < 0.4)
-		    if (trueEta < 1.75)
-		      h_TFnStubinTrack_phihole->Fill(nstubs);
-
-		h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
-		if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
-		    ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-		  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(trueEta);
-		  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
-		}
-		
-		if ((nptbin == pt_all) ||
-		    ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
-
-		  if (((nstubbin == stub_2) && (nstubs > 1)) ||
-		      ((nstubbin == stub_3) && (nstubs > 2))){
-
-		    if ((nMEbin == ME_all) ||
-			((nMEbin == ME_1) && (hasME1)) ||
-			((nMEbin == ME_2) && (hasME2))){
-
-		      h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
-		      
-		      if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
-			  ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-			h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(trueEta);
-			h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-      }
-    }
-  }
   
   // all lcts
   for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=lcts->begin(); csc!=lcts->end(); csc++){
@@ -324,12 +188,38 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
   for(; tmp_trk != l1csctracks->end(); tmp_trk++){
     float GEMdPhi = -99;
+    float pt=0, eta=-9, phi=-9;
     unsigned int quality_packed=0, rank=0, ptLUTAddress=0;
     unsigned int pt_packed=0;
+
     auto l1track = tmp_trk->first;
     rank=l1track.rank();
     ptLUTAddress = l1track.ptLUTAddress();
     l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
+    pt = ptscale[pt_packed];
+	
+    unsigned int sector = l1track.sector();// get sector
+    edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
+    iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
+    const L1MuTriggerScales  *ts;// the trigger scales 
+    ts = scales.product();
+    unsigned gbl_phi = l1track.localPhi() + ((sector - 1)*24) + 6;
+    if(gbl_phi > 143) gbl_phi -= 143;
+    phi = ts->getPhiScale()->getLowEdge( gbl_phi&0xff );
+    unsigned eta_sign = (l1track.endcap() == 1 ? 0 : 1);
+    eta = ts->getRegionalEtaScale(2)->getCenter( ((l1track.eta_packed()) | (eta_sign<<5)) & 0x3f );
+
+    for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
+      for (int netabin = 0; netabin < netabins; netabin++){
+	for (int nptbin = 0; nptbin < nptbins; nptbin++){
+	  for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
+	    h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(pt);
+	    h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(eta);
+	    h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
+	  }
+	}
+      }
+    }
     int nstubs = 0;
     bool hasGEM = false;
     for(CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin(); csc!=tmp_trk->second.end(); csc++){
@@ -339,10 +229,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if ((*csc).first.endcap() == 1){
 	h_nStationTF->Fill((*csc).first.station());
-	if (loweta){
-	  h_nStationTFloweta->Fill((*csc).first.station());
-	  if (lowphi) h_nStationTFlowetalowphi->Fill((*csc).first.station());
-	}
       }
       if ((*csc).first.endcap() == 2){
 	h_nStationTF->Fill(-((*csc).first.station()));
@@ -378,7 +264,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void L1TAnalyser::beginJob()
+void L1TTriggerRate::beginJob()
 {
 
   TString etabinsName[] = {"", "eta1", "eta2"};
@@ -389,13 +275,6 @@ void L1TAnalyser::beginJob()
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
-	  h_truth_pt[netabin][nptbin][nstubbin][nMEbin] 
-	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 20, 0, 50);
-	  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]
-	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_eta", "", 50,1.5,2.5);
-	  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]
-	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_phi", "", 70,-3.5,3.5);
-
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]
 	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 20, 0, 50);
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon p_{T} [GeV]");
@@ -531,24 +410,15 @@ void L1TAnalyser::beginJob()
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void L1TAnalyser::endJob() 
+void L1TTriggerRate::endJob() 
 {
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
-	  h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin], 
-								     h_truth_pt[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin], 
-								      h_truth_eta[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
-	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin],
-								      h_truth_phi[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
 	}
       }
     }
@@ -556,4 +426,4 @@ void L1TAnalyser::endJob()
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(L1TAnalyser);
+DEFINE_FWK_MODULE(L1TTriggerRate);
