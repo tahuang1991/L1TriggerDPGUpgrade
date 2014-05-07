@@ -128,17 +128,7 @@ private:
   TH1F* h_TFnStubinTrack_phihole;
 
 };
-//
-// constants, enums and typedefs
-//
 
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
@@ -190,6 +180,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       float tempDRMatch = 10;
       bool hasME1=false;
       bool hasME2=false;
+      bool foundMatch=false;
 
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
       for(; tmp_trk != l1csctracks->end(); tmp_trk++){
@@ -230,6 +221,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if (truemuon.DeltaR(templ1muon) < minDRMatch){
 	  if (tempnstubs >= nstubs){
 	    if (truemuon.DeltaR(templ1muon) < tempDRMatch){
+	      foundMatch = true;
 	      nstubs = tempnstubs;
 	      tempDRMatch = truemuon.DeltaR(templ1muon);
 	      l1muon = templ1muon;
@@ -276,7 +268,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		if ((nptbin == pt_all) ||
 		    ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
-		  if ((nstubbin == stub_all) ||
+		  if ((nstubbin == stub_all && foundMatch) ||
 		      ((nstubbin == stub_2) && (nstubs > 1)) ||
 		      ((nstubbin == stub_3) && (nstubs > 2))){
 
