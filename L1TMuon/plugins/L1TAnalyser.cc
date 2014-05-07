@@ -42,7 +42,6 @@
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 
-
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFile.h"
@@ -58,17 +57,19 @@ public:
   explicit L1TAnalyser(const edm::ParameterSet&);
   ~L1TAnalyser();
 
-
 private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
   // ----------member data ---------------------------
-
   edm::Service<TFileService> fs;
-  //  csctf_analysis::RunSRLUTs* runSRLUTs;
-  
+  const float ptscale[33] = { 
+    -1.,   0.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,
+    4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
+    16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
+    50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
+
   double min_pt;
   double max_pt;
   double min_aEta;
@@ -115,13 +116,13 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_2, stub_3, nstubbins};
+  enum stubbins{stub_all, stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, ME_2, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
-  TH1F* h_truth_eta[netabins][nptbins][nstubbins][nMEbins];
+  TH1F* h_truth_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_truth_phi[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
-  TH1F* h_L1CSCTrack_eta[netabins][nptbins][nstubbins][nMEbins];
+  TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
 
   TH1F* h_TFnStubinTrack_phihole;
@@ -161,16 +162,6 @@ L1TAnalyser::~L1TAnalyser()
 void
 L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  ///////////////////
-  //Setup Stuff//////
-  ///////////////////
-  //  edm::RefProd<CSCTrackCollection> csctfProd = ev.getRefBeforePut<CSCTrackCollection>("input");  
-  const float ptscale[33] = { 
-    -1.,   0.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,
-    4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
-    16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
-    50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
-
   edm::Handle<L1CSCTrackCollection> l1csctracks;
   iEvent.getByLabel("simCsctfTrackDigis",l1csctracks);
   edm::Handle<TriggerPrimitiveCollection> trigPrims;
@@ -253,7 +244,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	loweta = true;
 	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4){
 	  lowphi = true;
-	  if (nstubs > 1 && nstubs < 3)
+	  if (nstubs == 2)
       	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
       		 << ", eta = "<< BaseSimTrk->momentum().eta()
       		 << ", phi = "<< BaseSimTrk->momentum().phi()
@@ -278,14 +269,15 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 		    ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-		  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(trueEta);
+		  if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 		  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		}
 		
 		if ((nptbin == pt_all) ||
 		    ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
-		  if (((nstubbin == stub_2) && (nstubs > 1)) ||
+		  if ((nstubbin == stub_all) ||
+		      ((nstubbin == stub_2) && (nstubs > 1)) ||
 		      ((nstubbin == stub_3) && (nstubs > 2))){
 
 		    if ((nMEbin == ME_all) ||
@@ -296,7 +288,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      
 		      if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 			  ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-			h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(trueEta);
+			if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 			h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		      }
 		    }
@@ -383,7 +375,7 @@ void L1TAnalyser::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"stub2", "stub3"};
+  TString stubbinsName[] = {"", "stub2", "stub3"};
   TString MEbinsName[] = {"", "hasME1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
@@ -391,20 +383,23 @@ void L1TAnalyser::beginJob()
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  h_truth_pt[netabin][nptbin][nstubbin][nMEbin] 
 	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 20, 0, 50);
-	  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]
-	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_eta", "", 50,1.5,2.5);
 	  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]
 	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_phi", "", 70,-3.5,3.5);
+
+	  if (netabin == eta_all){
+	    h_truth_eta[nptbin][nstubbin][nMEbin]
+	    = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon #eta");
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
+	  }
 
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]
 	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 20, 0, 50);
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon p_{T} [GeV]");
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
-
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]
-	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_eta", "", 50,1.5,2.5);
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon #eta");
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
 
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]
 	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_phi", "", 70,-3.5,3.5);
@@ -538,15 +533,17 @@ void L1TAnalyser::endJob()
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_truth_eta[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
+	  if (netabin == eta_all) {
+	    h_truth_eta[nptbin][nstubbin][nMEbin]->Sumw2();
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Sumw2();
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin], 
+								      h_truth_eta[nptbin][nstubbin][nMEbin],1.0,1.0,"B");
+	  }
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin], 
 								     h_truth_pt[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin], 
-								      h_truth_eta[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Divide(h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin],
 								      h_truth_phi[netabin][nptbin][nstubbin][nMEbin],1.0,1.0,"B");
 	}
