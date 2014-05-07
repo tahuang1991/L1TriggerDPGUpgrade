@@ -1,6 +1,6 @@
 LPC = False
 runevents = 1000
-runevents = -1;
+#runevents = -1;
 #LPC = True
 
 import os
@@ -28,6 +28,7 @@ if hasattr(sys, "argv") == True:
 
 GE11 = False
 GE21 = False
+doRate = False
 if gem == 1:
     GE11 = True
 if gem == 2:
@@ -38,7 +39,8 @@ if data == 1:
     fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
 if data == 2:
     fileOutputName = "SingleNu_SLHC12_2023Muon_DIGI_PU140"
-    
+    doRate = True
+
 #
 #fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU200"
 #fileOutputName = "SingleMu_SLHC12_PU0"
@@ -152,13 +154,21 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 
-process.L1TAnalyser = cms.EDAnalyzer('L1TAnalyser',
-    minPt = cms.untracked.double(2),
-    minEta = cms.untracked.double(1.6),
-    maxEta = cms.untracked.double(2.4),
-)
-process.pL1TAnalyser = cms.Path(process.L1TAnalyser)
-
+if not doRate:
+    process.L1TAnalyser = cms.EDAnalyzer('L1TAnalyser',
+        minPt = cms.untracked.double(2),
+        minEta = cms.untracked.double(1.6),
+        maxEta = cms.untracked.double(2.4),
+    )
+    process.pL1TAnalyser = cms.Path(process.L1TAnalyser)
+if doRate:
+    process.L1TTriggerRate = cms.EDAnalyzer('L1TTriggerRate',
+        minPt = cms.untracked.double(2),
+        minEta = cms.untracked.double(1.6),
+        maxEta = cms.untracked.double(2.4),
+    )
+    process.pL1TAnalyser = cms.Path(process.L1TTriggerRate)
+    
 process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
 
 from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
