@@ -1,50 +1,87 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.20 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: SingleMuPt100_cfi --conditions auto:upgrade2019 -n 100 --eventcontent FEVTDEBUGHLT -s L1 --datatier L1 --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2019WithGem --geometry Extended2019 --magField 38T_PostLS1 --filein file:out_digi.root --fileout file:out_L1_cust_2019WithGem.root
+LPC = False
+runevents = 1000
+runevents = -1;
+#LPC = True
 
-useUpdatedTF = True
-withGEM = True
-clctNplanesHitPattern3 = False
-buildLCTfromALCTandGEMinOverlap = False
-
+import os
 import FWCore.ParameterSet.Config as cms
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('python')
+options.register ('gem', 1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "gem: 1  default")
+options.register ('data', 1,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.int,
+                  "data: 1  default")
+import sys
+if len(sys.argv) > 0:
+    last = sys.argv.pop()
+    sys.argv.extend(last.split(","))
+    print sys.argv
+    
+if hasattr(sys, "argv") == True:
+	options.parseArguments()
+	gem = options.gem
+	data = options.data
+
+GE11 = False
+GE21 = False
+if gem == 1:
+    GE11 = True
+if gem == 2:
+    GE21 = True
+if data == 0:
+    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU0"
+if data == 1:
+    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
+if data == 2:
+    fileOutputName = "SingleNu_SLHC12_2023Muon_DIGI_PU140"
+    
+#
+#fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU200"
+#fileOutputName = "SingleMu_SLHC12_PU0"
+## input
+#directory = '/u/user/jlee/scratch/CMSSW_6_2_0_SLHC11_PU0/'
+directory = '/u/user/jlee/scratch/'
+saveDir = ''
+if LPC:
+    directory = '/uscms/home/jlee/cmsrun/'
+    saveDir = '/eos/uscms/store/user/lpcgem/jlee/l1csctf/'
+directory = directory + fileOutputName + '/'
 
 process = cms.Process('L1')
-
-# import of standard configurations
+# import of standard configuration
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2019Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2023MuonReco_cff')
+process.load('Configuration.Geometry.GeometryExtended2023Muon_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.MessageLogger.cerr.FwkReport.reportEvery = 500
 
-fileOutputName = "out_L1_cust_2019"
-if withGEM:
-    fileOutputName = fileOutputName+"WithGem"
+from CalibMuon.CSCCalibration.CSCIndexer_cfi import CSCIndexerESProducer
+process.CSCIndexerESProducer= CSCIndexerESProducer
+from CalibMuon.CSCCalibration.CSCChannelMapper_cfi import CSCChannelMapperESProducer
+process.CSCChannelMapperESProducer= CSCChannelMapperESProducer
 
-if useUpdatedTF:
-    process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonTriggerPrimitiveProducer_cfi')
-    process.load('L1TriggerDPGUpgrade.L1TMuon.L1CSCTFTrackConverter_cfi')
-    process.load('L1TriggerDPGUpgrade.L1TMuon.L1DTTFTrackConverter_cfi')
-    process.load('L1TriggerDPGUpgrade.L1TMuon.L1RPCTFTrackConverter_cfi')
-    process.load('L1TriggerDPGUpgrade.L1TMuon.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
-    fileOutputName = fileOutputName+"NewTF"
+if GE11:
+    fileOutputName = fileOutputName+"GE11"
+if GE21:
+    fileOutputName = fileOutputName+"GE21"
 
-histofileName= "histo_"+fileOutputName+".root"
-fileOutputName = "file:"+fileOutputName+".root"
+histofileName= saveDir+"histo_"+fileOutputName+".root"
+fileOutputName = "file:"+saveDir+fileOutputName+".root"
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(runevents)
 )
 
-## input
-directory = '/pnfs/user/trackfinder/tf/'
 inputDir = [directory]
 theInputFiles = []
 import os
@@ -58,24 +95,20 @@ for d in range(len(inputDir)):
     continue
   print "Proceed to next directory"
   ls = os.listdir(my_dir)
-  ## this works only if you pass the location on pnfs - FIXME for files staring with store/user/...
-#  theInputFiles.extend([my_dir[:16] + x for x in ls if x.endswith('root')])
-  theInputFiles.extend(['file:' + my_dir[:50] + x for x in ls if x.endswith('.root')])
+  theInputFiles.extend(['file:' + my_dir[:] + x for x in ls if x.endswith('.root')])
 
-theInputFiles = theInputFiles[:60]
-##inputFiles = ['file:out_SingleMuPt10Fwd_GEM2019_8PartIncRad_DIGI_L1.root']
-print "InputFiles: ", theInputFiles
+theInputFiles = theInputFiles[:]
+#theInputFiles = ['file:/u/user/jlee/scratch/SingleMuPt2-50Fwdv2_50k_DIGI_PU0_SLHC10_2023Muon/out_digi_10_1_UPn.root']
 
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-#    fileNames = cms.untracked.vstring("file:" + directory + "tf/out_digi_test_73_1_M7u.root")
     fileNames = cms.untracked.vstring(*theInputFiles)
 )
+print "fileNames:", process.source.fileNames
+print "fileOutput", fileOutputName
 
-process.options = cms.untracked.PSet(
-
-)
+process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -85,12 +118,18 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-outCommands = cms.untracked.vstring('keep *')
+outCommands = cms.untracked.vstring('drop *')
+outCommands.append('keep *_genParticles_*_*')
+outCommands.append('keep *_simCsctfDigis_*_*')
+outCommands.append('keep *_simCsctfTrackDigis_*_*')
+outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_g4SimHits_*_*')
+outCommands.append('keep *_simMuonGEMCSCPadDigis_*_*')
 
 process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-#    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
+    #outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     outputCommands = outCommands,
     fileName = cms.untracked.string(fileOutputName),
     dataset = cms.untracked.PSet(
@@ -100,107 +139,37 @@ process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
 )
 
 # Additional output definition
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string(histofileName)
+    )
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgrade2019', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
 
 # Path and EndPath definitions
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 
-if not useUpdatedTF:
-    process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,process.FEVTDEBUGHLToutput_step)
+process.L1TAnalyser = cms.EDAnalyzer('L1TAnalyser',
+    minPt = cms.untracked.double(2),
+    minEta = cms.untracked.double(1.6),
+    maxEta = cms.untracked.double(2.4),
+)
+process.pL1TAnalyser = cms.Path(process.L1TAnalyser)
 
-if useUpdatedTF:
-    process.L1NewTF_step = cms.Path( process.L1TMuonTriggerPrimitives +
-                                     process.L1CSCTFTrackConverter    +
-                                     process.L1DTTFTrackConverter     +
-                                     process.L1RPCTFTrackConverters   +
-                                     process.L1TMuonSimpleDeltaEtaHitMatcher )
-    
-    process.L1TMuonText = cms.EDProducer(
-        'L1TMuonTextDumper',
-        doGen = cms.untracked.bool(True),
-        genSrc = cms.untracked.InputTag("genParticles"),
-        primitiveSrcs = cms.VInputTag(
-            cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
-            cms.InputTag('L1TMuonTriggerPrimitives','DT'),
-            cms.InputTag('L1TMuonTriggerPrimitives','RPC'),
-            cms.InputTag('L1TMuonTriggerPrimitives','GEM')
-            ),
-        converterSrcs = cms.VInputTag(
-            cms.InputTag('L1CSCTFTrackConverter'),
-            cms.InputTag('L1DTTFTrackConverter'),
-            cms.InputTag('L1RPCbTFTrackConverter'),
-            cms.InputTag('L1RPCfTFTrackConverter'),
-            cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
-            ),
-        lutParam = process.simCsctfTrackDigis.SectorProcessor.PTLUT
-                #cms.PSet(
-                #    isBeamStartConf = cms.untracked.bool(True),
-                #    ReadPtLUT = cms.bool(False),
-                #    PtMethod = csctfTrackDigisUngangedME1a.SectorProcessor.PTLUT.PtMethod #cms.untracked.uint32(32)
-                #    )
-        )
-    
-    process.content = cms.EDAnalyzer("EventContentAnalyzer")
-    
-    
-    process.sptf = cms.EDProducer('sptf',
-                                  primitiveSrcs = cms.VInputTag(
-                                      cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
-                                      cms.InputTag('L1TMuonTriggerPrimitives','DT'),
-                                      cms.InputTag('L1TMuonTriggerPrimitives','RPC')
-                                      ),
-                                      converterSrcs = cms.VInputTag(
-                                          cms.InputTag('L1CSCTFTrackConverter'),
-                                          cms.InputTag('L1DTTFTrackConverter'),
-                                          cms.InputTag('L1RPCbTFTrackConverter'),
-                                          cms.InputTag('L1RPCfTFTrackConverter'),
-                                          cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
-                                          ),
-                                          lutParam = cms.PSet(
-                                              isBeamStartConf = cms.untracked.bool(True),
-                                              ReadPtLUT = cms.bool(False),
-                                              PtMethod = cms.untracked.uint32(32)
-                                              )
-        )
-    process.DiagMaker = cms.EDAnalyzer(
-        'DiagMaker',
-        testVar = cms.untracked.bool(False)
-        )
-    process.TFileService = cms.Service("TFileService",
-                                       fileName = cms.string(
-                                           histofileName
-                                           ))
-    
-    #process.L1TMuonSequence = cms.Sequence(process.L1TMuonVerilogBasedMatcher * process.DiagMaker)
-    #process.L1TMuonSequence = cms.Sequence(process.L1TMuonVerilogBasedMatcher)
-    process.L1TMuonSequence = cms.Sequence(process.L1TMuonText)
-    #process.L1TMuonSequence = cms.Sequence(process.L1TMuonText * process.sptf * process.DiagMaker)
-    process.L1TMuonPath = cms.Path(process.L1TMuonSequence)
-    process.schedule = cms.Schedule(process.L1simulation_step,process.L1NewTF_step,process.L1TMuonPath,process.endjob_step,process.FEVTDEBUGHLToutput_step)
+process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
 
-# customisation of the process.
-
-# Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.combinedCustoms
-if withGEM:
-    from SLHCUpgradeSimulations.Configuration.combinedCustoms import cust_2019WithGem 
+from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
+if GE21:
+    process = cust_2023Muon(process)
+elif GE11:
     process = cust_2019WithGem(process)
-
-    if clctNplanesHitPattern3:
-        process.simCscTriggerPrimitiveDigis.clctSLHC.clctNplanesHitPattern = cms.uint32(3)
-    if buildLCTfromALCTandGEMinOverlap:
-        process.simCscTriggerPrimitiveDigis.tmbSLHC.buildLCTfromALCTandGEMinOverlap = cms.untracked.bool(True)
-
-else :
-    from SLHCUpgradeSimulations.Configuration.combinedCustoms import cust_2019
+else:
     process = cust_2019(process)
 
-print process.simCsctfTrackDigis.SectorProcessor.PTLUT
-if useUpdatedTF:
-    process.L1TMuonText.lutParam = process.simCsctfTrackDigis.SectorProcessor.PTLUT
-
-# End of customisation functions
+#process.simCsctfTrackDigis.SectorProcessor.isCoreVerbose = cms.bool(True) 
+print "PTLUT", process.simCsctfTrackDigis.SectorProcessor.PTLUT
+print "firmwareSP", process.simCsctfTrackDigis.SectorProcessor.firmwareSP
+print "clctNplanesHitPattern", process.simCscTriggerPrimitiveDigis.clctSLHC.clctNplanesHitPattern
