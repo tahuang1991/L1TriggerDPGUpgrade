@@ -88,10 +88,10 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_2, stub_3, nstubbins};
+  enum stubbins{stub_all, stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, ME_2, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
-  TH1F* h_L1CSCTrack_eta[netabins][nptbins][nstubbins][nMEbins];
+  TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
 
   TH1F* h_nStation;
@@ -174,7 +174,8 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
 
     for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
-      if (((nstubbin == stub_2) && (nstubs > 1)) ||
+      if ((nstubbin == stub_all) ||
+	  ((nstubbin == stub_2) && (nstubs > 1)) ||
 	  ((nstubbin == stub_3) && (nstubs > 2))){
 
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
@@ -196,7 +197,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		for (unsigned nptbin = 0; nptbin < nptbins; nptbin++){
 		  if ((nptbin == pt_all) ||
 		      ((nptbin == pt_20) && (pt >= 20))){
-		    h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Fill(eta);
+		    if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(eta);
 		    h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
 		  }
 		}
@@ -227,7 +228,7 @@ void L1TTriggerRate::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"stub2", "stub3"};
+  TString stubbinsName[] = {"", "stub2", "stub3"};
   TString MEbinsName[] = {"", "hasME1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
@@ -238,10 +239,12 @@ void L1TTriggerRate::beginJob()
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("L1 muon p_{T} [GeV]");
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Rate [kHz]");
 
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]
-	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_eta", "", 50,1.5,2.5);
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("muon #eta");
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Rate [kHz]");
+	  if (netabin == 0){
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("muon #eta");
+	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Rate [kHz]");
+	  }
 
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]
 	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_phi", "", 70,-3.5,3.5);
@@ -266,11 +269,11 @@ void L1TTriggerRate::endJob()
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
+	  if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Sumw2();
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Sumw2();
 
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Scale(40000./ntotalEvents/3.*0.795);
-	  h_L1CSCTrack_eta[netabin][nptbin][nstubbin][nMEbin]->Scale(40000./ntotalEvents/3.*0.795);
+	  if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Scale(40000./ntotalEvents/3.*0.795);
 	  h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Scale(40000./ntotalEvents/3.*0.795);
 	}
       }
