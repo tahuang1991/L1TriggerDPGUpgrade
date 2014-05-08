@@ -88,7 +88,7 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_all, stub_2, stub_3, nstubbins};
+  enum stubbins{stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, ME_2, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
@@ -174,8 +174,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
 
     for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
-      if ((nstubbin == stub_all) ||
-	  ((nstubbin == stub_2) && (nstubs > 1)) ||
+      if (((nstubbin == stub_2) && (nstubs > 1)) ||
 	  ((nstubbin == stub_3) && (nstubs > 2))){
 
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
@@ -228,7 +227,7 @@ void L1TTriggerRate::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"", "stub2", "stub3"};
+  TString stubbinsName[] = {"stub2", "stub3"};
   TString MEbinsName[] = {"", "hasME1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
