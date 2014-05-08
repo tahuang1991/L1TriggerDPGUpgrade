@@ -116,7 +116,7 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_all, stub_2, stub_3, nstubbins};
+  enum stubbins{stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, ME_2, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_truth_eta[nptbins][nstubbins][nMEbins];
@@ -180,7 +180,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       float tempDRMatch = 10;
       bool hasME1=false;
       bool hasME2=false;
-      bool foundMatch=false;
 
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
       for(; tmp_trk != l1csctracks->end(); tmp_trk++){
@@ -221,7 +220,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if (truemuon.DeltaR(templ1muon) < minDRMatch){
 	  if (tempnstubs >= nstubs){
 	    if (truemuon.DeltaR(templ1muon) < tempDRMatch){
-	      foundMatch = true;
 	      nstubs = tempnstubs;
 	      tempDRMatch = truemuon.DeltaR(templ1muon);
 	      l1muon = templ1muon;
@@ -268,8 +266,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		if ((nptbin == pt_all) ||
 		    ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
-		  if ((nstubbin == stub_all && foundMatch) ||
-		      ((nstubbin == stub_2) && (nstubs > 1)) ||
+		  if (((nstubbin == stub_2) && (nstubs > 1)) ||
 		      ((nstubbin == stub_3) && (nstubs > 2))){
 
 		    if ((nMEbin == ME_all) ||
@@ -367,7 +364,7 @@ void L1TAnalyser::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"", "stub2", "stub3"};
+  TString stubbinsName[] = {"stub2", "stub3"};
   TString MEbinsName[] = {"", "hasME1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
