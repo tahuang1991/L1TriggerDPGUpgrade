@@ -79,12 +79,12 @@ private:
     4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
     16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
-  const float xptscale[32] = { 
-    0.0,   1.5,   2.0,   2.5,   3.0,   3.5,   4.0,
+  const float xptscale[30] = { 
+    2.0,   2.5,   3.0,   3.5,   4.0,
     4.5,   5.0,   6.0,   7.0,   8.0,  10.0,  12.0,  14.0,  
     16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 200.0};
-  unsigned maxPTbins = 32;
+  unsigned maxPTbins = 33;
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
@@ -234,7 +234,7 @@ void L1TTriggerRate::beginJob()
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]
-	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 31, xptscale);
+	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 30, xptscale);
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("L1 muon p_{T} [GeV]");
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Rate [kHz]");
 
@@ -280,6 +280,7 @@ void L1TTriggerRate::endJob()
   }
   h_nStation->Sumw2();
   h_nStation->Scale(40000./ntotalEvents/3.*0.795);
+  cout << "L1TTriggerRate::endJob ntotalEvents " << ntotalEvents<<endl;
 }
 
 //define this as a plug-in
