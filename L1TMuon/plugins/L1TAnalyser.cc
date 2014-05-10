@@ -42,6 +42,8 @@
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 
+#include "DataFormats/L1CSCTrackFinder/interface/L1Track.h"
+
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFile.h"
@@ -74,7 +76,7 @@ private:
   double max_pt;
   double min_aEta;
   double max_aEta;
-
+  int n_events;
   TH1F* h_GEMDPhi;
   TH1F* h_nStation;
   TH1F* h_nStationTF;
@@ -162,7 +164,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("g4SimHits",BaseSimTracks);
 
   float minDRMatch = 0.5;
-
+  //cout <<"event "<< n_events++<<endl;
   bool loweta = false;
   bool lowphi = false;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
@@ -180,8 +182,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       float tempDRMatch = 10;
       bool hasME1=false;
       bool hasME2=false;
-
+      csc::L1Track matched_l1track;
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
+      L1CSCTrackCollection::const_iterator matched_l1trackIT;
       for(; tmp_trk != l1csctracks->end(); tmp_trk++){
 	float pt=0, eta=-9, phi=-9;
 	unsigned int quality_packed=0, rank=0;// ptLUTAddress=0;
@@ -203,7 +206,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	phi = ts->getPhiScale()->getLowEdge( gbl_phi&0xff );
 	unsigned eta_sign = (l1track.endcap() == 1 ? 0 : 1);
 	eta = ts->getRegionalEtaScale(2)->getCenter( ((l1track.eta_packed()) | (eta_sign<<5)) & 0x3f );
-
+	
 	int tempnstubs = 0;
 	bool temphasME1=false;
 	bool temphasME2=false;
@@ -225,22 +228,47 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      l1muon = templ1muon;
 	      hasME1 = temphasME1;
 	      hasME2 = temphasME2;
+	      matched_l1trackIT = tmp_trk;
 	    }
 	  }
 	}
       }
       // testing for eff drop at phi~0
-      if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
-	loweta = true;
-	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4){
-	  lowphi = true;
-	  if (nstubs == 2)
-      	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
-      		 << ", eta = "<< BaseSimTrk->momentum().eta()
-      		 << ", phi = "<< BaseSimTrk->momentum().phi()
-      		 << endl;
-	}
-      }
+      // if (nstubs)
+      // if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
+      // 	loweta = true;
+      // 	    cout << " nstubs = "<< nstubs
+      // 		 << " pt = "<< BaseSimTrk->momentum().pt()
+      // 		 << ", eta = "<< BaseSimTrk->momentum().eta()
+      // 		 << ", phi = "<< BaseSimTrk->momentum().phi()
+      // 		 << endl;
+
+      // 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=matched_l1trackIT->second.begin();
+      // 	for(; csc!=matched_l1trackIT->second.end(); csc++){
+      // 	  int station = (*csc).first.station()-1;
+      // 	  int cscId   = (*csc).first.triggerCscId()-1;
+      // 	  int sector  = (*csc).first.triggerSector()-1;// + ( (*csc).first.endcap()==1 ? 0 : 6 );
+      // 	  int subSector = CSCTriggerNumbering::triggerSubSectorFromLabels((*csc).first);
+      // 	  cout << " station " << (*csc).first.station()
+      // 	      << " ring " << (*csc).first.ring()
+      // 	      << " layer " << (*csc).first.layer()
+      // 	      << " chamber " << (*csc).first.chamber()
+      // 	      << " station " << station
+      // 	      << " cscId " << cscId
+      // 	      << " sector " << sector
+      // 	      << " subSector " << subSector
+      // 	       << endl;
+      // 	}
+      // 	if (BaseSimTrk->momentum().phi() > 0.0 and BaseSimTrk->momentum().phi() < 0.4){
+      // 	  lowphi = true;
+      // 	  if (nstubs == 2){
+      // 	    cout << "drop in 3 stub efficiency, pt = "<< BaseSimTrk->momentum().pt()
+      // 		 << ", eta = "<< BaseSimTrk->momentum().eta()
+      // 		 << ", phi = "<< BaseSimTrk->momentum().phi()
+      // 		 << endl;
+      // 	  }
+      // 	}
+      // }
 
       float trueEta = fabs(truemuon.Eta());
       for (int netabin = 0; netabin < netabins; netabin++){

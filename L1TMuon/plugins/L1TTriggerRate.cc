@@ -234,7 +234,7 @@ void L1TTriggerRate::beginJob()
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]
-	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 30, xptscale);
+	    = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+etabinsName[netabin]+"_pt", "", 29, xptscale);
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("L1 muon p_{T} [GeV]");
 	  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Rate [kHz]");
 
