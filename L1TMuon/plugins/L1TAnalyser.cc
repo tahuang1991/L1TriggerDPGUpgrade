@@ -342,12 +342,12 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       if (nstubs < 3 && nlcts > 2){
 	//if (nlcts > 2){
-	cout << " nstubs = "<< nstubs
+	cout << "nstubs = "<< nstubs
 	     << " pt = "<< truemuon.Pt()
 	     << ", eta = "<< truemuon.Eta()
 	     << ", phi = "<< truemuon.Phi()
 	     << endl;
-
+	printf("sta sec sub Valid Quality etaPacked phiPacked cscid CLCTPattern BX \n");
 	// making stubs
 	for(Citer = lcts->begin(); Citer != lcts->end(); Citer++){
 	  if ( (truemuon.Eta() > 0 && (*Citer).first.endcap() == 1) ||
@@ -401,7 +401,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      }
 
 	      stubi.setEtaPacked(gblEta.global_eta);
-
 	      stubi.setPhiPacked(gblPhi.global_phi);
 
 	      bool Vp   = stubi.isValid();
@@ -410,9 +409,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      unsigned Phip = stubi.phiPacked();
 	      unsigned CSCIdp  = stubi.cscid();
 	      int CLCTp  = stubi.getCLCTPattern();
-	      cout << (*Citer).first.station() << " " << stubi.sector() << " " << stubi.subsector() << " "
-		   << Vp << " " << Qp << " " << Etap << " " 
-		   << Phip << " " << CSCIdp << " " << CLCTp << " "<< stubi.BX() << endl;
+	      //printf("station sector subsec Valid Quality etaPacked phiPacked cscid CLCTPattern BX \n");
+	      printf(" %1i %3i %3i  %3i  %5i  %7i %9i %9i %5i %7i \n",(*Citer).first.station(), stubi.sector(), stubi.subsector(), Vp, Qp, Etap, Phip, CSCIdp, CLCTp, stubi.BX());
+
 	    }
 	  }
 	}
