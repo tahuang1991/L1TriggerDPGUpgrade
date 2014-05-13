@@ -295,7 +295,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // 	}
       // }
 
-      float trueEta = fabs(truemuon.Eta());
+      //float trueEta = fabs(truemuon.Eta());
+      float trueEta = truemuon.Eta();
       for (int netabin = 0; netabin < netabins; netabin++){
 	if ((netabin == eta_all) ||
 	    ((netabin == eta_me1) && (trueEta > 1.6 && trueEta < 2.1)) ||
@@ -521,10 +522,10 @@ void L1TAnalyser::beginJob()
 
 	  if (netabin == eta_all){
 	    h_truth_eta[nptbin][nstubbin][nMEbin]
-	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
 
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
-	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon #eta");
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
 	  }
