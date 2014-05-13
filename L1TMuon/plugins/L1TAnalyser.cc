@@ -129,7 +129,7 @@ private:
   enum etabins{eta_all, eta_me1, eta_me2, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
-  enum MEbins{ME_all, ME_1, ME_2, nMEbins};
+  enum MEbins{ME_all, ME_1, GE_1, ME_2, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_truth_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_truth_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -143,11 +143,11 @@ private:
 
 L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 {
-  min_pt = iConfig.getParameter<double>("minPt", 2);
-  max_pt = iConfig.getParameter<double>("maxPt", 100);
-  min_aEta = iConfig.getParameter<double>("minEta", 1.6);
-  max_aEta = iConfig.getParameter<double>("maxEta", 2.4);
-  debugTF = iConfig.getParameter<double>("debugTF", false);
+  min_pt = iConfig.getParameter<double>("minPt");
+  max_pt = iConfig.getParameter<double>("maxPt");
+  min_aEta = iConfig.getParameter<double>("minEta");
+  max_aEta = iConfig.getParameter<double>("maxEta");
+  debugTF = iConfig.getParameter<double>("debugTF");
 
   m_gangedME1a = false;
   edm::ParameterSet srLUTset = iConfig.getParameter<edm::ParameterSet>("SRLUT");
@@ -206,6 +206,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int nstubs=0;
       float tempDRMatch = 10;
       bool hasME1=false;
+      bool hasGE1=false;
       bool hasME2=false;
       csc::L1Track matched_l1track;
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
@@ -234,13 +235,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	int tempnstubs = 0;
 	bool temphasME1=false;
+	bool temphasGE1=false;
 	bool temphasME2=false;
 
 	TLorentzVector templ1muon;
 	templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
 	for(; csc!=tmp_trk->second.end(); csc++){
-	  if ((*csc).first.station()==1) temphasME1 = true;
+	  if ((*csc).first.station()==1){
+	    temphasME1 = true;
+	    if (fabs((*csc).second.first->getGEMDPhi()) < 10 ) temphasGE1 = true;
+	  }
 	  if ((*csc).first.station()==2) temphasME2 = true;
 	  tempnstubs++;
 	}
@@ -252,6 +257,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      tempDRMatch = truemuon.DeltaR(templ1muon);
 	      l1muon = templ1muon;
 	      hasME1 = temphasME1;
+	      hasGE1 = temphasGE1;
 	      hasME2 = temphasME2;
 	      matched_l1trackIT = tmp_trk;
 	    }
@@ -318,6 +324,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 		    if ((nMEbin == ME_all) ||
 			((nMEbin == ME_1) && (hasME1)) ||
+			((nMEbin == GE_1) && (hasGE1)) ||
 			((nMEbin == ME_2) && (hasME2))){
 
 		      h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
@@ -502,7 +509,7 @@ void L1TAnalyser::beginJob()
   TString etabinsName[] = {"", "eta1", "eta2"};
   TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
-  TString MEbinsName[] = {"", "hasME1", "hasME2"};
+  TString MEbinsName[] = {"", "hasME1", "hasGE1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
