@@ -97,17 +97,7 @@ private:
   TH1F* h_nStation;
 
 };
-//
-// constants, enums and typedefs
-//
 
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 L1TTriggerRate::L1TTriggerRate(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
@@ -118,16 +108,11 @@ L1TTriggerRate::L1TTriggerRate(const edm::ParameterSet& iConfig)
   max_aEta = iConfig.getParameter<double>("maxEta");
 
 }
+
 L1TTriggerRate::~L1TTriggerRate()
 {
- 
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
-  //  delete runSRLUTs;
 }
-//
-// member functions
-// ------------ method called to for each event  ------------
+
 void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   edm::Handle<L1CSCTrackCollection> l1csctracks;

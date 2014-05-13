@@ -140,14 +140,13 @@ private:
   TH1F* h_TFnStubinTrack_phihole;
 
 };
-
 L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 {
   min_pt = iConfig.getParameter<double>("minPt");
   max_pt = iConfig.getParameter<double>("maxPt");
   min_aEta = iConfig.getParameter<double>("minEta");
   max_aEta = iConfig.getParameter<double>("maxEta");
-  debugTF = iConfig.getParameter<double>("debugTF");
+  debugTF = iConfig.getParameter<bool>("debugTF");
 
   m_gangedME1a = false;
   edm::ParameterSet srLUTset = iConfig.getParameter<edm::ParameterSet>("SRLUT");
