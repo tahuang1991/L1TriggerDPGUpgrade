@@ -44,6 +44,7 @@
 
 #include "DataFormats/L1CSCTrackFinder/interface/L1Track.h"
 #include <L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h>
+#include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -54,7 +55,6 @@
 using namespace std;
 using namespace edm;
 using namespace L1TMuon;
-const std::string FPGAs[5] = {"F1","F2","F3","F4","F5"};
 
 class L1TAnalyser : public edm::EDAnalyzer {
 public:
@@ -78,7 +78,11 @@ private:
   double max_pt;
   double min_aEta;
   double max_aEta;
-  std::map<std::string, CSCSectorReceiverLUT*> srLUTs_; // indexed by FPGA
+  const int maxEndcapId = CSCDetId::maxEndcapId();
+  const int maxTriggerSectorId = CSCTriggerNumbering::maxTriggerSectorId();
+  enum { nEndcaps = 2, nSectors = 6};
+
+  CSCSectorReceiverLUT* srLUTs_[5][nEndcaps][nSectors]; // indexed by FPGA
   bool m_gangedME1a;
 
   int n_events;
@@ -138,8 +142,6 @@ private:
 
 L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
 {
-  //now do what ever initialization is needed
-  //  runSRLUTs = new csctf_analysis::RunSRLUTs();
   min_pt = iConfig.getUntrackedParameter<double>("minPt", 2);
   max_pt = iConfig.getUntrackedParameter<double>("maxPt", 100);
   min_aEta = iConfig.getUntrackedParameter<double>("minEta", 1.6);
@@ -153,10 +155,10 @@ L1TAnalyser::L1TAnalyser(const edm::ParameterSet& iConfig)
       for(int i = 1; i <= 4; ++i){
 	if(i == 1)
 	  for(int j = 0; j < 2; j++){
-            srLUTs_[FPGAs[j]] = new CSCSectorReceiverLUT(e, s, j+1, i, srLUTset, true);
+            srLUTs_[j][e-1][s-1] = new CSCSectorReceiverLUT(e, s, j+1, i, srLUTset, true);
 	  }
 	else
-	  srLUTs_[FPGAs[i]] = new CSCSectorReceiverLUT(e, s, 0, i, srLUTset, true);
+	  srLUTs_[i][e-1][s-1] = new CSCSectorReceiverLUT(e, s, 0, i, srLUTset, true);
       }
     }
   }
@@ -185,7 +187,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("g4SimHits",BaseSimTracks);
 
   float minDRMatch = 0.5;
-  //cout <<"event "<< n_events++<<endl;
+  cout <<"event "<< n_events++<<endl;
   bool loweta = false;
   bool lowphi = false;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
@@ -347,7 +349,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     << ", eta = "<< truemuon.Eta()
 	     << ", phi = "<< truemuon.Phi()
 	     << endl;
-	printf("sta sec sub Valid Quality etaPacked phiPacked cscid CLCTPattern BX \n");
+	printf("sta sec sub Valid Quality etaPacked phiPacked cscid CLCTPattern BX gemDPhi\n");
 	// making stubs
 	for(Citer = lcts->begin(); Citer != lcts->end(); Citer++){
 	  if ( (truemuon.Eta() > 0 && (*Citer).first.endcap() == 1) ||
@@ -360,13 +362,16 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	      CSCDetId id(stubi.getDetId().rawId());
 	      unsigned fpga = (id.station() == 1) ? CSCTriggerNumbering::triggerSubSectorFromLabels(id) - 1 : id.station();
+	      
+	      int sectorbin = stubi.sector() - 1;
+	      int endcapbin = (*Citer).first.endcap() - 1;
 
 	      lclphidat lclPhi;
 	      try {
-		lclPhi = srLUTs_[FPGAs[fpga]]->localPhi(stubi.getStrip(), stubi.getPattern(), stubi.getQuality(), stubi.getBend());
+		lclPhi = srLUTs_[fpga][endcapbin][sectorbin]->localPhi(stubi.getStrip(), stubi.getPattern(), stubi.getQuality(), stubi.getBend());
 	      } catch( cms::Exception &e ) {
 		bzero(&lclPhi,sizeof(lclPhi));
-		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from LocalPhi LUT in " << FPGAs[fpga]
+		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from LocalPhi LUT in " << fpga
 							      << "(strip="<<stubi.getStrip()<<",pattern="<<stubi.getPattern()<<",quality="<<stubi.getQuality()<<",bend="<<stubi.getBend()<<")" <<std::endl;
 	      }
 
@@ -374,29 +379,29 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      try {
 		unsigned csc_id = stubi.cscid();
 		if (!m_gangedME1a) csc_id = stubi.cscidSeparateME1a();
-		gblPhi = srLUTs_[FPGAs[fpga]]->globalPhiME(lclPhi.phi_local, stubi.getKeyWG(), csc_id);
+		gblPhi = srLUTs_[fpga][endcapbin][sectorbin]->globalPhiME(lclPhi.phi_local, stubi.getKeyWG(), csc_id);
         
 	      } catch( cms::Exception &e ) {
 		bzero(&gblPhi,sizeof(gblPhi));
-		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi LUT in " << FPGAs[fpga]
+		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi LUT in " << fpga
 							      << "(phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
 	      }
 
 	      gbletadat gblEta;
 	      try {
-		gblEta = srLUTs_[FPGAs[fpga]]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
+		gblEta = srLUTs_[fpga][endcapbin][sectorbin]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
 	      } catch( cms::Exception &e ) {
 		bzero(&gblEta,sizeof(gblEta));
-		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalEta LUT in " << FPGAs[fpga]
+		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalEta LUT in " << fpga
 							      << "(phi_bend_local="<<lclPhi.phi_bend_local<<",phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
 	      }
 
 	      gblphidat gblPhiDT;
 	      try {
-		gblPhiDT = srLUTs_[FPGAs[fpga]]->globalPhiMB(lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
+		gblPhiDT = srLUTs_[fpga][endcapbin][sectorbin]->globalPhiMB(lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
 	      } catch( cms::Exception &e ) {
 		bzero(&gblPhiDT,sizeof(gblPhiDT));
-		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi DT LUT in " << FPGAs[fpga]
+		edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi DT LUT in " << fpga
 							      << "(phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
 	      }
 
@@ -410,7 +415,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      unsigned CSCIdp  = stubi.cscid();
 	      int CLCTp  = stubi.getCLCTPattern();
 	      //printf("station sector subsec Valid Quality etaPacked phiPacked cscid CLCTPattern BX \n");
-	      printf(" %1i %3i %3i  %3i  %5i  %7i %9i %9i %5i %7i \n",(*Citer).first.station(), stubi.sector(), stubi.subsector(), Vp, Qp, Etap, Phip, CSCIdp, CLCTp, stubi.BX());
+	      printf(" %1i %3i %3i  %3i  %5i  %7i %9i %9i %5i    %3i  %7.4f \n",(*Citer).first.station(), stubi.sector(), stubi.subsector(), Vp, Qp, Etap, Phip, CSCIdp, CLCTp, stubi.BX(), stubi.getGEMDPhi());
 
 	    }
 	  }
@@ -639,7 +644,7 @@ void L1TAnalyser::beginJob()
   h_nStation=fs->make<TH1F>("nStation","LCT stations",11,-5,6);
   h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
-
+  n_events = 0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
