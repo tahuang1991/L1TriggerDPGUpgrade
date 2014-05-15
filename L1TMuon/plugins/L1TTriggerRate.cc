@@ -89,7 +89,7 @@ private:
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
-  enum MEbins{ME_all, ME_1, ME_2, nMEbins};
+  enum MEbins{ME_all, ME_1, GE_1, ME_2, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -97,37 +97,22 @@ private:
   TH1F* h_nStation;
 
 };
-//
-// constants, enums and typedefs
-//
 
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 L1TTriggerRate::L1TTriggerRate(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
   //  runSRLUTs = new csctf_analysis::RunSRLUTs();
-  min_pt = iConfig.getUntrackedParameter<double>("minPt", 2);
-  max_pt = iConfig.getUntrackedParameter<double>("maxPt", 100);
-  min_aEta = iConfig.getUntrackedParameter<double>("minEta", 1.6);
-  max_aEta = iConfig.getUntrackedParameter<double>("maxEta", 2.4);
+  min_pt = iConfig.getParameter<double>("minPt");
+  max_pt = iConfig.getParameter<double>("maxPt");
+  min_aEta = iConfig.getParameter<double>("minEta");
+  max_aEta = iConfig.getParameter<double>("maxEta");
 
 }
+
 L1TTriggerRate::~L1TTriggerRate()
 {
- 
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
-  //  delete runSRLUTs;
 }
-//
-// member functions
-// ------------ method called to for each event  ------------
+
 void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   edm::Handle<L1CSCTrackCollection> l1csctracks;
@@ -165,10 +150,14 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       phi = 3.14159265359 - phi;
     int nstubs=0;
     bool hasME1=false;
+    bool hasGE1=false;
     bool hasME2=false;
     CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
     for(; csc!=tmp_trk->second.end(); csc++){
-      if ((*csc).first.station()==1) hasME1 = true;
+      if ((*csc).first.station()==1){
+	hasME1 = true;
+	if (fabs((*csc).second.first->getGEMDPhi()) < 10 ) hasGE1 = true;
+      }
       if ((*csc).first.station()==2) hasME2 = true;
       nstubs++;
     }
@@ -180,6 +169,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  if ((nMEbin == ME_all) ||
 	      ((nMEbin == ME_1) && (hasME1)) ||
+	      ((nMEbin == GE_1) && (hasGE1)) ||
 	      ((nMEbin == ME_2) && (hasME2))){
 
 	    for (int netabin = 0; netabin < netabins; netabin++){
@@ -228,7 +218,7 @@ void L1TTriggerRate::beginJob()
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
-  TString MEbinsName[] = {"", "hasME1", "hasME2"};
+  TString MEbinsName[] = {"", "hasME1", "hasGE1", "hasME2"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
