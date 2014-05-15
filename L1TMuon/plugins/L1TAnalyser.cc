@@ -353,8 +353,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if ((*Citer).first.station()) nlcts++;
 	  }
 	}
-	//if (nstubs < 3 && nlcts > 2){
-	if (nlcts > 2){
+	if (nstubs < 2 && nlcts > 2 && hasGE1){
+	  //if (nlcts > 2){
 	  cout << "nstubs = "<< nstubs
 	       << " pt = "<< truemuon.Pt()
 	       << ", eta = "<< truemuon.Eta()
