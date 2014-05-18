@@ -172,6 +172,14 @@ if doRate:
 process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
 
 from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
+from GEMCode.SimMuL1.GEMCSCdPhiDict import *
+pt = 'Pt10' # 'Pt10', 'Pt15', 'Pt20'
+process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiOdd = dphi_lct_pad_ME11[pt]['odd']
+process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiEven = dphi_lct_pad_ME11[pt]['even']
+
+process.simCscTriggerPrimitiveDigis.me21tmbSLHCGEM.gemMatchDeltaPhiOdd = dphi_lct_pad_ME21[pt]['odd']
+process.simCscTriggerPrimitiveDigis.me21tmbSLHCGEM.gemMatchDeltaPhiEven = dphi_lct_pad_ME21[pt]['even']
+
 if GE21:
     process = cust_2023Muon(process)
 elif GE11:
