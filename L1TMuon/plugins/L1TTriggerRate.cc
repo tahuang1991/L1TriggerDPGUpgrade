@@ -150,15 +150,22 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       phi = 3.14159265359 - phi;
     int nstubs=0;
     bool hasME1=false;
-    bool hasGE1=false;
     bool hasME2=false;
+    float GE11dPhi=-99.;
+    //float GE21dPhi=-99.;
     CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
     for(; csc!=tmp_trk->second.end(); csc++){
+
+      //      bool is_odd = ((*csc).first.chamber()%2==1);
+      
       if ((*csc).first.station()==1){
 	hasME1 = true;
-	if (fabs((*csc).second.first->getGEMDPhi()) < 10 ) hasGE1 = true;
+	GE11dPhi = (*csc).second.first->getGEMDPhi();
       }
-      if ((*csc).first.station()==2) hasME2 = true;
+      if ((*csc).first.station()==2){
+	hasME2 = true;
+	//	GE21dPhi = (*csc).second.first->getGEMDPhi();
+      }
       nstubs++;
     }
 
@@ -169,7 +176,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  if ((nMEbin == ME_all) ||
 	      ((nMEbin == ME_1) && (hasME1)) ||
-	      ((nMEbin == GE_1) && (hasGE1)) ||
+	      ((nMEbin == GE_1) && (GE11dPhi != 99.)) ||
 	      ((nMEbin == ME_2) && (hasME2))){
 
 	    for (int netabin = 0; netabin < netabins; netabin++){

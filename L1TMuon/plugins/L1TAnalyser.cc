@@ -188,24 +188,24 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("g4SimHits",BaseSimTracks);
 
   float minDRMatch = 0.5;
-  if (debugTF) cout <<"event "<< n_events++<<endl;
   bool loweta = false;
   bool lowphi = false;
+  n_events++;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
   for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
-    if ((fabs(BaseSimTrk->type()) == 13) and
-	(BaseSimTrk->momentum().pt() >= min_pt) and
-	(BaseSimTrk->momentum().pt() <= max_pt) and
-	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) and 
+    if (BaseSimTrk->momentum().eta() < 0.0) // temp for neg endcap
+    if ((fabs(BaseSimTrk->type()) == 13) &&
+	(BaseSimTrk->momentum().pt() >= min_pt) &&
+	(BaseSimTrk->momentum().pt() <= max_pt) &&
+	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) && 
 	(fabs(BaseSimTrk->momentum().eta()) <= max_aEta) ){
-
       TLorentzVector truemuon; 
       truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
       TLorentzVector l1muon;      
       int nstubs=0;
       float tempDRMatch = 10;
       bool hasME1=false;
-      bool hasGE1=false;
+      float hasGE1=0;
       bool hasME2=false;
       csc::L1Track matched_l1track;
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
@@ -234,7 +234,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	int tempnstubs = 0;
 	bool temphasME1=false;
-	bool temphasGE1=false;
+	float temphasGE1=0;
 	bool temphasME2=false;
 
 	TLorentzVector templ1muon;
@@ -243,7 +243,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(; csc!=tmp_trk->second.end(); csc++){
 	  if ((*csc).first.station()==1){
 	    temphasME1 = true;
-	    if (fabs((*csc).second.first->getGEMDPhi()) < 10 ) temphasGE1 = true;
+	    temphasGE1 = (*csc).second.first->getGEMDPhi();
 	  }
 	  if ((*csc).first.station()==2) temphasME2 = true;
 	  tempnstubs++;
@@ -294,25 +294,26 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // 	}
       // }
 
-      //float trueEta = fabs(truemuon.Eta());
-      float trueEta = truemuon.Eta();
+      float trueAbsEta = fabs(truemuon.Eta());
+      //      float trueEta = truemuon.Eta();
       for (int netabin = 0; netabin < netabins; netabin++){
 	if ((netabin == eta_all) ||
-	    ((netabin == eta_me1) && (trueEta > 1.6 && trueEta < 2.1)) ||
-	    ((netabin == eta_me2) && (trueEta > 2.1 && trueEta < 2.4))){	    
+	    ((netabin == eta_me1) && (trueAbsEta > 1.6 && trueAbsEta < 2.1)) ||
+	    ((netabin == eta_me2) && (trueAbsEta > 2.1 && trueAbsEta < 2.4))){	    
 	  for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	    for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	      for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
 
-		if (nptbin == 0 and netabin == 0 and nMEbin == 0 and nstubbin == 0)
-		  if (truemuon.Phi() > 0 and truemuon.Phi() < 0.4)
-		    if (trueEta < 1.75)
+		if (nptbin == 0 && netabin == 0 && nMEbin == 0 && nstubbin == 0)
+		  if (truemuon.Phi() > 0 && truemuon.Phi() < 0.4)
+		    if (trueAbsEta < 1.75)
 		      h_TFnStubinTrack_phihole->Fill(nstubs);
 
 		h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 		    ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-		  if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
+		  if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
+		  //if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 		  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		}
 		
@@ -324,14 +325,15 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 		    if ((nMEbin == ME_all) ||
 			((nMEbin == ME_1) && (hasME1)) ||
-			((nMEbin == GE_1) && (hasGE1)) ||
+			((nMEbin == GE_1) && (fabs(hasGE1) < 1.0)) ||
 			((nMEbin == ME_2) && (hasME2))){
 
 		      h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		      
 		      if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 			  ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-			if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
+			if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
+			//if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 			h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		      }
 		    }
@@ -345,15 +347,24 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if (debugTF){
 	// debug to see where stubs are lost
+	hasGE1 = -99;
+	hasME1 = false;
 	int nlcts = 0;
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator Citer;
 	for(Citer = lcts->begin(); Citer != lcts->end(); Citer++){
 	  if ( (truemuon.Eta() > 0 && (*Citer).first.endcap() == 1) ||
 	       (truemuon.Eta() < 0 && (*Citer).first.endcap() == 2) ){
 	    if ((*Citer).first.station()) nlcts++;
+
+	    if ((*Citer).first.station()==1){
+	      hasME1 = true;
+	      hasGE1 = (*Citer).second.first->getGEMDPhi();
+	    }
 	  }
 	}
-	if (nstubs < 2 && nlcts > 2 && hasGE1){
+	//	if (nstubs < 2 && nlcts > 2 && hasGE1==99.0){
+	if (nstubs ==2 && nlcts > 2 && hasME1){
+	  if (debugTF) cout <<"event "<< n_events <<endl;
 	  //if (nlcts > 2){
 	  cout << "nstubs = "<< nstubs
 	       << " pt = "<< truemuon.Pt()
@@ -521,10 +532,10 @@ void L1TAnalyser::beginJob()
 
 	  if (netabin == eta_all){
 	    h_truth_eta[nptbin][nstubbin][nMEbin]
-	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
+	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
 
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
-	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon #eta");
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
 	  }
