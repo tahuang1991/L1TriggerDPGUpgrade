@@ -188,7 +188,7 @@ if doRate:
     )
     process.pL1TAnalyser = cms.Path(process.L1TTriggerRate)
     
-process.schedule = cms.Schedule(process.L1simulation_step,L1Extra_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
+process.schedule = cms.Schedule(process.L1simulation_step,process.L1Extra_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
 
 from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
 if GE21:
