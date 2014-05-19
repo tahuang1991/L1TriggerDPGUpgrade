@@ -230,8 +230,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       float tempDRMatch = 10;
       bool hasME1=false;
       bool hasME2=false;
-      float GE11dPhi=-99.;
-      float GE21dPhi=-99.;
+      //      float GE11dPhi=-99.;
+      //      float GE21dPhi=-99.;
       bool passGE11=false;
       bool passGE21=false;
       csc::L1Track matched_l1track;
@@ -314,8 +314,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      l1muon = templ1muon;
 	      hasME1 = temphasME1;
 	      hasME2 = temphasME2;
-	      GE11dPhi=tempGE11dPhi;
-	      GE21dPhi=tempGE21dPhi;
+	      // GE11dPhi=tempGE11dPhi;
+	      // GE21dPhi=tempGE21dPhi;
 	      passGE11=temppassGE11;
 	      passGE21=temppassGE21;
 	      matched_l1trackIT = tmp_trk;
@@ -408,7 +408,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if (debugTF){
 	// debug to see where stubs are lost
-	float gemDphi = -99;
+	//float gemDphi = -99;
 	hasME1 = false;
 	int nlcts = 0;
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator Citer;
@@ -419,7 +419,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	    if ((*Citer).first.station()==1){
 	      hasME1 = true;
-	      gemDphi = (*Citer).second.first->getGEMDPhi();
+	      //gemDphi = (*Citer).second.first->getGEMDPhi();
 	    }
 	  }
 	}
