@@ -408,7 +408,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if (debugTF){
 	// debug to see where stubs are lost
-	hasGE1 = -99;
+	float gemDphi = -99;
 	hasME1 = false;
 	int nlcts = 0;
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator Citer;
@@ -419,11 +419,11 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	    if ((*Citer).first.station()==1){
 	      hasME1 = true;
-	      hasGE1 = (*Citer).second.first->getGEMDPhi();
+	      gemDphi = (*Citer).second.first->getGEMDPhi();
 	    }
 	  }
 	}
-	//	if (nstubs < 2 && nlcts > 2 && hasGE1==99.0){
+	//	if (nstubs < 2 && nlcts > 2 && gemDphi==99.0){
 	if (nstubs ==2 && nlcts > 2 && hasME1){
 	  if (debugTF) cout <<"event "<< n_events <<endl;
 	  //if (nlcts > 2){
