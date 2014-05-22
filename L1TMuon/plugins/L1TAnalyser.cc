@@ -108,15 +108,15 @@ private:
     {-2 , 0.00689220, 0.00331313 },
   };
   const double ME21GEMdPhi[9][3] = {
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
-    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
   };
 
   double min_pt;
@@ -450,10 +450,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    }
 	  }
 	}
-	//	if (nstubs < 2 && nlcts > 2 && gemDphi==99.0){
-	if (nstubs ==2 && nlcts > 2 && hasME1){
+	if (nstubs < 2 && nlcts > 2){
+	//if (nstubs ==2 && nlcts > 2 && hasME1){
 	  if (debugTF) cout <<"event "<< n_events <<endl;
-	  //if (nlcts > 2){
+	//if (nlcts > 2){
 	  cout << "nstubs = "<< nstubs
 	       << " pt = "<< truemuon.Pt()
 	       << ", eta = "<< truemuon.Eta()
@@ -484,7 +484,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from LocalPhi LUT in " << fpga
 								<< "(strip="<<stubi.getStrip()<<",pattern="<<stubi.getPattern()<<",quality="<<stubi.getQuality()<<",bend="<<stubi.getBend()<<")" <<std::endl;
 		}
-
 		gblphidat gblPhi;
 		try {
 		  unsigned csc_id = stubi.cscid();
@@ -496,23 +495,15 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi LUT in " << fpga
 								<< "(phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
 		}
-
 		gbletadat gblEta;
 		try {
-		  gblEta = srLUTs_[fpga][endcapbin][sectorbin]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
+		  unsigned csc_id = stubi.cscid();
+		  if (!m_gangedME1a) csc_id = stubi.cscidSeparateME1a();
+		  gblEta = srLUTs_[fpga][endcapbin][sectorbin]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, stubi.getKeyWG(), csc_id);
 		} catch( cms::Exception &e ) {
 		  bzero(&gblEta,sizeof(gblEta));
 		  edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalEta LUT in " << fpga
 								<< "(phi_bend_local="<<lclPhi.phi_bend_local<<",phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
-		}
-
-		gblphidat gblPhiDT;
-		try {
-		  gblPhiDT = srLUTs_[fpga][endcapbin][sectorbin]->globalPhiMB(lclPhi.phi_local, stubi.getKeyWG(), stubi.cscid());
-		} catch( cms::Exception &e ) {
-		  bzero(&gblPhiDT,sizeof(gblPhiDT));
-		  edm::LogWarning("CSCTFSectorProcessor:run()") << "Exception from GlobalPhi DT LUT in " << fpga
-								<< "(phi_local="<<lclPhi.phi_local<<",KeyWG="<<stubi.getKeyWG()<<",csc="<<stubi.cscid()<<")"<<std::endl;
 		}
 
 		stubi.setEtaPacked(gblEta.global_eta);
