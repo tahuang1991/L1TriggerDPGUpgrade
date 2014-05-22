@@ -74,6 +74,29 @@ private:
     16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
 
+  const double ME11GEMdPhi[9][3] = {
+    {-2 , 1.0, 1.0 },
+    {3 , 0.03971647, 0.01710244 },
+    {5 , 0.02123785, 0.00928431 },
+    {7 , 0.01475524, 0.00650928 },
+    {10, 0.01023299, 0.00458796 },
+    {15, 0.00689220, 0.00331313 },
+    {20, 0.00535176, 0.00276152 },
+    {30, 0.00389050, 0.00224959 },
+    {40, 0.00329539, 0.00204670 }
+  };
+  const double ME21GEMdPhi[9][3] = {
+    {-2 , 1.0, 1.0 },
+    {3 , 0.01832829, 0.01003643 },
+    {5 , 0.01095490, 0.00631625 },
+    {7 , 0.00786026, 0.00501017 },
+    {10, 0.00596349, 0.00414560 },
+    {15, 0.00462411, 0.00365550 },
+    {20, 0.00435298, 0.00361550 },
+    {30, 0.00465160, 0.00335700 },
+    {40, 0.00372145, 0.00366262 }
+  };
+
   double min_pt;
   double max_pt;
   double min_aEta;
@@ -129,7 +152,7 @@ private:
   enum etabins{eta_all, eta_me1, eta_me2, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
-  enum MEbins{ME_all, ME_1, GE_1, ME_2, nMEbins};
+  enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_truth_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_truth_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -188,25 +211,29 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("g4SimHits",BaseSimTracks);
 
   float minDRMatch = 0.5;
-  if (debugTF) cout <<"event "<< n_events++<<endl;
   bool loweta = false;
   bool lowphi = false;
+  n_events++;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
   for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
-    if ((fabs(BaseSimTrk->type()) == 13) and
-	(BaseSimTrk->momentum().pt() >= min_pt) and
-	(BaseSimTrk->momentum().pt() <= max_pt) and
-	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) and 
+    if (BaseSimTrk->momentum().eta() < 0.0) // temp for neg endcap
+    if ((fabs(BaseSimTrk->type()) == 13) &&
+	(BaseSimTrk->momentum().pt() >= min_pt) &&
+	(BaseSimTrk->momentum().pt() <= max_pt) &&
+	(fabs(BaseSimTrk->momentum().eta()) >= min_aEta) && 
 	(fabs(BaseSimTrk->momentum().eta()) <= max_aEta) ){
-
       TLorentzVector truemuon; 
       truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
       TLorentzVector l1muon;      
+
       int nstubs=0;
       float tempDRMatch = 10;
       bool hasME1=false;
-      bool hasGE1=false;
       bool hasME2=false;
+      //      float GE11dPhi=-99.;
+      //      float GE21dPhi=-99.;
+      bool passGE11=false;
+      bool passGE21=false;
       csc::L1Track matched_l1track;
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
       L1CSCTrackCollection::const_iterator matched_l1trackIT;
@@ -234,18 +261,48 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	int tempnstubs = 0;
 	bool temphasME1=false;
-	bool temphasGE1=false;
 	bool temphasME2=false;
+	float tempGE11dPhi=-99.;
+	float tempGE21dPhi=-99.;
+	bool temppassGE11=false;
+	bool temppassGE21=false;
 
 	TLorentzVector templ1muon;
 	templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
 	for(; csc!=tmp_trk->second.end(); csc++){
+
+	  bool is_odd = ((*csc).first.chamber()%2==1);
+      
 	  if ((*csc).first.station()==1){
 	    temphasME1 = true;
-	    if (fabs((*csc).second.first->getGEMDPhi()) < 10 ) temphasGE1 = true;
+	    tempGE11dPhi =  fabs((*csc).second.first->getGEMDPhi());
+	    for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
+	      if (double(pt) >= ME11GEMdPhi[b][0]){
+		if ((is_odd && ME11GEMdPhi[b][1] > tempGE11dPhi) || 
+		    (!is_odd && ME11GEMdPhi[b][2] > tempGE11dPhi)){
+		  temppassGE11 = true;
+		}
+		else temppassGE11 = false;
+	      }
+	    }
+	    if (tempGE11dPhi == -99) temppassGE11 = true;// no gem match, pass
 	  }
-	  if ((*csc).first.station()==2) temphasME2 = true;
+
+	  if ((*csc).first.station()==2){
+	    temphasME2 = true;
+	    tempGE21dPhi =  fabs((*csc).second.first->getGEMDPhi());
+	    for (int b = 0; b < 9; b++){
+	      if (double(pt) >= ME21GEMdPhi[b][0]){
+		if ((is_odd && ME21GEMdPhi[b][1] > tempGE21dPhi) || 
+		    (!is_odd && ME21GEMdPhi[b][2] > tempGE21dPhi)){
+		  temppassGE21 = true;
+		}
+		else temppassGE21 = false;
+	      }
+	    }
+	    if (tempGE21dPhi == -99) temppassGE21 = true;
+	  }
 	  tempnstubs++;
 	}
 
@@ -256,8 +313,11 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      tempDRMatch = truemuon.DeltaR(templ1muon);
 	      l1muon = templ1muon;
 	      hasME1 = temphasME1;
-	      hasGE1 = temphasGE1;
 	      hasME2 = temphasME2;
+	      // GE11dPhi=tempGE11dPhi;
+	      // GE21dPhi=tempGE21dPhi;
+	      passGE11=temppassGE11;
+	      passGE21=temppassGE21;
 	      matched_l1trackIT = tmp_trk;
 	    }
 	  }
@@ -294,25 +354,26 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // 	}
       // }
 
-      //float trueEta = fabs(truemuon.Eta());
-      float trueEta = truemuon.Eta();
+      float trueAbsEta = fabs(truemuon.Eta());
+      //      float trueEta = truemuon.Eta();
       for (int netabin = 0; netabin < netabins; netabin++){
 	if ((netabin == eta_all) ||
-	    ((netabin == eta_me1) && (trueEta > 1.6 && trueEta < 2.1)) ||
-	    ((netabin == eta_me2) && (trueEta > 2.1 && trueEta < 2.4))){	    
+	    ((netabin == eta_me1) && (trueAbsEta > 1.6 && trueAbsEta < 2.1)) ||
+	    ((netabin == eta_me2) && (trueAbsEta > 2.1 && trueAbsEta < 2.4))){	    
 	  for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	    for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	      for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
 
-		if (nptbin == 0 and netabin == 0 and nMEbin == 0 and nstubbin == 0)
-		  if (truemuon.Phi() > 0 and truemuon.Phi() < 0.4)
-		    if (trueEta < 1.75)
+		if (nptbin == 0 && netabin == 0 && nMEbin == 0 && nstubbin == 0)
+		  if (truemuon.Phi() > 0 && truemuon.Phi() < 0.4)
+		    if (trueAbsEta < 1.75)
 		      h_TFnStubinTrack_phihole->Fill(nstubs);
 
 		h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 		    ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-		  if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
+		  if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
+		  //if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 		  h_truth_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		}
 		
@@ -323,15 +384,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      ((nstubbin == stub_3) && (nstubs > 2))){
 
 		    if ((nMEbin == ME_all) ||
-			((nMEbin == ME_1) && (hasME1)) ||
-			((nMEbin == GE_1) && (hasGE1)) ||
-			((nMEbin == ME_2) && (hasME2))){
-
-		      h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
+			((nMEbin == ME_1) && hasME1) ||
+			((nMEbin == ME_2) && hasME2) ||
+			((nMEbin == GE_1) && passGE11) ||
+			((nMEbin == GE_2) && passGE11 && passGE21) )
+		      {
+			h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		      
 		      if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
 			  ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
-			if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
+			if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
+			//if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 			h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 		      }
 		    }
@@ -345,15 +408,24 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       if (debugTF){
 	// debug to see where stubs are lost
+	//float gemDphi = -99;
+	hasME1 = false;
 	int nlcts = 0;
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator Citer;
 	for(Citer = lcts->begin(); Citer != lcts->end(); Citer++){
 	  if ( (truemuon.Eta() > 0 && (*Citer).first.endcap() == 1) ||
 	       (truemuon.Eta() < 0 && (*Citer).first.endcap() == 2) ){
 	    if ((*Citer).first.station()) nlcts++;
+
+	    if ((*Citer).first.station()==1){
+	      hasME1 = true;
+	      //gemDphi = (*Citer).second.first->getGEMDPhi();
+	    }
 	  }
 	}
-	if (nstubs < 2 && nlcts > 2 && hasGE1){
+	//	if (nstubs < 2 && nlcts > 2 && gemDphi==99.0){
+	if (nstubs ==2 && nlcts > 2 && hasME1){
+	  if (debugTF) cout <<"event "<< n_events <<endl;
 	  //if (nlcts > 2){
 	  cout << "nstubs = "<< nstubs
 	       << " pt = "<< truemuon.Pt()
@@ -509,7 +581,7 @@ void L1TAnalyser::beginJob()
   TString etabinsName[] = {"", "eta1", "eta2"};
   TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
-  TString MEbinsName[] = {"", "hasME1", "hasGE1", "hasME2"};
+  TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
@@ -521,10 +593,10 @@ void L1TAnalyser::beginJob()
 
 	  if (netabin == eta_all){
 	    h_truth_eta[nptbin][nstubbin][nMEbin]
-	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
+	      = new TH1F("truth_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
 
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
-	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 100,-2.5,2.5);
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("simulated muon #eta");
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Efficiency");
 	  }

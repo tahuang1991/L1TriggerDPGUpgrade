@@ -1,9 +1,9 @@
 LPC = False
-runevents = 1000
-#runevents = -1;
+runevents = -1;
+#runevents = 20000
 #LPC = True
+fileOutputName = ""
 
-import os
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
@@ -34,24 +34,28 @@ if gem == 1:
 if gem == 2:
     GE21 = True
 if data == 0:
-    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU0"
+    dataSetName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU0"
 if data == 1:
-    fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
+    dataSetName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU140"
 if data == 2:
-    fileOutputName = "SingleNu_SLHC12_2023Muon_DIGI_PU140"
+    dataSetName = "SingleNu_SLHC12_2023Muon_DIGI_PU140"
     doRate = True
-
-#
-#fileOutputName = "SingleMuPt2-50_1M_SLHC11_2023Muon_DIGI_PU200"
-#fileOutputName = "SingleMu_SLHC12_PU0"
-## input
-#directory = '/u/user/jlee/scratch/CMSSW_6_2_0_SLHC11_PU0/'
-directory = '/u/user/jlee/scratch/'
+if data == 3:
+    dataSetName = "SingleNu_SLHC12_2023Muon_DIGI_PU400"
+    doRate = True
+if data == 4:
+    dataSetName = "SingleMu_SLHC12_PU0"
+if data == 5:
+    dataSetName = "SingleMu_SLHC12_PU140"
+    
+from os.path import expanduser
+directory = expanduser("~")+'/scratch/'
 saveDir = ''
 if LPC:
     directory = '/uscms/home/jlee/cmsrun/'
     saveDir = '/eos/uscms/store/user/lpcgem/jlee/l1csctf/'
-directory = directory + fileOutputName + '/'
+directory = directory + dataSetName + '/'
+fileOutputName = dataSetName+fileOutputName
 
 process = cms.Process('L1')
 # import of standard configuration
@@ -64,9 +68,10 @@ process.load('Configuration.Geometry.GeometryExtended2023MuonReco_cff')
 process.load('Configuration.Geometry.GeometryExtended2023Muon_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_PostLS1_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
+process.load("Configuration.StandardSequences.L1Extra_cff")
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.MessageLogger.cerr.FwkReport.reportEvery = 500
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 from CalibMuon.CSCCalibration.CSCIndexer_cfi import CSCIndexerESProducer
 process.CSCIndexerESProducer= CSCIndexerESProducer
@@ -100,7 +105,6 @@ for d in range(len(inputDir)):
   theInputFiles.extend(['file:' + my_dir[:] + x for x in ls if x.endswith('.root')])
 
 theInputFiles = theInputFiles[:]
-#theInputFiles = ['file:/u/user/jlee/scratch/SingleMuPt2-50Fwdv2_50k_DIGI_PU0_SLHC10_2023Muon/out_digi_10_1_UPn.root']
 
 # Input source
 process.source = cms.Source("PoolSource",
@@ -153,23 +157,38 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:upgradePLS3', '')
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.L1Extra_step = cms.Path(process.L1Extra)
+
+process.l1extraParticles.centralBxOnly = cms.bool(True)
+process.l1extraParticles.produceMuonParticles = cms.bool(True)
+process.l1extraParticles.produceCaloParticles = cms.bool(False)
+process.l1extraParticles.ignoreHtMiss = cms.bool(False)
 
 if not doRate:
     process.L1TAnalyser = cms.EDAnalyzer('L1TAnalyser',
-        minPt = cms.untracked.double(2),
-        minEta = cms.untracked.double(1.6),
-        maxEta = cms.untracked.double(2.4),
+        minPt = cms.double(2.0),
+        maxPt = cms.double(100.0),
+        minEta = cms.double(1.6),
+        maxEta = cms.double(2.4),
+        SRLUT = cms.PSet(
+			Binary = cms.untracked.bool(False),
+			ReadLUTs = cms.untracked.bool(False),
+			LUTPath = cms.untracked.string('./'),
+			UseMiniLUTs = cms.untracked.bool(True)
+		),
+        debugTF = cms.bool(False)
     )
     process.pL1TAnalyser = cms.Path(process.L1TAnalyser)
 if doRate:
     process.L1TTriggerRate = cms.EDAnalyzer('L1TTriggerRate',
-        minPt = cms.untracked.double(2),
-        minEta = cms.untracked.double(1.6),
-        maxEta = cms.untracked.double(2.4),
+        minPt = cms.double(2.0),
+        maxPt = cms.double(100.0),
+        minEta = cms.double(1.6),
+        maxEta = cms.double(2.4),
     )
     process.pL1TAnalyser = cms.Path(process.L1TTriggerRate)
     
-process.schedule = cms.Schedule(process.L1simulation_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
+process.schedule = cms.Schedule(process.L1simulation_step,process.L1Extra_step,process.endjob_step,process.FEVTDEBUGHLToutput_step,process.pL1TAnalyser)
 
 from SLHCUpgradeSimulations.Configuration.combinedCustoms import *
 from GEMCode.SimMuL1.GEMCSCdPhiDict import *
@@ -182,12 +201,39 @@ process.simCscTriggerPrimitiveDigis.me21tmbSLHCGEM.gemMatchDeltaPhiEven = dphi_l
 
 if GE21:
     process = cust_2023Muon(process)
+    process.simCscTriggerPrimitiveDigis.commonParam.runME3141ILT = cms.bool(True)
+    process.simCscTriggerPrimitiveDigis.me3141tmbSLHCRPC.debugMatching = cms.bool(False)
+    process.simCscTriggerPrimitiveDigis.me21tmbSLHCGEM.gemMatchDeltaPhiOdd = cms.double(1)
+    process.simCscTriggerPrimitiveDigis.me21tmbSLHCGEM.gemMatchDeltaPhiEven = cms.double(1)
 elif GE11:
     process = cust_2019WithGem(process)
+    process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiOdd = cms.double(1)
+    process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiEven = cms.double(1)
 else:
     process = cust_2019(process)
 
+#process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiEven = cms.double(2.0)
+#process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.gemMatchDeltaPhiOdd = cms.double(2.0)
+#process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.debugMatching = cms.bool(True)
+#process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM.debugLUTs = cms.bool(True)
+
+#process.simCscTriggerPrimitiveDigis.tmbSLHC.me11ILT.debugGemMatching = cms.untracked.bool(True)
+#process.simCscTriggerPrimitiveDigis.tmbSLHC.me11ILT.debugLUTs = cms.untracked.bool(True)
+
+
 #process.simCsctfTrackDigis.SectorProcessor.isCoreVerbose = cms.bool(True) 
-print "PTLUT", process.simCsctfTrackDigis.SectorProcessor.PTLUT
-print "firmwareSP", process.simCsctfTrackDigis.SectorProcessor.firmwareSP
-print "clctNplanesHitPattern", process.simCscTriggerPrimitiveDigis.clctSLHC.clctNplanesHitPattern
+#print "PTLUT", process.simCsctfTrackDigis.SectorProcessor.PTLUT
+#print "SRLUT", process.simCsctfTrackDigis.SectorProcessor.SRLUT
+#print "firmwareSP", process.simCsctfTrackDigis.SectorProcessor.firmwareSP
+#print "initializeFromPSet", process.simCsctfTrackDigis.SectorProcessor.initializeFromPSet
+#print "clctNplanesHitPattern", process.simCscTriggerPrimitiveDigis.clctSLHC.clctNplanesHitPattern
+#print "SectorProcessor", process.simCsctfTrackDigis.SectorProcessor
+
+#print "commonParam", process.simCscTriggerPrimitiveDigis.commonParam
+#print "clctSLHC", process.simCscTriggerPrimitiveDigis.clctSLHC
+#print "clctParam07", process.simCscTriggerPrimitiveDigis.clctParam07
+#print "alctSLHC", process.simCscTriggerPrimitiveDigis.alctSLHC
+#print "alctParam07", process.simCscTriggerPrimitiveDigis.alctParam07
+#print "tmbParam", process.simCscTriggerPrimitiveDigis.tmbParam
+#print "tmbSLHC", process.simCscTriggerPrimitiveDigis.tmbSLHC
+#print "me11tmbSLHCGEM", process.simCscTriggerPrimitiveDigis.me11tmbSLHCGEM
