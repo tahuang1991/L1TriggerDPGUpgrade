@@ -86,33 +86,55 @@ private:
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 200.0};
   unsigned maxPTbins = 33;
 
+  // const double ME11GEMdPhi[9][3] = {
+  //   {-2 , 1.0, 1.0 },
+  //   {3 , 0.03971647, 0.01710244 },
+  //   {5 , 0.02123785, 0.00928431 },
+  //   {7 , 0.01475524, 0.00650928 },
+  //   {10, 0.01023299, 0.00458796 },
+  //   {15, 0.00689220, 0.00331313 },
+  //   {20, 0.00535176, 0.00276152 },
+  //   {30, 0.00389050, 0.00224959 },
+  //   {40, 0.00329539, 0.00204670 }
+  // };
+  // const double ME21GEMdPhi[9][3] = {
+  //   {-2 , 1.0, 1.0 },
+  //   {3 , 0.01832829, 0.01003643 },
+  //   {5 , 0.01095490, 0.00631625 },
+  //   {7 , 0.00786026, 0.00501017 },
+  //   {10, 0.00596349, 0.00414560 },
+  //   {15, 0.00462411, 0.00365550 },
+  //   {20, 0.00435298, 0.00361550 },
+  //   {30, 0.00465160, 0.00335700 },
+  //   {40, 0.00372145, 0.00366262 }
+  // };
   const double ME11GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.03971647, 0.01710244 },
-    {5 , 0.02123785, 0.00928431 },
-    {7 , 0.01475524, 0.00650928 },
-    {10, 0.01023299, 0.00458796 },
-    {15, 0.00689220, 0.00331313 },
-    {20, 0.00535176, 0.00276152 },
-    {30, 0.00389050, 0.00224959 },
-    {40, 0.00329539, 0.00204670 }
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
+    {-2 , 0.00689220, 0.00331313 },
   };
   const double ME21GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.01832829, 0.01003643 },
-    {5 , 0.01095490, 0.00631625 },
-    {7 , 0.00786026, 0.00501017 },
-    {10, 0.00596349, 0.00414560 },
-    {15, 0.00462411, 0.00365550 },
-    {20, 0.00435298, 0.00361550 },
-    {30, 0.00465160, 0.00335700 },
-    {40, 0.00372145, 0.00366262 }
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
+    {-2 , 0.00462411, 0.00365550 },
   };
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
-  enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, nMEbins};
+  enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -180,37 +202,34 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     bool passGE21=false;
     CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
     for(; csc!=tmp_trk->second.end(); csc++){
-
       bool is_odd = ((*csc).first.chamber()%2==1);
-      
       if ((*csc).first.station()==1){
 	hasME1 = true;
-	GE11dPhi =  fabs((*csc).second.first->getGEMDPhi());
+	GE11dPhi = (*csc).second.first->getGEMDPhi();
 	for (int b = 0; b < 9; b++){
 	  if (double(pt) >= ME11GEMdPhi[b][0]){
-	    if ((is_odd && ME11GEMdPhi[b][1] > GE11dPhi) || 
-		(!is_odd && ME11GEMdPhi[b][2] > GE11dPhi)){
+	    if ((is_odd && ME11GEMdPhi[b][1] > fabs(GE11dPhi)) || 
+		(!is_odd && ME11GEMdPhi[b][2] > fabs(GE11dPhi))){
 	      passGE11 = true;
 	    }
 	    else passGE11 = false;
 	  }
 	}
-	if (GE11dPhi == -99) passGE11 = true;
+	if (GE11dPhi < -50) passGE11 = true;
       }
-
       if ((*csc).first.station()==2){
 	hasME2 = true;
-	GE21dPhi =  fabs((*csc).second.first->getGEMDPhi());
+	GE21dPhi = (*csc).second.first->getGEMDPhi();
 	for (int b = 0; b < 9; b++){
 	  if (double(pt) >= ME21GEMdPhi[b][0]){
-	    if ((is_odd && ME21GEMdPhi[b][1] > GE21dPhi) || 
-		(!is_odd && ME21GEMdPhi[b][2] > GE21dPhi)){
+	    if ((is_odd && ME21GEMdPhi[b][1] > fabs(GE21dPhi)) || 
+		(!is_odd && ME21GEMdPhi[b][2] > fabs(GE21dPhi))){
 	      passGE21 = true;
 	    }
 	    else passGE21 = false;
 	  }
 	}
-	if (GE21dPhi == -99) passGE21 = true;
+	if (GE21dPhi < -50) passGE21 = true;
       }
       nstubs++;
     }
@@ -224,7 +243,8 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ((nMEbin == ME_1) && hasME1) ||
 	      ((nMEbin == ME_2) && hasME2) ||
 	      ((nMEbin == GE_1) && passGE11) ||
-	      ((nMEbin == GE_2) && passGE11 && passGE21) )
+	      ((nMEbin == GE_2) && passGE21) ||
+	      ((nMEbin == GE_12) && passGE11 && passGE21) )
 	    {
 
 	    for (int netabin = 0; netabin < netabins; netabin++){
@@ -273,7 +293,7 @@ void L1TTriggerRate::beginJob()
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
-  TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21"};
+  TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
