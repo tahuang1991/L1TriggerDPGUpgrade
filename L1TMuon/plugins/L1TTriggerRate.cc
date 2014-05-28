@@ -305,7 +305,7 @@ void L1TTriggerRate::beginJob()
 
 	  if (netabin == 0){
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]
-	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 50,1.5,2.5);
+	      = fs->make<TH1F>("L1cscTrack_"+stubbinsName[nstubbin]+ptbinsName[nptbin]+MEbinsName[nMEbin]+"_eta", "", 20,1.5,2.5);
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetXaxis()->SetTitle("L1 muon #eta");
 	    h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->GetYaxis()->SetTitle("Trigger Rate [kHz]");
 	  }
