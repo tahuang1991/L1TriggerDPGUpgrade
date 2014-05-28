@@ -174,7 +174,7 @@ private:
   TH1F* h_noTFQ3nStub;
   TH1F* h_noTFQ3nStubGEM;
 
-  enum etabins{eta_all, eta_me1, eta_me2, netabins};
+  enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, nstubbins};
   enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
@@ -384,8 +384,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       for (int netabin = 0; netabin < netabins; netabin++){
 	if ((netabin == eta_all) ||
+	    ((netabin == eta_me3) && (trueAbsEta > 1.64 && trueAbsEta < 2.14)) ||
 	    ((netabin == eta_me1) && (trueAbsEta > 1.6 && trueAbsEta < 2.1)) ||
-	    ((netabin == eta_me2) && (trueAbsEta > 2.1 && trueAbsEta < 2.4))){	    
+	    ((netabin == eta_me2) && (trueAbsEta > 2.1 && trueAbsEta < 2.4))){
 	  for (int nptbin = 0; nptbin < nptbins; nptbin++){
 	    for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	      for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
@@ -596,7 +597,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 // ------------ method called once each job just before starting event loop  ------------
 void L1TAnalyser::beginJob()
 {
-  TString etabinsName[] = {"", "eta1", "eta2"};
+  TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3"};
   TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
