@@ -451,7 +451,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    }
 	  }
 	}
-	if (nstubs < 2 && nlcts > 2){
+	if (nstubs < 3 && nlcts > 2){
 	//if (nstubs ==2 && nlcts > 2 && hasME1){
 	  if (debugTF) cout <<"event "<< n_events <<endl;
 	//if (nlcts > 2){
