@@ -241,7 +241,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   n_events++;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
   for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
-    if (BaseSimTrk->momentum().eta() < 0.0) // temp for neg endcap
+    //if (BaseSimTrk->momentum().eta() < 0.0) // temp for neg endcap
     if ((fabs(BaseSimTrk->type()) == 13) &&
 	(BaseSimTrk->momentum().pt() >= min_pt) &&
 	(BaseSimTrk->momentum().pt() <= max_pt) &&
@@ -252,6 +252,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       TLorentzVector l1muon;      
 
       int nstubs=0;
+      unsigned int sign = 0;
+      unsigned int charge = 0;
       float tempDRMatch = 10;
       bool hasME1=false;
       bool hasME2=false;
@@ -270,6 +272,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	auto l1track = tmp_trk->first;
 	rank=l1track.rank();
 	//ptLUTAddress = l1track.ptLUTAddress();
+        ptadd ptLUTAddress(l1track.ptLUTAddress());
+
 	l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
 	pt = ptscale[pt_packed];
 	
@@ -284,6 +288,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	unsigned eta_sign = (l1track.endcap() == 1 ? 0 : 1);
 	eta = ts->getRegionalEtaScale(2)->getCenter( ((l1track.eta_packed()) | (eta_sign<<5)) & 0x3f );
 	
+	unsigned int tempsign = l1track.charge_packed();
+	unsigned int tempcharge = ptLUTAddress.delta_phi_sign;
+
 	int tempnstubs = 0;
 	bool temphasME1=false;
 	bool temphasME2=false;
@@ -341,10 +348,13 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      passGE11=temppassGE11;
 	      passGE21=temppassGE21;
 	      matched_l1trackIT = tmp_trk;
+	      sign = tempsign;
+	      charge = tempcharge;
 	    }
 	  }
 	}
       }
+      
       // testing for eff drop at phi~0
       // if (nstubs)
       // if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
@@ -455,6 +465,11 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	//if (nstubs ==2 && nlcts > 2 && hasME1){
 	  if (debugTF) cout <<"event "<< n_events <<endl;
 	//if (nlcts > 2){
+	  cout << "BaseSimTrk->type() " << BaseSimTrk->type()
+	       << " charge = " <<charge
+	       << " GE11dPhi = " <<GE11dPhi
+	       << " sign = " <<sign <<endl;
+
 	  cout << "nstubs = "<< nstubs
 	       << " pt = "<< truemuon.Pt()
 	       << ", eta = "<< truemuon.Eta()
