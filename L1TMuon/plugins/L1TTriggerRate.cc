@@ -222,6 +222,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  }
 	}
 	if (GE11dPhi < -50) passGE11 = true;
+	if (GE11dPhi == 100) passGE11 = false;
       }
       if ((*csc).first.station()==2){
 	hasME2 = true;
@@ -239,6 +240,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  }
 	}
 	if (GE21dPhi < -50) passGE21 = true;
+	if (GE21dPhi == 100) passGE21 = false;
       }
       nstubs++;
     }
