@@ -258,27 +258,27 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ((nMEbin == GE_12) && passGE11 && passGE21) )
 	    {
 
-	    for (int netabin = 0; netabin < netabins; netabin++){
-	      if ((netabin == eta_all) ||
-		  ((netabin == eta_me3) && (eta > 1.64 && eta < 2.14)) ||
-		  ((netabin == eta_me1) && (eta > 1.6 && eta < 2.1)) ||
-		  ((netabin == eta_me2) && (eta > 2.1 && eta < 2.4))){
+	      for (int netabin = 0; netabin < netabins; netabin++){
+		if ((netabin == eta_all) ||
+		    ((netabin == eta_me3) && (eta > 1.64 && eta < 2.14)) ||
+		    ((netabin == eta_me1) && (eta > 1.6 && eta < 2.1)) ||
+		    ((netabin == eta_me2) && (eta > 2.1 && eta < 2.4))){
    
-		for (unsigned nptbin = 0; nptbin < maxPTbins; nptbin++){
-		  if (pt >= ptscale[nptbin]){
-		    h_L1CSCTrack_pt[netabin][0][nstubbin][nMEbin]->Fill(ptscale[nptbin]);
+		  for (unsigned nptbin = 0; nptbin < maxPTbins; nptbin++){
+		    if (pt >= ptscale[nptbin]){
+		      h_L1CSCTrack_pt[netabin][0][nstubbin][nMEbin]->Fill(ptscale[nptbin]);
+		    }
 		  }
-		}
-		for (unsigned nptbin = 0; nptbin < nptbins; nptbin++){
-		  if ((nptbin == pt_all) ||
-		      ((nptbin == pt_20) && (pt >= 20))){
-		    if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(eta);
-		    h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
+		  for (unsigned nptbin = 0; nptbin < nptbins; nptbin++){
+		    if ((nptbin == pt_all) ||
+			((nptbin == pt_20) && (pt >= 20))){
+		      if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(eta);
+		      h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
+		    }
 		  }
 		}
 	      }
 	    }
-	  }
 	}
       }
     }
