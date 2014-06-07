@@ -133,7 +133,7 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_2, stub_3, nstubbins};
+  enum stubbins{stub_2, stub_3, stub_5, nstubbins};
   enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
@@ -247,7 +247,8 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
     for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
       if (((nstubbin == stub_2) && (nstubs > 1)) ||
-	  ((nstubbin == stub_3) && (nstubs > 2))){
+	  ((nstubbin == stub_3) && (nstubs > 2)) ||
+	  ((nstubbin == stub_4) && (nstubs == 4))){
 
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  if ((nMEbin == ME_all) ||
@@ -255,30 +256,29 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ((nMEbin == ME_2) && hasME2) ||
 	      ((nMEbin == GE_1) && passGE11) ||
 	      ((nMEbin == GE_2) && passGE21) ||
-	      ((nMEbin == GE_12) && passGE11 && passGE21) )
-	    {
-
-	      for (int netabin = 0; netabin < netabins; netabin++){
-		if ((netabin == eta_all) ||
-		    ((netabin == eta_me3) && (eta > 1.64 && eta < 2.14)) ||
-		    ((netabin == eta_me1) && (eta > 1.6 && eta < 2.1)) ||
-		    ((netabin == eta_me2) && (eta > 2.1 && eta < 2.4))){
+	      ((nMEbin == GE_12) && passGE11 && passGE21) ){
+	    
+	    for (int netabin = 0; netabin < netabins; netabin++){
+	      if ((netabin == eta_all) ||
+		  ((netabin == eta_me3) && (eta > 1.64 && eta < 2.14)) ||
+		  ((netabin == eta_me1) && (eta > 1.6 && eta < 2.1)) ||
+		  ((netabin == eta_me2) && (eta > 2.1 && eta < 2.4))){
    
-		  for (unsigned nptbin = 0; nptbin < maxPTbins; nptbin++){
-		    if (pt >= ptscale[nptbin]){
-		      h_L1CSCTrack_pt[netabin][0][nstubbin][nMEbin]->Fill(ptscale[nptbin]);
-		    }
+		for (unsigned nptbin = 0; nptbin < maxPTbins; nptbin++){
+		  if (pt >= ptscale[nptbin]){
+		    h_L1CSCTrack_pt[netabin][0][nstubbin][nMEbin]->Fill(ptscale[nptbin]);
 		  }
-		  for (unsigned nptbin = 0; nptbin < nptbins; nptbin++){
-		    if ((nptbin == pt_all) ||
-			((nptbin == pt_20) && (pt >= 20))){
-		      if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(eta);
-		      h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
-		    }
+		}
+		for (unsigned nptbin = 0; nptbin < nptbins; nptbin++){
+		  if ((nptbin == pt_all) ||
+		      ((nptbin == pt_20) && (pt >= 20))){
+		    if (netabin == 0) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(eta);
+		    h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(phi);
 		  }
 		}
 	      }
 	    }
+	  }
 	}
       }
     }
@@ -303,7 +303,7 @@ void L1TTriggerRate::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"stub2", "stub3"};
+  TString stubbinsName[] = {"stub2", "stub3", "stub4"};
   TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){

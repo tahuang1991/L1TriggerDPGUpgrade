@@ -176,7 +176,7 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_2, stub_3, nstubbins};
+  enum stubbins{stub_2, stub_3, stub_4, nstubbins};
   enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_truth_eta[nptbins][nstubbins][nMEbins];
@@ -418,7 +418,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
 		    if (((nstubbin == stub_2) && (nstubs > 1)) ||
-			((nstubbin == stub_3) && (nstubs > 2))){
+			((nstubbin == stub_3) && (nstubs > 2)) ||
+			((nstubbin == stub_4) && (nstubs == 4))){
 
 		      if ((nMEbin == ME_all) ||
 			  ((nMEbin == ME_1) && hasME1) ||
@@ -614,7 +615,7 @@ void L1TAnalyser::beginJob()
 {
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"stub2", "stub3"};
+  TString stubbinsName[] = {"stub2", "stub3", "stub4"};
   TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
