@@ -221,7 +221,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      }
 	  }
 	}
-	if (GE11dPhi < -50) passGE11 = true;
+	if (GE11dPhi < -50) passGE11 = false;
 	if (GE11dPhi >= 99.) passGE11 = false;
       }
       if ((*csc).first.station()==2){
@@ -239,7 +239,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      }
 	  }
 	}
-	if (GE21dPhi < -50) passGE21 = true;
+	if (GE21dPhi < -50) passGE21 = false;
 	if (GE21dPhi >= 99.) passGE21 = false;
       }
       nstubs++;
