@@ -175,7 +175,7 @@ private:
   TH1F* h_noTFQ3nStubGEM;
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
-  enum ptbins{pt_all, pt_20, nptbins};
+  enum ptbins{pt_all, pt_15, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, stub_4, nstubbins};
   enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
   TH1F* h_truth_pt[netabins][nptbins][nstubbins][nMEbins];
@@ -408,6 +408,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 		  h_truth_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		  if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
+		      ((nptbin == pt_15) && (truemuon.Pt() >= 20)) ||
 		      ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
 		    if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
 		    //if (netabin == eta_all) h_truth_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
@@ -415,6 +416,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  }
 		
 		  if ((nptbin == pt_all) ||
+		      ((nptbin == pt_15) && (pt >= 15)) ||
 		      ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
 		    if (((nstubbin == stub_2) && (nstubs > 1)) ||
@@ -431,6 +433,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  h_L1CSCTrack_pt[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Pt());
 		      
 			  if ((nptbin == pt_all && truemuon.Pt() >= 10) ||
+			      ((nptbin == pt_15) && (truemuon.Pt() >= 20)) ||
 			      ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
 			    if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
 			    //if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
@@ -614,7 +617,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void L1TAnalyser::beginJob()
 {
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
-  TString ptbinsName[] = {"", "pt20"};
+  TString ptbinsName[] = {"", "pt15", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3", "stub4"};
   TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
