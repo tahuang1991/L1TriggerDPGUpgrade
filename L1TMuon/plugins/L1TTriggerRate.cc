@@ -133,7 +133,7 @@ private:
 
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_20, nptbins};
-  enum stubbins{stub_2, stub_3, nstubbins};
+  enum stubbins{stub_2, stub_3, stub_4, nstubbins};
   enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
@@ -221,8 +221,8 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      }
 	  }
 	}
-	if (GE11dPhi < -50) passGE11 = true;
-	if (GE11dPhi == 100) passGE11 = false;
+	if (GE11dPhi < -50) passGE11 = false;
+	if (GE11dPhi >= 99.) passGE11 = false;
       }
       if ((*csc).first.station()==2){
 	hasME2 = true;
@@ -239,15 +239,16 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      }
 	  }
 	}
-	if (GE21dPhi < -50) passGE21 = true;
-	if (GE21dPhi == 100) passGE21 = false;
+	if (GE21dPhi < -50) passGE21 = false;
+	if (GE21dPhi >= 99.) passGE21 = false;
       }
       nstubs++;
     }
 
     for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
       if (((nstubbin == stub_2) && (nstubs > 1)) ||
-	  ((nstubbin == stub_3) && (nstubs > 2))){
+	  ((nstubbin == stub_3) && (nstubs > 2)) ||
+	  ((nstubbin == stub_4) && (nstubs == 4))){
 
 	for (int nMEbin = 0; nMEbin < nMEbins; nMEbin++){
 	  if ((nMEbin == ME_all) ||
@@ -255,9 +256,8 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ((nMEbin == ME_2) && hasME2) ||
 	      ((nMEbin == GE_1) && passGE11) ||
 	      ((nMEbin == GE_2) && passGE21) ||
-	      ((nMEbin == GE_12) && passGE11 && passGE21) )
-	    {
-
+	      ((nMEbin == GE_12) && passGE11 && passGE21) ){
+	    
 	    for (int netabin = 0; netabin < netabins; netabin++){
 	      if ((netabin == eta_all) ||
 		  ((netabin == eta_me3) && (eta > 1.64 && eta < 2.14)) ||
@@ -303,7 +303,7 @@ void L1TTriggerRate::beginJob()
 
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt20"};
-  TString stubbinsName[] = {"stub2", "stub3"};
+  TString stubbinsName[] = {"stub2", "stub3", "stub4"};
   TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
