@@ -416,7 +416,7 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  }
 		
 		  if ((nptbin == pt_all) ||
-		      ((nptbin == pt_15) && (pt >= 15)) ||
+		      ((nptbin == pt_15) && (l1muon.Pt() >= 15)) ||
 		      ((nptbin == pt_20) && (l1muon.Pt() >= 20))){
 
 		    if (((nstubbin == stub_2) && (nstubs > 1)) ||
