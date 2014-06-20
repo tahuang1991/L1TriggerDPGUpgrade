@@ -438,7 +438,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			      ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
 			    if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
 			    //temp
-			    if (netabin == eta_all && nptbin == pt_all && truemuon.Pt() >= 10 && nstubbin == stub_2 && nMEbin == ME_all){
+			    if (debugTF && netabin == eta_all && nptbin == pt_all && truemuon.Pt() >= 10 
+				&& nstubbin == stub_2 && nMEbin == ME_all){
 			      if (nstubs < 3 && nstubs > 1){ 
 				  cout << "no 3 nstubs = "<< nstubs
 				  << " pt = "<< truemuon.Pt()
