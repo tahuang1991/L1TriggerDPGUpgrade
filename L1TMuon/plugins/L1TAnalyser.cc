@@ -132,6 +132,7 @@ private:
   bool m_gangedME1a;
 
   int n_events;
+  int n_No3stub;
   TH1F* h_GEMDPhi;
   TH1F* h_TFGE11DPhi;
   TH1F* h_TFGE21DPhi;
@@ -436,6 +437,17 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			      ((nptbin == pt_15) && (truemuon.Pt() >= 20)) ||
 			      ((nptbin == pt_20) && (truemuon.Pt() >= 30))){
 			    if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueAbsEta);
+			    //temp
+			    if (debugTF && netabin == eta_all && nptbin == pt_all && truemuon.Pt() >= 10 
+				&& nstubbin == stub_2 && nMEbin == ME_all){
+			      if (nstubs < 3 && nstubs > 1){ 
+				  cout << "no 3 nstubs = "<< nstubs
+				  << " pt = "<< truemuon.Pt()
+				  << ", eta = "<< truemuon.Eta()
+				  << ", phi = "<< truemuon.Phi()
+				  << endl;
+			      }
+			    } 
 			    //if (netabin == eta_all) h_L1CSCTrack_eta[nptbin][nstubbin][nMEbin]->Fill(trueEta);
 			    h_L1CSCTrack_phi[netabin][nptbin][nstubbin][nMEbin]->Fill(truemuon.Phi());
 			  }
@@ -465,9 +477,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      }
 	    }
 	  }
-	  if (nstubs < 3 && nlcts > 2){
-	    //if (nstubs ==2 && nlcts > 2 && hasME1){
-	    if (debugTF) cout <<"event "<< n_events <<endl;
+	  //if (nstubs < 3 && nlcts > 2){
+	  if (nstubs ==2){
+	    n_No3stub++;
+	    if (debugTF) cout <<"event "<< n_events << " No3stub "<< n_No3stub<<endl;
 	    //if (nlcts > 2){
 	    cout << "BaseSimTrk->type() " << BaseSimTrk->type()
 		 << " charge = " <<charge
@@ -774,6 +787,7 @@ void L1TAnalyser::beginJob()
   h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
   n_events = 0;
+  n_No3stub = 0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
