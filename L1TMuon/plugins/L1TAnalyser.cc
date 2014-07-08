@@ -73,6 +73,7 @@ struct CSCTFTrack
 
     Int_t nstubs;
     Bool_t hasME1,hasME2,passGE11,passGE21,GE11IsOdd,GE21IsOdd;
+    Bool_t passGE11simPt,passGE21simPt;
     Bool_t match;
     Float_t GE11dPhi,GE21dPhi;
 
@@ -101,6 +102,8 @@ void CSCTFTrack::init(){
     hasME2 = false;
     passGE11 = false;
     passGE21 = false;
+    passGE11simPt = false;
+    passGE21simPt = false;
     GE11IsOdd = false;
     GE21IsOdd = false;
     match = false;
@@ -133,6 +136,8 @@ TTree* CSCTFTrack::bookTrackTree(TTree* t )
     t->Branch("hasME2",&hasME2);
     t->Branch("passGE11",&passGE11);
     t->Branch("passGE21",&passGE21);
+    t->Branch("passGE11simPt",&passGE11simPt);
+    t->Branch("passGE21simPt",&passGE21simPt);
     t->Branch("GE11IsOdd",&GE11IsOdd);
     t->Branch("GE21IsOdd",&GE21IsOdd);
     t->Branch("GE11dPhi",&GE11dPhi);
@@ -218,6 +223,11 @@ private:
   CSCTFTrack csctftrack;
   TTree* tree_track;
 
+  void fillTrackTree(edm::Handle<L1CSCTrackCollection> l1csctracks,
+	             L1CSCTrackCollection::const_iterator matched_l1trackIT,
+		     edm::ESHandle< L1MuTriggerScales > scales,
+		     TLorentzVector truemuon);
+  
   CSCSectorReceiverLUT* srLUTs_[5][nEndcaps][nSectors]; // indexed by FPGA
   bool m_gangedME1a;
 
@@ -330,9 +340,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool loweta = false;
   bool lowphi = false;
   n_events++;
+  int n_simtracks = 0;
   edm::SimTrackContainer::const_iterator BaseSimTrk;
   for(BaseSimTrk=BaseSimTracks->begin(); BaseSimTrk != BaseSimTracks->end(); BaseSimTrk++){
-    if (BaseSimTrk->momentum().eta() > 0.0) continue; //only do analysis for Negative endcap
+   // if (BaseSimTrk->momentum().eta() > 0.0) continue; //only do analysis for Negative endcap
     if ((fabs(BaseSimTrk->type()) == 13) &&
 	(BaseSimTrk->momentum().pt() >= min_pt) &&
 	(BaseSimTrk->momentum().pt() <= max_pt) &&
@@ -341,7 +352,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       TLorentzVector truemuon; 
       truemuon.SetPtEtaPhiE(BaseSimTrk->momentum().pt(), BaseSimTrk->momentum().eta(), BaseSimTrk->momentum().phi(), BaseSimTrk->momentum().E());
       TLorentzVector l1muon;      
-
+      n_simtracks++;
+      //std::cout<<"n_simtracks "<< n_simtracks <<std::endl;
       int nstubs=0;
       unsigned int sign = 0;
       unsigned int charge = 0;
@@ -352,9 +364,11 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       float GE21dPhi=-99.;
       bool passGE11=false;
       bool passGE21=false;
-      bool isOdd = false;
 
-      csc::L1Track matched_l1track;
+	edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
+	iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
+      
+      //csc::L1Track matched_l1track;
       L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
       L1CSCTrackCollection::const_iterator matched_l1trackIT;
       for(; tmp_trk != l1csctracks->end(); tmp_trk++){
@@ -371,8 +385,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	pt = ptscale[pt_packed];
 	
 	unsigned int sector = l1track.sector();// get sector
-	edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
-	iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
+	//edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
+	//iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
 	const L1MuTriggerScales  *ts;// the trigger scales 
 	ts = scales.product();
 	unsigned gbl_phi = l1track.localPhi() + ((sector - 1)*24) + 6;
@@ -384,22 +398,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	unsigned int tempsign = l1track.charge_packed();
 	unsigned int tempcharge = ptLUTAddress.delta_phi_sign;
         
-	csctftrack.init();
-	csctftrack.truept = truemuon.Pt();
-	csctftrack.trueeta = truemuon.Eta();
-	csctftrack.truephi = truemuon.Phi();
-	csctftrack.pt = pt;
-	csctftrack.eta = eta;
-	csctftrack.phi = phi;
-	csctftrack.rank = rank;
-	csctftrack.pt_packed = pt_packed;
-	csctftrack.quality_packed = quality_packed;
-	csctftrack.sector = sector;
-	//csctftrack.gbl_phi = gbl_phi;
-	//csctftrack.eta_sign = eta_sign;
-	csctftrack.sign = tempsign;
-	csctftrack.charge = tempcharge;
-
 
 	int tempnstubs = 0;
 	bool temphasME1=false;
@@ -408,7 +406,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	float tempGE21dPhi=-99.;
 	bool temppassGE11=false;
 	bool temppassGE21=false;
-	bool tempisOdd=false;
 
 	TLorentzVector templ1muon;
 	templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
@@ -417,8 +414,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  bool is_odd = ((*csc).first.chamber()%2==1);
 	  if ((*csc).first.station()==1){
 	    temphasME1 = true;
-	    tempisOdd = ((*csc).first.chamber()%2==1);
-	    csctftrack.GE11IsOdd = ((*csc).first.chamber()%2==1);
 	    tempGE11dPhi = (*csc).second.first->getGEMDPhi();
 	    for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
 	      if (double(pt) >= ME11GEMdPhi[b][0]){
@@ -435,7 +430,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if ((*csc).first.station()==2){
 	    temphasME2 = true;
 	    tempGE21dPhi = (*csc).second.first->getGEMDPhi();
-	    csctftrack.GE21IsOdd = ((*csc).first.chamber()%2==1);
 	    for (int b = 0; b < 9; b++){
 	      //if (double(pt) >= ME21GEMdPhi[b][0]){
 	      if (double(truemuon.Pt()) >= ME21GEMdPhi[b][0]){
@@ -451,18 +445,6 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  tempnstubs++;
 	}
        
-	csctftrack.nstubs = tempnstubs;
-        csctftrack.GE11dPhi = tempGE11dPhi;
-        csctftrack.GE21dPhi = tempGE21dPhi;	
-	if (temphasME1) csctftrack.hasME1 = true;
-	else csctftrack.hasME1 = false;
-	if (temphasME2) csctftrack.hasME2 = true;
-	else csctftrack.hasME2 = false;
-	if (temppassGE11) csctftrack.passGE11 = true;
-	else csctftrack.passGE11 = false;
-	if (temppassGE21) csctftrack.passGE21 = true;
-	else csctftrack.passGE21 = false;
-
 
 	if (truemuon.DeltaR(templ1muon) < minDRMatch){
 	  if (tempnstubs >= nstubs){
@@ -479,17 +461,15 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      matched_l1trackIT = tmp_trk;
 	      sign = tempsign;
 	      charge = tempcharge;
-	      isOdd = (tempisOdd ?true : false);
-	      csctftrack.match = true;
 	    }
-	    else csctftrack.match = false;
 	  }
 	}
 
-       tree_track->Fill();
 
       }
-      
+//	 auto matched_l1track = matched_l1trackIT->first;
+     //std::cout<<"rank "<< matched_l1track.rank()<<std::endl;
+     fillTrackTree(l1csctracks,matched_l1trackIT,scales,truemuon); 
       // testing for eff drop at phi~0
       // if (nstubs)
       // if (BaseSimTrk->momentum().eta() > 1.6 and BaseSimTrk->momentum().eta() < 1.75){
@@ -932,6 +912,127 @@ void L1TAnalyser::endJob()
       }
     }
   }
+
+}
+
+
+void L1TAnalyser::fillTrackTree(edm::Handle<L1CSCTrackCollection> l1csctracks, 
+	                        L1CSCTrackCollection::const_iterator matched_l1trackIT,
+				edm::ESHandle< L1MuTriggerScales > scales,
+				TLorentzVector truemuon)
+{
+
+   L1CSCTrackCollection::const_iterator tmp_trk = l1csctracks->begin();
+   //L1CSCTrackCollection::const_iterator matched_l1trackIT;
+	 //auto matched_l1track = matched_l1trackIT->first;
+	 //std::cout<<"rank "<< matched_l1track.rank() <<std::endl;
+   for(; tmp_trk != l1csctracks->end(); tmp_trk++)
+   {  
+        float pt=0, eta=-9, phi=-9;
+	unsigned int quality_packed=0, rank=0;// ptLUTAddress=0;
+	unsigned int pt_packed=0;
+
+	auto l1track = tmp_trk->first;
+	rank=l1track.rank();
+	//std::cout<<"csctf track rank "<<rank<<std::endl;
+	//ptLUTAddress = l1track.ptLUTAddress();
+        ptadd ptLUTAddress(l1track.ptLUTAddress());
+
+	l1track.decodeRank(rank,pt_packed,quality_packed); //get the pt and gaulity packed
+	pt = ptscale[pt_packed];
+	
+	unsigned int sector = l1track.sector();// get sector
+	//edm::ESHandle< L1MuTriggerScales > scales;//get structures for scales (phi and eta
+	//iSetup.get< L1MuTriggerScalesRcd >().get(scales); // get scales from EventSetup
+	const L1MuTriggerScales  *ts;// the trigger scales 
+	ts = scales.product();
+	unsigned gbl_phi = l1track.localPhi() + ((sector - 1)*24) + 6;
+	if(gbl_phi > 143) gbl_phi -= 143;
+	phi = ts->getPhiScale()->getLowEdge( gbl_phi&0xff );
+	unsigned eta_sign = (l1track.endcap() == 1 ? 0 : 1);
+	eta = ts->getRegionalEtaScale(2)->getCenter( ((l1track.eta_packed()) | (eta_sign<<5)) & 0x3f );
+	
+	unsigned int tempsign = l1track.charge_packed();
+	unsigned int tempcharge = ptLUTAddress.delta_phi_sign;
+        
+        if (eta*truemuon.Eta()<0)  continue;	
+	csctftrack.init();
+	if (tmp_trk == matched_l1trackIT)   csctftrack.match = true;
+	else csctftrack.match = false;
+	//if (csctftrack.match) std::cout<<"matched csctf track"<<std::endl;
+	csctftrack.truept = truemuon.Pt();
+	csctftrack.trueeta = truemuon.Eta();
+	csctftrack.truephi = truemuon.Phi();
+	csctftrack.pt = pt;
+	csctftrack.eta = eta;
+	csctftrack.phi = phi;
+	csctftrack.rank = rank;
+	csctftrack.pt_packed = pt_packed;
+	csctftrack.quality_packed = quality_packed;
+	csctftrack.sector = sector;
+	//csctftrack.gbl_phi = gbl_phi;
+	//csctftrack.eta_sign = eta_sign;
+	csctftrack.sign = tempsign;
+	csctftrack.charge = tempcharge;
+
+	//TLorentzVector templ1muon;
+	//templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
+	csctftrack.nstubs = 0;
+	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
+	for(; csc!=tmp_trk->second.end(); csc++){
+	  bool is_odd = ((*csc).first.chamber()%2==1);
+	  if ((*csc).first.station()==1){
+	    csctftrack.hasME1 = true;
+	    csctftrack.GE11IsOdd = ((*csc).first.chamber()%2==1);
+	    csctftrack.GE11dPhi = (*csc).second.first->getGEMDPhi();
+	    for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
+	      if (double(pt) >= ME11GEMdPhi[b][0]){
+		if ((is_odd && ME11GEMdPhi[b][1] > fabs(csctftrack.GE11dPhi)) || 
+		    (!is_odd && ME11GEMdPhi[b][2] > fabs(csctftrack.GE11dPhi))){
+		  csctftrack.passGE11 = true;
+		}
+		else csctftrack.passGE11 = false;
+	      }
+	      if (double(truemuon.Pt()) >= ME11GEMdPhi[b][0]){
+		if ((is_odd && ME11GEMdPhi[b][1] > fabs(csctftrack.GE11dPhi)) || 
+		    (!is_odd && ME11GEMdPhi[b][2] > fabs(csctftrack.GE11dPhi))){
+		  csctftrack.passGE11simPt = true;
+		}
+		else csctftrack.passGE11simPt = false;
+	      }
+	    }
+	    if (csctftrack.GE11dPhi < -50) csctftrack.passGE11 = true;// no gem match, pass
+	    if (csctftrack.GE11dPhi < -50) csctftrack.passGE11simPt = true;// no gem match, pass
+	  }
+	  if ((*csc).first.station()==2){
+	    csctftrack.hasME2 = true;
+	    csctftrack.GE21dPhi = (*csc).second.first->getGEMDPhi();
+	    csctftrack.GE21IsOdd = ((*csc).first.chamber()%2==1);
+	    for (int b = 0; b < 9; b++){
+	        if (double(pt) >= ME21GEMdPhi[b][0]){
+		if ((is_odd && ME21GEMdPhi[b][1] > fabs(csctftrack.GE21dPhi)) ||
+		    (!is_odd && ME21GEMdPhi[b][2] > fabs(csctftrack.GE21dPhi))){
+		  csctftrack.passGE21 = true;
+		}
+		else csctftrack.passGE21 = false;
+	      }
+	        if (double(truemuon.Pt()) >= ME21GEMdPhi[b][0]){
+		if ((is_odd && ME21GEMdPhi[b][1] > fabs(csctftrack.GE21dPhi)) ||
+		    (!is_odd && ME21GEMdPhi[b][2] > fabs(csctftrack.GE21dPhi))){
+		  csctftrack.passGE21simPt = true;
+		}
+		else csctftrack.passGE21simPt = false;
+	      }
+	    }
+	    if (csctftrack.GE21dPhi < -50)  csctftrack.passGE21 = true;
+	    if (csctftrack.GE21dPhi < -50)  csctftrack.passGE21simPt = true;
+	  }
+	  csctftrack.nstubs++;
+	}
+       
+      tree_track->Fill();
+      
+   }
 }
 
 //define this as a plug-in
