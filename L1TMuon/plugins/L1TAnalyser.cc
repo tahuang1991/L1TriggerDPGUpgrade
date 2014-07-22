@@ -72,6 +72,7 @@ struct CSCTFTrack
     UInt_t sign,charge;
 
     Int_t nstubs;
+    Int_t wg_ME11,wg_ME21,hs_ME11,hs_ME21;
     Bool_t hasME1,hasME2,passGE11,passGE21,GE11IsOdd,GE21IsOdd;
     Bool_t passGE11simPt,passGE21simPt;
     Bool_t match;
@@ -98,6 +99,11 @@ void CSCTFTrack::init(){
     sign = 0;
     charge = 0;
     nstubs = 0;
+    wg_ME11 = -1;
+    wg_ME21 = -1;
+    hs_ME11 = -1;
+    hs_ME21 = -1;
+
     hasME1 = false;
     hasME2 = false;
     passGE11 = false;
@@ -132,6 +138,11 @@ TTree* CSCTFTrack::bookTrackTree(TTree* t )
     t->Branch("sign",&sign);
     t->Branch("charge",&charge);
     t->Branch("nstubs",&nstubs);
+    t->Branch("wg_ME11",&wg_ME11);
+    t->Branch("wg_ME21",&wg_ME21);
+    t->Branch("hs_ME11",&hs_ME11);
+    t->Branch("hs_ME21",&hs_ME21);
+
     t->Branch("hasME1",&hasME1);
     t->Branch("hasME2",&hasME2);
     t->Branch("passGE11",&passGE11);
@@ -558,7 +569,9 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
 	}
       }
-
+      
+      float ptResolution = 0.3;
+      if (std::fabs((truemuon.Pt()-l1muon.Pt())/truemuon.Pt()) > ptResolution) debugTF = true;
       if (debugTF){
 	// debug to see where stubs are lost
 	//float gemDphi = -99;
@@ -885,6 +898,8 @@ void L1TAnalyser::beginJob()
   h_nStation->GetXaxis()->SetTitle("Station number");
   h_nStation->GetYaxis()->SetTitle("Counts");
   n_events = 0;
+
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -981,10 +996,12 @@ void L1TAnalyser::fillTrackTree(edm::Handle<L1CSCTrackCollection> l1csctracks,
 	CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
 	for(; csc!=tmp_trk->second.end(); csc++){
 	  bool is_odd = ((*csc).first.chamber()%2==1);
-	  if ((*csc).first.station()==1){
-	    csctftrack.hasME1 = true;
+	  if ((*csc).first.station()==1)  csctftrack.hasME1 = true;
+	  if ((*csc).first.station()==1 && ((*csc).first.ring() ==1 || (*csc).first.ring() ==4)){
 	    csctftrack.GE11IsOdd = ((*csc).first.chamber()%2==1);
 	    csctftrack.GE11dPhi = (*csc).second.first->getGEMDPhi();
+	    csctftrack.wg_ME11 = (*csc).second.first->getKeyWG();
+	    csctftrack.hs_ME11 = (*csc).second.first->getStrip();
 	    for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
 	      if (double(pt) >= ME11GEMdPhi[b][0]){
 		if ((is_odd && ME11GEMdPhi[b][1] > fabs(csctftrack.GE11dPhi)) || 
@@ -1004,10 +1021,12 @@ void L1TAnalyser::fillTrackTree(edm::Handle<L1CSCTrackCollection> l1csctracks,
 	    if (csctftrack.GE11dPhi < -50) csctftrack.passGE11 = true;// no gem match, pass
 	    if (csctftrack.GE11dPhi < -50) csctftrack.passGE11simPt = true;// no gem match, pass
 	  }
-	  if ((*csc).first.station()==2){
-	    csctftrack.hasME2 = true;
+	  if ((*csc).first.station()==2)  csctftrack.hasME2 = true;
+	  if ((*csc).first.station()==2 && (*csc).first.ring() ==1){
 	    csctftrack.GE21dPhi = (*csc).second.first->getGEMDPhi();
 	    csctftrack.GE21IsOdd = ((*csc).first.chamber()%2==1);
+	    csctftrack.wg_ME21 = (*csc).second.first->getKeyWG();
+	    csctftrack.hs_ME21 = (*csc).second.first->getStrip();
 	    for (int b = 0; b < 9; b++){
 	        if (double(pt) >= ME21GEMdPhi[b][0]){
 		if ((is_odd && ME21GEMdPhi[b][1] > fabs(csctftrack.GE21dPhi)) ||
