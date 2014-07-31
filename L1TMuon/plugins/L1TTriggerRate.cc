@@ -211,7 +211,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	GE11dPhi = (*csc).second.first->getGEMDPhi();
 	if (fabs(GE11dPhi) < 10){
 	  for (int b = 0; b < 9; b++){
-	    if ((sign == 1 && GE11dPhi < 0) || (sign == 0 && GE11dPhi > 0))
+	    if ((sign == 1 && GE11dPhi < 0) || (sign == 0 && GE11dPhi > 0) || fabs(GE11dPhi) < 0.001){
 	      if (double(pt) >= ME11GEMdPhi[b][0]){
 		if ((is_odd && ME11GEMdPhi[b][1] > fabs(GE11dPhi)) || 
 		    (!is_odd && ME11GEMdPhi[b][2] > fabs(GE11dPhi))){
@@ -219,6 +219,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		}
 		else passGE11 = false;
 	      }
+	    }
 	  }
 	}
 	if (GE11dPhi < -50) passGE11 = false;
@@ -229,7 +230,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	GE21dPhi = (*csc).second.first->getGEMDPhi();
 	if (fabs(GE21dPhi) < 10){
 	  for (int b = 0; b < 9; b++){
-	    if ((sign == 1 && GE21dPhi < 0) || (sign == 0 && GE21dPhi > 0))
+	    if ((sign == 1 && GE21dPhi < 0) || (sign == 0 && GE21dPhi > 0) || fabs(GE21dPhi) < 0.001){
 	      if (double(pt) >= ME21GEMdPhi[b][0]){
 		if ((is_odd && ME21GEMdPhi[b][1] > fabs(GE21dPhi)) || 
 		    (!is_odd && ME21GEMdPhi[b][2] > fabs(GE21dPhi))){
@@ -237,6 +238,7 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		}
 		else passGE21 = false;
 	      }
+	    }
 	  }
 	}
 	if (GE21dPhi < -50) passGE21 = false;

@@ -308,13 +308,16 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if ((*csc).first.station()==1){
 	      temphasME1 = true;
 	      tempGE11dPhi = (*csc).second.first->getGEMDPhi();
-	      for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
-		if (double(pt) >= ME11GEMdPhi[b][0]){
-		  if ((is_odd && ME11GEMdPhi[b][1] > fabs(tempGE11dPhi)) || 
-		      (!is_odd && ME11GEMdPhi[b][2] > fabs(tempGE11dPhi))){
-		    temppassGE11 = true;
+
+	      if ((tempsign == 1 && tempGE11dPhi < 0) || (tempsign == 0 && tempGE11dPhi > 0) || fabs(tempGE11dPhi) < 0.001){
+		for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
+		  if (double(pt) >= ME11GEMdPhi[b][0]){
+		    if ((is_odd && ME11GEMdPhi[b][1] > fabs(tempGE11dPhi)) || 
+		     	(!is_odd && ME11GEMdPhi[b][2] > fabs(tempGE11dPhi))){
+		      temppassGE11 = true;
+		    }
+		    else temppassGE11 = false;
 		  }
-		  else temppassGE11 = false;
 		}
 	      }
 	      if (tempGE11dPhi < -50) temppassGE11 = true;// no gem match, pass
@@ -389,7 +392,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	float trueAbsEta = fabs(truemuon.Eta());
 	//      float trueEta = truemuon.Eta();
-	if (nstubs > 1 && trueAbsEta > 2.1){
+	// if (nstubs > 1 && trueAbsEta > 2.1){
+	if (nstubs > 1){
 	  h_TFGE11DPhi->Fill(GE11dPhi);
 	  h_TFGE21DPhi->Fill(GE21dPhi);
 	}
