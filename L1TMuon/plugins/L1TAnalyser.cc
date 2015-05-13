@@ -45,6 +45,7 @@
 #include "DataFormats/L1CSCTrackFinder/interface/L1Track.h"
 #include <L1Trigger/CSCTrackFinder/interface/CSCSectorReceiverLUT.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
+#include "GEMCSCdphi_LUT.h"
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -74,28 +75,6 @@ private:
     16.0,  18.0,  20.0,  25.0,  30.0,  35.0,  40.0,  45.0, 
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 1.E6 };
 
-  const double ME11GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.03971647, 0.01710244 },
-    {5 , 0.02123785, 0.00928431 },
-    {7 , 0.01475524, 0.00650928 },
-    {10, 0.01023299, 0.00458796 },
-    {15, 0.00689220, 0.00331313 },
-    {20, 0.00535176, 0.00276152 },
-    {30, 0.00389050, 0.00224959 },
-    {40, 0.00329539, 0.00204670 }
-  };
-  const double ME21GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.01832829, 0.01003643 },
-    {5 , 0.01095490, 0.00631625 },
-    {7 , 0.00786026, 0.00501017 },
-    {10, 0.00596349, 0.00414560 },
-    {15, 0.00462411, 0.00365550 },
-    {20, 0.00435298, 0.00361550 },
-    {30, 0.00465160, 0.00335700 },
-    {40, 0.00372145, 0.00366262 }
-  };
   // const double ME11GEMdPhi[9][3] = {
   //   {-2 , 0.00689220, 0.00331313 },
   //   {-2 , 0.00689220, 0.00331313 },
@@ -300,6 +279,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  bool temppassGE11=false;
 	  bool temppassGE21=false;
 
+    	  int ME11Ptsize = sizeof(ME11GEMdPhi)/sizeof(ME11GEMdPhi[0]);
+    	  int ME21Ptsize = sizeof(ME21GEMdPhi)/sizeof(ME21GEMdPhi[0]);
 	  TLorentzVector templ1muon;
 	  templ1muon.SetPtEtaPhiM(pt, eta, phi, 0.1057);
 	  CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
@@ -309,8 +290,8 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      temphasME1 = true;
 	      tempGE11dPhi = (*csc).second.first->getGEMDPhi();
 
-	      if ((tempsign == 1 && tempGE11dPhi < 0) || (tempsign == 0 && tempGE11dPhi > 0) || fabs(tempGE11dPhi) < 0.001){
-		for (int b = 0; b < 9; b++){ // cutting on gem csc dPhi
+	      if ((tempsign == 1 && tempGE11dPhi < 0) || (tempsign == 0 && tempGE11dPhi > 0) || fabs(tempGE11dPhi) < 0.5*ME11GEMdPhi[ME11Ptsize-1][2]){
+		for (int b = 0; b < ME11Ptsize; b++){ // cutting on gem csc dPhi
 		  if (double(pt) >= ME11GEMdPhi[b][0]){
 		    if ((is_odd && ME11GEMdPhi[b][1] > fabs(tempGE11dPhi)) || 
 		     	(!is_odd && ME11GEMdPhi[b][2] > fabs(tempGE11dPhi))){
@@ -321,11 +302,13 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	      }
 	      if (tempGE11dPhi < -50) temppassGE11 = true;// no gem match, pass
+	      if (GE11dPhi >= 99.) temppassGE11 = false;
 	    }
 	    if ((*csc).first.station()==2){
 	      temphasME2 = true;
 	      tempGE21dPhi = (*csc).second.first->getGEMDPhi();
-	      for (int b = 0; b < 9; b++){
+	      if ((tempsign == 1 && tempGE21dPhi < 0) || (tempsign == 0 && tempGE21dPhi > 0) || fabs(tempGE21dPhi) < 0.5*ME21GEMdPhi[ME21Ptsize-1][2]){
+	      for (int b = 0; b < ME21Ptsize; b++){
 		if (double(pt) >= ME21GEMdPhi[b][0]){
 		  if ((is_odd && ME21GEMdPhi[b][1] > fabs(tempGE21dPhi)) ||
 		      (!is_odd && ME21GEMdPhi[b][2] > fabs(tempGE21dPhi))){
@@ -333,8 +316,10 @@ L1TAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  }
 		  else temppassGE21 = false;
 		}
+	       }
 	      }
 	      if (tempGE21dPhi < -50) temppassGE21 = true;
+	      if (GE21dPhi >= 99.) temppassGE21 = false;
 	    }
 	    tempnstubs++;
 	  }

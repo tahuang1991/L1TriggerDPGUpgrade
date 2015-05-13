@@ -41,7 +41,7 @@
 #include "CondFormats/DataRecord/interface/L1MuTriggerScalesRcd.h"
 #include "CondFormats/DataRecord/interface/L1MuTriggerPtScaleRcd.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-
+#include "GEMCSCdphi_LUT.h"
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -86,28 +86,6 @@ private:
     50.0,  60.0,  70.0,  80.0,  90.0, 100.0, 120.0, 140.0, 200.0};
   unsigned maxPTbins = 33;
 
-  const double ME11GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.03971647, 0.01710244 },
-    {5 , 0.02123785, 0.00928431 },
-    {7 , 0.01475524, 0.00650928 },
-    {10, 0.01023299, 0.00458796 },
-    {15, 0.00689220, 0.00331313 },
-    {20, 0.00535176, 0.00276152 },
-    {30, 0.00389050, 0.00224959 },
-    {40, 0.00329539, 0.00204670 }
-  };
-  const double ME21GEMdPhi[9][3] = {
-    {-2 , 1.0, 1.0 },
-    {3 , 0.01832829, 0.01003643 },
-    {5 , 0.01095490, 0.00631625 },
-    {7 , 0.00786026, 0.00501017 },
-    {10, 0.00596349, 0.00414560 },
-    {15, 0.00462411, 0.00365550 },
-    {20, 0.00435298, 0.00361550 },
-    {30, 0.00465160, 0.00335700 },
-    {40, 0.00372145, 0.00366262 }
-  };
   // const double ME11GEMdPhi[9][3] = {
   //   {-2 , 0.00689220, 0.00331313 },
   //   {-2 , 0.00689220, 0.00331313 },
@@ -134,7 +112,7 @@ private:
   enum etabins{eta_all, eta_me1, eta_me2, eta_me3, netabins};
   enum ptbins{pt_all, pt_15, pt_20, nptbins};
   enum stubbins{stub_2, stub_3, stub_4, nstubbins};
-  enum MEbins{ME_all, ME_1, GE_1, ME_2, GE_2, GE_12, nMEbins};
+  enum MEbins{ME_all, ME_1, GE_1, passGE_1, ME_2, GE_2, passGE_2, GE_12, passGE_12, nMEbins};
   TH1F* h_L1CSCTrack_pt[netabins][nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_eta[nptbins][nstubbins][nMEbins];
   TH1F* h_L1CSCTrack_phi[netabins][nptbins][nstubbins][nMEbins];
@@ -199,19 +177,24 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     int nstubs=0;
     bool hasME1=false;
     bool hasME2=false;
+    bool hasGE1=false;
+    bool hasGE2=false;
     float GE11dPhi=-99.;
     float GE21dPhi=-99.;
     bool passGE11=false;
     bool passGE21=false;
+    int ME11Ptsize = sizeof(ME11GEMdPhi)/sizeof(ME11GEMdPhi[0]);
+    int ME21Ptsize = sizeof(ME21GEMdPhi)/sizeof(ME21GEMdPhi[0]);
     CSCCorrelatedLCTDigiCollection::DigiRangeIterator csc=tmp_trk->second.begin();
     for(; csc!=tmp_trk->second.end(); csc++){
       bool is_odd = ((*csc).first.chamber()%2==1);
       if ((*csc).first.station()==1){
 	hasME1 = true;
 	GE11dPhi = (*csc).second.first->getGEMDPhi();
+	if (GE11dPhi > -10) hasGE1 = true;
 	if (fabs(GE11dPhi) < 10){
-	  for (int b = 0; b < 9; b++){
-	    if ((sign == 1 && GE11dPhi < 0) || (sign == 0 && GE11dPhi > 0) || fabs(GE11dPhi) < 0.001){
+	  for (int b = 0; b < ME11Ptsize; b++){
+	    if ((sign == 1 && GE11dPhi < 0) || (sign == 0 && GE11dPhi > 0) || fabs(GE11dPhi) <  0.5*ME11GEMdPhi[ME11Ptsize-1][2]){
 	      if (double(pt) >= ME11GEMdPhi[b][0]){
 		if ((is_odd && ME11GEMdPhi[b][1] > fabs(GE11dPhi)) || 
 		    (!is_odd && ME11GEMdPhi[b][2] > fabs(GE11dPhi))){
@@ -220,17 +203,20 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		else passGE11 = false;
 	      }
 	    }
+	//    else std::cout <<" GE11dphi " << GE11dPhi << " sign " << sign << std::endl;
 	  }
 	}
-	if (GE11dPhi < -50) passGE11 = false;
-	if (GE11dPhi >= 99.) passGE11 = false;
+	if (fabs(GE11dPhi) > 10) passGE11 = false;
+//	if (GE11dPhi >= 99.) passGE11 = false;
+      if (passGE11 and !hasGE1 ) std::cout << " pass GE11 but failed to has GE11, dphi " << GE11dPhi << " " << pt << std::endl;
       }
       if ((*csc).first.station()==2){
 	hasME2 = true;
 	GE21dPhi = (*csc).second.first->getGEMDPhi();
+	if (GE21dPhi > -10) hasGE2 = true;
 	if (fabs(GE21dPhi) < 10){
-	  for (int b = 0; b < 9; b++){
-	    if ((sign == 1 && GE21dPhi < 0) || (sign == 0 && GE21dPhi > 0) || fabs(GE21dPhi) < 0.001){
+	  for (int b = 0; b < ME21Ptsize; b++){
+	    if ((sign == 1 && GE21dPhi < 0) || (sign == 0 && GE21dPhi > 0) || fabs(GE21dPhi) < 0.5*ME21GEMdPhi[ME21Ptsize-1][2]){
 	      if (double(pt) >= ME21GEMdPhi[b][0]){
 		if ((is_odd && ME21GEMdPhi[b][1] > fabs(GE21dPhi)) || 
 		    (!is_odd && ME21GEMdPhi[b][2] > fabs(GE21dPhi))){
@@ -239,12 +225,24 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		else passGE21 = false;
 	      }
 	    }
+//else std::cout <<" GE21dphi " << GE21dPhi << " sign " << sign << std::endl;
 	  }
 	}
-	if (GE21dPhi < -50) passGE21 = false;
-	if (GE21dPhi >= 99.) passGE21 = false;
+
+	if (fabs(GE21dPhi) > 10) passGE21 = false;
+	//if (GE21dPhi >= 99.) passGE21 = false;
+      if (passGE21 and !hasGE2 ) std::cout << " pass GE21 but failed to has GE21, dphi " << GE21dPhi << " " << pt << std::endl;
       }
       nstubs++;
+    }
+    
+     if (nstubs >= 3 and eta > 1.64 and eta < 2.14 ){
+      if (!hasME1) std::cout <<" no stub in ME1" << std::endl;
+      if (hasME1 and !hasGE1) std::cout << " has stub in ME1 but no GE11 " << std::endl;
+      if (hasME1 and hasGE1 and !passGE11) std::cout << " has stub in ME1 and  GE11  but failed to pass GE11 dphicut" << std::endl;
+      if (!hasME2) std::cout <<" no stub in ME2" << std::endl;
+      if (hasME2 and !hasGE2) std::cout << " has stub in ME2 but no GE21 " << std::endl;
+      if (hasME2 and hasGE2 and !passGE21) std::cout << " has stub in ME2 and  GE21  but failed to pass GE21 dphicut" << std::endl;
     }
 
     for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
@@ -256,9 +254,12 @@ void L1TTriggerRate::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if ((nMEbin == ME_all) ||
 	      ((nMEbin == ME_1) && hasME1) ||
 	      ((nMEbin == ME_2) && hasME2) ||
-	      ((nMEbin == GE_1) && passGE11) ||
-	      ((nMEbin == GE_2) && passGE21) ||
-	      ((nMEbin == GE_12) && passGE11 && passGE21) ){
+	      ((nMEbin == GE_1) && hasGE1) ||
+	      ((nMEbin == GE_2) && hasGE2) ||
+	      ((nMEbin == passGE_1) && passGE11) ||
+	      ((nMEbin == passGE_2) && passGE21) ||
+	      ((nMEbin == GE_12) && hasGE1 && hasGE2) || 
+	      ((nMEbin == passGE_12) && passGE11 && passGE21) ){
 	    
 	    for (int netabin = 0; netabin < netabins; netabin++){
 	      if ((netabin == eta_all) ||
@@ -307,7 +308,7 @@ void L1TTriggerRate::beginJob()
   TString etabinsName[] = {"", "eta1", "eta2", "eta3"};
   TString ptbinsName[] = {"", "pt15", "pt20"};
   TString stubbinsName[] = {"stub2", "stub3", "stub4"};
-  TString MEbinsName[] = {"", "hasME1", "hasGE11", "hasME2", "hasGE21", "hasGE11GE21"};
+  TString MEbinsName[] = {"", "hasME1", "hasGE11", "passGE11","hasME2", "hasGE21","passGE21", "hasGE11GE21","passGE11GE21"};
   for (int nstubbin = 0; nstubbin < nstubbins; nstubbin++){
     for (int netabin = 0; netabin < netabins; netabin++){
       for (int nptbin = 0; nptbin < nptbins; nptbin++){
